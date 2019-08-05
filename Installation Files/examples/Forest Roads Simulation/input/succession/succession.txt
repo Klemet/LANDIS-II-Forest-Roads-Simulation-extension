@@ -1,0 +1,13 @@
+LandisData "Age-only Succession"
+
+Timestep 10
+
+SeedingAlgorithm WardSeedDispersal
+>> Also NoDispersal or UniversalDispersal
+
+InitialCommunities "./input/succession/initial-communities.txt"
+InitialCommunitiesMap "./input/succession/initial communities.tif"
+
+>> Obligatory. For variation of probabilities of seed establishement through
+>> time and through ecoregions. Only indicate year 0 if no change through the years.
+DynamicInputFile ./input/succession/age-only-succession-dynamic-inputs.txt
