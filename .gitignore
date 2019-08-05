@@ -16,6 +16,12 @@
 # Mono auto generated files
 mono_crash.*
 
+# Results of test simulations
+/Installation Files/examples/Forest Roads Simulation/output
+/Installation Files/examples/Forest Roads Simulation/Metadata
+/Installation Files/examples/Forest Roads Simulation/Landis-Log
+/Installation Files/examples/Forest Roads Simulation/wind-events-log
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
