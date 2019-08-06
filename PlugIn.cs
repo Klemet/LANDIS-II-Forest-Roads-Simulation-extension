@@ -21,6 +21,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static readonly ExtensionType ExtType = new ExtensionType("disturbance:roads");
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 
+		// Propriété pour contenir les paramètres
+		private IInputParameters parameters;
+
 		// Propriété qui va contenir l'object "Coeur" de LANDIS-II afin de pouvoir y faire référence dans les fonctions.
 		private static ICore modelCore;
 
@@ -56,7 +59,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
-			parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
+			this.parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
 			modelCore.UI.WriteLine("Parameters of the Forest Roads Simulation Extension are loaded");
 		}
 
@@ -66,12 +69,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Elle va préparer tout ce qu'il faut pour l'output des données.
 		public override void Initialize()
 		{
+			Timestep = parameters.Timestep;
+			modelCore.UI.WriteLine("The timestep for the Forest Road Extension is : " + Timestep);
+
 			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension is done");
 		}
 
 		public override void Run()
 		{
-			throw new NotImplementedException();
+			modelCore.UI.WriteLine("Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?");
 		}
 	}
 

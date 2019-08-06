@@ -21,9 +21,11 @@ mono_crash.*
 /Installation Files/examples/Forest Roads Simulation/Metadata
 /Installation Files/examples/Forest Roads Simulation/Landis-Log
 /Installation Files/examples/Forest Roads Simulation/wind-events-log
+/Installation Files/examples/Forest Roads Simulation/
 
-# BatchFile for copying everything to the LANDIS-II folder automatically
+# BatchFiles for quickly running the program
 copyToLandisFolder.bat
+launchLandisIITestScenario.bat
 
 # Build results
 [Dd]ebug/

@@ -1,0 +1,18 @@
+2019-08-06 10:30:41,852 - LANDIS-II 7.0 (7)
+2019-08-06 10:30:41,860 - 
+2019-08-06 10:30:41,918 - Loading scenario from file ".\Installation Files\examples\Forest Roads Simulation\test_scenario.txt" ...
+2019-08-06 10:30:41,974 - Initialized random number generator with user-supplied seed = 4,357
+2019-08-06 10:30:41,974 - Loading species data from file "./input/species_ecoregions/species.txt" ...
+2019-08-06 10:30:41,976 - Internal error occurred within the program:
+2019-08-06 10:30:41,977 -   Could not find a part of the path 'D:\OneDrive -UQAM\OneDrive - UQAM\Thèse CEF MONTREAL\Chapitre 1\Module de route\LANDIS-II-Forest-Roads-Extension\input\species_ecoregions\species.txt'.
+2019-08-06 10:30:41,977 - 
+2019-08-06 10:30:41,978 - Stack trace:
+2019-08-06 10:30:42,002 -    at System.IO.FileStream.ValidateFileHandle(SafeFileHandle fileHandle)
+   at System.IO.FileStream.CreateFileOpenHandle(FileMode mode, FileShare share, FileOptions options)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options)
+   at System.IO.StreamReader..ctor(String path, Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize)
+   at Landis.Data.OpenTextFile(String path)
+   at Landis.Data.Load[T](String path, ITextParser`1 parser)
+   at Landis.Model.LoadSpecies(String path)
+   at Landis.Model.Run(String scenarioPath, IUserInterface ui)
+   at Landis.App.Main(String[] args) in D:\CGAProjects\Rob\LANDIS_FINAL\GitHubRepo\Core-Model-v7\Tool-Console\src\App.cs:line 99
