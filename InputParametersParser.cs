@@ -49,6 +49,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(timestep);
 			parameters.Timestep = timestep.Value;
 
+			// On lit le raster initial des routes
+			InputVar<string> roadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
+			ReadVar(roadNetworkMap);
+			MapReader.ReadMap(roadNetworkMap.Value);
+
 			return (parameters);
 		}
 

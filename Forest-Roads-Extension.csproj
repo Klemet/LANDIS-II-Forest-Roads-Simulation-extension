@@ -65,6 +65,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UIntPixel.cs" />
+    <Compile Include="MapReader.cs" />
+    <Compile Include="RoadType.cs" />
+    <Compile Include="SiteVars.cs" />
     <Compile Include="InputParameters.cs" />
     <Compile Include="InputParametersParser.cs" />
     <Compile Include="PlugIn.cs" />

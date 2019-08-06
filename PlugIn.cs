@@ -57,10 +57,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On lie le coeur de LANDIS-II
 			modelCore = mCore;
 
+			// On initialise les variables de site, dont le type de route
+			SiteVars.Initialize();
+
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
 			this.parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
 			modelCore.UI.WriteLine("Parameters of the Forest Roads Simulation Extension are loaded");
+
+			// Proof that the input map of roads has been properly read
+			/*
+			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+			{
+				modelCore.UI.WriteLine("Site " + site.Location + " has for road type " + SiteVars.RoadsInLandscape[site].getRoadTypeName() + " (int type : " + SiteVars.RoadsInLandscape[site].typeNumber + ")");
+			}
+			*/
 		}
 
 		//---------------------------------------------------------------------

@@ -1,3 +1,5 @@
 LandisData "Forest Roads Simulation"
 
 Timestep 15
+
+InitialRoadNetworkMap ./input/disturbances/roads.tif
