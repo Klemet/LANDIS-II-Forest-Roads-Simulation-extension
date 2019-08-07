@@ -57,10 +57,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On lie le coeur de LANDIS-II
 			modelCore = mCore;
 
+			// On initialise les variables de site, dont le type de route
+			SiteVars.Initialize();
+
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
 			this.parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
 			modelCore.UI.WriteLine("Parameters of the Forest Roads Simulation Extension are loaded");
+
+			// Proof that the input map of roads has been properly read
+			/*
+			int i = 0;
+			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+			{
+				int sitePixelNumber = (int)(site.Location.Column + ((site.Location.Row - 1) * PlugIn.ModelCore.Landscape.Dimensions.Rows));
+				modelCore.UI.WriteLine("Site " + site.Location + " has for road type " + SiteVars.RoadsInLandscape[site].getRoadTypeName() + " (int type : " + SiteVars.RoadsInLandscape[site].typeNumber + ", should have type : " + MapManager.ReadAPixelOfTheMap(this.parameters.RoadNetworkMap, site) + " Site number " + sitePixelNumber +")");
+				i++;
+			}
+			modelCore.UI.WriteLine("Number of sites counted : " + i);
+			modelCore.UI.WriteLine("Number of sites in total : " + PlugIn.ModelCore.Landscape.SiteCount);
+			modelCore.UI.WriteLine("Number of inactive sites : " + PlugIn.ModelCore.Landscape.InactiveSiteCount);
+			modelCore.UI.WriteLine("Number of active sites : " + PlugIn.ModelCore.Landscape.ActiveSiteCount);
+			*/
 		}
 
 		//---------------------------------------------------------------------
@@ -78,6 +96,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public override void Run()
 		{
 			modelCore.UI.WriteLine("Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?");
+
+
+			// On écrit la carte output du réseau de routes
+			MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+
+			modelCore.UI.WriteLine("We also wrote a map at this timestep. Wow. amazing !");
 		}
 	}
 
