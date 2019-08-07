@@ -34,6 +34,9 @@
     <Reference Include="Landis.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.Core.2.0.0\lib\netstandard2.0\Landis.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Landis.Landscapes, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Landis.Landscapes.2.0.0\lib\netstandard2.0\Landis.Landscapes.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
     </Reference>
@@ -65,8 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BytePixel.cs" />
     <Compile Include="UIntPixel.cs" />
-    <Compile Include="MapReader.cs" />
+    <Compile Include="MapManager.cs" />
     <Compile Include="RoadType.cs" />
     <Compile Include="SiteVars.cs" />
     <Compile Include="InputParameters.cs" />

@@ -21,6 +21,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
+		/// <summary>
+		/// Path for input map
+		/// </summary>
+		string RoadNetworkMap
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// Path to save the output maps of the forest road network
+		/// </summary>
+		string OutputsOfRoadNetworkMaps
+		{
+			get; set;
+		}
+
 	}
 }
 
@@ -34,6 +50,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		: IInputParameters
 	{
 		private int timestep;
+		private string roadNetworkMap;
+		private string outputsOfRoadNetworkMaps;
 
 		//---------------------------------------------------------------------
 
@@ -51,6 +69,44 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				timestep = value;
+			}
+		}
+
+		/// <summary>
+		/// Path for input map
+		/// </summary>
+		public string RoadNetworkMap
+		{
+			get
+			{
+				return roadNetworkMap;
+			}
+			set
+			{
+				if (value != null)
+				{
+					// FIXME: check for null or empty path (value.Actual);
+					roadNetworkMap = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Path to save the output maps of the forest road network
+		/// </summary>
+		public string OutputsOfRoadNetworkMaps
+		{
+			get
+			{
+				return outputsOfRoadNetworkMaps;
+			}
+			set
+			{
+				if (value != null)
+				{
+					// FIXME: check for null or empty path (value.Actual);
+					outputsOfRoadNetworkMaps = value;
+				}
 			}
 		}
 
