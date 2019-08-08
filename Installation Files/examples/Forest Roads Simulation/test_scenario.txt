@@ -17,7 +17,9 @@ CellLength 100 << meters, so cell area = 1 ha
 >> ---------------------- -------------------
 "Base Wind" ./input/disturbances/wind.txt
 "Base Fire" ./input/disturbances/fire.txt
+"Base Harvest" ./input/disturbances/harvest.txt
 "Forest Roads Simulation" ./input/disturbances/roads.txt
+
 
 DisturbancesRandomOrder yes
 

@@ -9,6 +9,7 @@ using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
 
+
 namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class PlugIn
@@ -20,6 +21,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Les propriétés en privées sont accédées en lectures via des propriétés qui masquent les privées (définies plus bas)
 		public static readonly ExtensionType ExtType = new ExtensionType("disturbance:roads");
 		public static readonly string ExtensionName = "Forest Roads Simulation";
+		private bool harvestExtensionDetected = false;
 
 		// Propriété pour contenir les paramètres
 		private IInputParameters parameters;
@@ -90,6 +92,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 			Timestep = parameters.Timestep;
 			modelCore.UI.WriteLine("The timestep for the Forest Road Extension is : " + Timestep);
 
+			// On vérifie si une extension de harvest s'est bien initialisée !
+			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null)
+			{
+				modelCore.UI.WriteLine("WOW ! I just detected a harvest extension ! Yay !");
+				this.harvestExtensionDetected = true;
+			}
+			else
+			{
+				modelCore.UI.WriteLine("WARNING : NO HARVEST EXTENSION DETECTED");
+			}
+
 			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension is done");
 		}
 
@@ -97,9 +110,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			modelCore.UI.WriteLine("Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?");
 
+			if (this.harvestExtensionDetected)
+			{
+				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+				{
+					int timeOfLastEvent = Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent[site];
+					if (site.IsActive && timeOfLastEvent < Timestep && timeOfLastEvent != -100)
+					{
+						modelCore.UI.WriteLine("We should build a road to go to site " + site.Location + " because it has been harvested " + timeOfLastEvent + " years ago.");
+					}
 
-			// On écrit la carte output du réseau de routes
-			MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+				}
+			}
+
+				// On écrit la carte output du réseau de routes
+				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 
 			modelCore.UI.WriteLine("We also wrote a map at this timestep. Wow. amazing !");
 		}
