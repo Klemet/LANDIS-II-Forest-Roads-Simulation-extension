@@ -89,28 +89,44 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Elle va préparer tout ce qu'il faut pour l'output des données.
 		public override void Initialize()
 		{
+			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension...");
 			Timestep = parameters.Timestep;
-			modelCore.UI.WriteLine("The timestep for the Forest Road Extension is : " + Timestep);
 
-			// On vérifie si une extension de harvest s'est bien initialisée !
-			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null)
-			{
-				modelCore.UI.WriteLine("WOW ! I just detected a harvest extension ! Yay !");
-				this.harvestExtensionDetected = true;
-			}
+			// Testing if a harvest extension is included in the scenario and thus initialized
+			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
 			else
 			{
-				modelCore.UI.WriteLine("WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
 			}
 
+			// We check if some roads are not connected to sawmills or to a main public network.
+			modelCore.UI.WriteLine("Checking if the wood has somewhere to go...");
+			if (!MapManager.IsThereAPlaceForTheWoodToGo(ModelCore))
+			{
+				throw new Exception("FOREST ROAD SIMULATION EXTENSION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
+									"Please put at least one in the input raster containing the initial road network.");
+			}
+			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
+			else
+			{
+				modelCore.UI.WriteLine("Initializing the road network...");
+				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
+			}
 			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension is done");
 		}
 
 		public override void Run()
 		{
-			modelCore.UI.WriteLine("Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?");
+			// We give a warning back to the user if no harvest extension is detected
+			if (!this.harvestExtensionDetected)
+			{
+				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
+			}
 
-			if (this.harvestExtensionDetected)
+			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
+			else if (this.harvestExtensionDetected)
 			{
 				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 				{

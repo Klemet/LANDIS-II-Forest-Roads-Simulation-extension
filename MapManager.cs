@@ -6,6 +6,16 @@ using Landis.SpatialModeling;
 using System.IO;
 using System.Collections.Generic;
 using Landis.Core;
+using Landis.Library.AgeOnlyCohorts;
+using Landis.Core;
+using Landis.SpatialModeling;
+using System.Collections.Generic;
+using System.IO;
+using Landis.Library.Metadata;
+using System;
+using System.Diagnostics;
+using System.Linq;
+
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -52,6 +62,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
+		// Function used for debugging purposes. Directly read into the input map given by the user. Obsolete.
 		public static int ReadAPixelOfTheMap(string path, Site site)
 		{
 			IInputRaster<UIntPixel> map;
@@ -83,7 +94,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				int sitePixelNumber = (int)(site.Location.Column + ((site.Location.Row - 1) * map.Dimensions.Rows));
 				UIntPixel pixel = map.BufferPixel;
 				// We skip the pixels until finding the one we want
-				for(int i = 0; i < sitePixelNumber; i++)
+				for (int i = 0; i < sitePixelNumber; i++)
 				{
 					map.ReadBufferPixel();
 				}
@@ -108,6 +119,174 @@ namespace Landis.Extension.ForestRoadsSimulation
 					outputRaster.WriteBufferPixel();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the 8 neighbours surounding a site as a list of sites.
+		/// </summary>
+		/// <returns>
+		/// A list of sites containing the neighbouring sites of the given site. 
+		/// </returns>
+		/// /// <param name="givenSite">
+		/// The starting site of the search.
+		/// </param>
+		/// /// <param name="onlyRoads">
+		/// If true, only add neighbouring sites with a road on it to the resulting list.
+		/// </param>
+		public static List<Site> GetNeighbouringSites(Site givenSite, bool onlyRoads = false)
+		{
+			List<Site> listOfNeighbouringSites = new List<Site>();
+
+			RelativeLocation[] neighborhood = new RelativeLocation[]
+{
+				new RelativeLocation(-1,  0),  // north
+                new RelativeLocation(-1,  1),  // northeast
+                new RelativeLocation( 0,  1),  // east
+                new RelativeLocation( 1,  1),  // southeast
+                new RelativeLocation( 1,  0),  // south
+                new RelativeLocation( 1, -1),  // southwest
+                new RelativeLocation( 0, -1),  // west
+                new RelativeLocation(-1, -1),  // northwest
+};
+
+			int siteRow = givenSite.Location.Row;
+			int siteColumn = givenSite.Location.Column;
+
+			foreach (RelativeLocation relativeLocation in neighborhood)
+			{
+				Site neighbour = givenSite.GetNeighbor(relativeLocation);
+				// Seems like the GetNeighbor function cannot check if the neighbour is part of the landscape. We have to check.
+				if (neighbour.Landscape == null) continue;
+				else if (onlyRoads) { if (SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour); }
+				else listOfNeighbouringSites.Add(neighbour);
+			}
+
+			return (listOfNeighbouringSites);
+		}
+
+
+		/// <summary>
+		/// Get all of the sites that have a road (forest road, sawmill, etc.) on them.
+		/// </summary>
+		/// <returns>
+		/// A list of "Site" objects that are associated with a road in the variable RoadsInLandscape.
+		/// </returns>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		public static List<Site> GetSitesWithRoads(ICore ModelCore)
+		{
+			List<Site> listOfSitesWithRoads = new List<Site>();
+
+			foreach (Site site in ModelCore.Landscape.AllSites)
+			{
+				if (SiteVars.RoadsInLandscape[site].IsARoad)
+				{
+					listOfSitesWithRoads.Add(site);
+				}
+			}
+
+			return (listOfSitesWithRoads);
+		}
+
+		/// <summary>
+		/// Check if there is at least a site with a main public road or a sawmill so that the harvested wood has a place to flow to, and the road network places to connect to.
+		/// </summary>
+		/// <returns>
+		/// A boolean indicating if there is at least such a site.
+		/// </returns>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		public static bool IsThereAPlaceForTheWoodToGo(ICore ModelCore)
+		{
+			bool placeDetected = false;
+
+			foreach (Site site in ModelCore.Landscape.AllSites)
+			{
+				if (SiteVars.RoadsInLandscape[site].IsAPlaceForTheWoodToGo)
+				{
+					placeDetected = true;
+					break;
+				}
+			}
+
+			return (placeDetected);
+		}
+
+		/// <summary>
+		/// Calculate the manhattan distance between two given sites
+		/// </summary>
+		/// <returns>
+		/// A double giving the value of this distance. The distance has no units (1 = side of a pixel or site)
+		/// </returns>
+		public static double GetManhattanDistance(Site givenSite, Site otherSite)
+		{
+			return (Math.Abs(givenSite.Location.Row - otherSite.Location.Row) + Math.Abs(givenSite.Location.Column - otherSite.Location.Column));
+		}
+
+		/// <summary>
+		/// Calculate the manhattan distance to the closest road from the given site
+		/// </summary>
+		/// <returns>
+		/// A double giving the value of this distance. The distance has no units (1 = side of a pixel or site)
+		/// </returns>
+		/// /// <param name="sitesWithRoads">
+		/// A list of sites containing roads that we want to check. Used for better performance, instead of launching .GetSitesWithRoads every time the function is called.
+		/// </param>
+		/// /// <param name="givenSite">
+		/// The site for which we want to have the distance to the nearest road.
+		/// </param>
+        /// /// <param name="connected">
+		/// If true, the function will look for the nearest road indicated as "connected" to a place where the wood can be transported.
+		/// </param>
+		public static double DistanceToNearestRoad(List<Site> sitesWithRoads, Site givenSite, bool connected = true)
+		{
+			double minDistance = double.PositiveInfinity;
+
+			foreach (Site otherSite in sitesWithRoads)
+			{
+				if (connected) if (!SiteVars.RoadsInLandscape[otherSite].isConnectedToSawMill) continue;
+				double distanceBetweenSites = GetManhattanDistance(givenSite, otherSite);
+				if (distanceBetweenSites > 0 && distanceBetweenSites < minDistance)
+				{
+					minDistance = distanceBetweenSites;
+				}
+			}
+
+			return (minDistance);
+		}
+
+		/// <summary>
+		/// Get all of the sites that have a road, and that are connected (8-site neighbourhood) to the given site.
+		/// </summary>
+		/// <returns>
+		/// A list of sites with a road on them, and that are connected to this one.
+		/// </returns>
+		public static List<Site> GetAllConnectedRoads(Site givenSite)
+		{
+			HashSet<Site> listOfConnectedNeighborsWithRoads = new HashSet<Site>();
+
+			HashSet<Site> openSearchList = new HashSet<Site>();
+			HashSet<Site> closedSearchList = new HashSet<Site>();
+
+			openSearchList.Add(givenSite);
+
+			while (openSearchList.Count != 0)
+			{
+				Site currentSite = openSearchList.ToList()[0];
+				openSearchList.Remove(currentSite);
+
+				foreach (Site neighbour in GetNeighbouringSites(currentSite, true))
+				{
+					listOfConnectedNeighborsWithRoads.Add(neighbour);
+					if(!closedSearchList.Contains(neighbour)) openSearchList.Add(neighbour);
+				}
+
+				closedSearchList.Add(currentSite);
+			}
+
+			return (listOfConnectedNeighborsWithRoads.ToList());
 		}
 
 	}

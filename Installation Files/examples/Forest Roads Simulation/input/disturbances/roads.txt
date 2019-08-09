@@ -2,5 +2,8 @@ LandisData "Forest Roads Simulation"
 
 Timestep 15
 
+HeuristicForNetworkConstruction Closestfirst
+
 InitialRoadNetworkMap ./input/disturbances/roads.tif
 OutputsOfRoadNetworkMaps ./output/disturbances/roads/roadNetwork.tif
+

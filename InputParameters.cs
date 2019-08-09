@@ -37,6 +37,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
+		/// <summary>
+		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
+		/// </summary>
+		string HeuristicForNetworkConstruction
+		{
+			get; set;
+		}
+
 	}
 }
 
@@ -52,6 +60,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private int timestep;
 		private string roadNetworkMap;
 		private string outputsOfRoadNetworkMaps;
+		private string heuristicForNetworkConstruction;
 
 		//---------------------------------------------------------------------
 
@@ -109,6 +118,27 @@ namespace Landis.Extension.ForestRoadsSimulation
 				}
 			}
 		}
+
+		/// <summary>
+		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
+		/// </summary>
+		public string HeuristicForNetworkConstruction
+		{
+			get
+			{
+				return heuristicForNetworkConstruction;
+			}
+			set
+			{
+				if (value != "Random" && value != "Closestfirst" && value != "Farthestfirst")
+				{
+					throw new InputValueException(value.ToString(), "Value must be \"Random\", \"Closestfirst\" or \"Farthestfirst\".");
+				}
+				else heuristicForNetworkConstruction = value;
+			}
+		}
+
+		
 
 		public InputParameters()
 		{

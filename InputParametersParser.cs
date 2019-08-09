@@ -49,6 +49,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(timestep);
 			parameters.Timestep = timestep.Value;
 
+			// On lit l'heuristique pour la création du réseau de routes
+			InputVar<string> HeuristicForNetworkConstruction = new InputVar<string>("HeuristicForNetworkConstruction");
+			ReadVar(HeuristicForNetworkConstruction);
+			parameters.HeuristicForNetworkConstruction = HeuristicForNetworkConstruction.Value;
+
 			// On lit le raster initial des routes
 			InputVar<string> roadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
 			ReadVar(roadNetworkMap);

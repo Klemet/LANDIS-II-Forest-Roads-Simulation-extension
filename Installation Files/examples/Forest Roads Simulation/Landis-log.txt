@@ -1,48 +1,56 @@
-2019-08-08 11:35:51,613 - LANDIS-II 7.0 (7)
-2019-08-08 11:35:51,622 - 
-2019-08-08 11:35:51,677 - Loading scenario from file "test_scenario.txt" ...
-2019-08-08 11:35:51,733 - Initialized random number generator with user-supplied seed = 4,357
-2019-08-08 11:35:51,735 - Loading species data from file "./input/species_ecoregions/species.txt" ...
-2019-08-08 11:35:51,754 - Loading ecoregions from file "./input/species_ecoregions/ecoregions.txt" ...
-2019-08-08 11:35:51,767 - Initializing landscape from ecoregions map "./input/species_ecoregions/ecoregions.tif" ...
-2019-08-08 11:35:51,779 - Cell length = 100 m, cell area = 1 ha
-2019-08-08 11:35:51,781 - Map dimensions: 100 rows by 100 columns = 10,000 cells
-2019-08-08 11:35:51,790 - Sites: 6,629 active (66.3 %), 3,371 inactive (33.7 %)
-2019-08-08 11:35:51,800 - Loading Age-only Succession extension ...
-2019-08-08 11:35:51,813 -    Registering Data:  Succession.AgeCohorts.
-2019-08-08 11:35:51,814 -    Loading dynamic input data from file "./input/succession/age-only-succession-dynamic-inputs.txt" ...
-2019-08-08 11:35:51,819 -   Dynamic Input Parser:  Add new year = 0.
-2019-08-08 11:35:51,828 -    Registering Data:  TimeOfLastSuccession.
-2019-08-08 11:35:51,829 -    Registering Data:  Shade.
-2019-08-08 11:35:51,831 -    Creating Dispersal Neighborhood List.
-2019-08-08 11:35:51,831 -    Dispersal:  NeighborRadius=5050, CellLength=100, numCellRadius=50
-2019-08-08 11:35:51,842 -    Loading initial communities from file "./input/succession/initial-communities.txt" ...
-2019-08-08 11:35:51,855 -    Reading initial communities map "./input/succession/initial communities.tif" ...
-2019-08-08 11:35:51,881 - Loading Base Wind extension ...
-2019-08-08 11:35:51,906 - Loading Base Fire extension ...
-2019-08-08 11:35:51,909 -    Registering Data:  Fire.Severity.
-2019-08-08 11:35:51,910 -    Registering Data:  Fire.TimeOfLastEvent.
-2019-08-08 11:35:51,943 -    Loading FireRegion data...
-2019-08-08 11:35:51,955 - Loading Base Harvest extension ...
-2019-08-08 11:35:51,962 -    Registering Data:  Harvest.PrescriptionName.
-2019-08-08 11:35:51,962 -    Registering Data:  Harvest.TimeOfLastEvent.
-2019-08-08 11:35:51,963 -    Registering Data:  Harvest.CohortsDamaged.
-2019-08-08 11:35:52,002 - Loading Forest Roads Simulation extension ...
-2019-08-08 11:35:52,015 - Parameters of the Forest Roads Simulation Extension are loaded
-2019-08-08 11:35:52,045 -    Registering Data:  Wind.TimeOfLastEvent.
-2019-08-08 11:35:52,046 -    Registering Data:  Wind.Severity.
-2019-08-08 11:35:52,048 -    Opening and Initializing Fire log files "./output/disturbances/fire/log.csv" and "./output/disturbances/fire/summary-log.csv"...
-2019-08-08 11:35:52,055 -    Generating event table...
-2019-08-08 11:35:52,056 -    Generating summary table...
-2019-08-08 11:35:52,069 -    Generating event table...
-2019-08-08 11:35:52,069 -    Generating summary table...
-2019-08-08 11:35:52,074 -    Reading management-area map ./input/disturbances/management.tif ...
-2019-08-08 11:35:52,081 -    Inactive management areas: 0
-2019-08-08 11:35:52,083 -    Reading stand map ./input/disturbances/stands.tif ...
-2019-08-08 11:35:52,102 - The timestep for the Forest Road Extension is : 15
-2019-08-08 11:35:52,105 - WOW ! I just detected a harvest extension ! Yay !
-2019-08-08 11:35:52,105 - Initialization of the Forest Roads Simulation Extension is done
-2019-08-08 11:35:52,107 - Using the following extensions ...
+2019-08-09 19:38:19,310 - LANDIS-II 7.0 (7)
+2019-08-09 19:38:19,317 - 
+2019-08-09 19:38:19,371 - Loading scenario from file "test_scenario.txt" ...
+2019-08-09 19:38:19,428 - Initialized random number generator with user-supplied seed = 4,357
+2019-08-09 19:38:19,432 - Loading species data from file "./input/species_ecoregions/species.txt" ...
+2019-08-09 19:38:19,449 - Loading ecoregions from file "./input/species_ecoregions/ecoregions.txt" ...
+2019-08-09 19:38:19,462 - Initializing landscape from ecoregions map "./input/species_ecoregions/ecoregions.tif" ...
+2019-08-09 19:38:19,474 - Cell length = 100 m, cell area = 1 ha
+2019-08-09 19:38:19,476 - Map dimensions: 100 rows by 100 columns = 10,000 cells
+2019-08-09 19:38:19,485 - Sites: 6,629 active (66.3 %), 3,371 inactive (33.7 %)
+2019-08-09 19:38:19,495 - Loading Age-only Succession extension ...
+2019-08-09 19:38:19,510 -    Registering Data:  Succession.AgeCohorts.
+2019-08-09 19:38:19,513 -    Loading dynamic input data from file "./input/succession/age-only-succession-dynamic-inputs.txt" ...
+2019-08-09 19:38:19,517 -   Dynamic Input Parser:  Add new year = 0.
+2019-08-09 19:38:19,527 -    Registering Data:  TimeOfLastSuccession.
+2019-08-09 19:38:19,527 -    Registering Data:  Shade.
+2019-08-09 19:38:19,529 -    Creating Dispersal Neighborhood List.
+2019-08-09 19:38:19,530 -    Dispersal:  NeighborRadius=5050, CellLength=100, numCellRadius=50
+2019-08-09 19:38:19,542 -    Loading initial communities from file "./input/succession/initial-communities.txt" ...
+2019-08-09 19:38:19,558 -    Reading initial communities map "./input/succession/initial communities.tif" ...
+2019-08-09 19:38:19,584 - Loading Base Wind extension ...
+2019-08-09 19:38:19,609 - Loading Base Fire extension ...
+2019-08-09 19:38:19,612 -    Registering Data:  Fire.Severity.
+2019-08-09 19:38:19,613 -    Registering Data:  Fire.TimeOfLastEvent.
+2019-08-09 19:38:19,646 -    Loading FireRegion data...
+2019-08-09 19:38:19,657 - Loading Base Harvest extension ...
+2019-08-09 19:38:19,664 -    Registering Data:  Harvest.PrescriptionName.
+2019-08-09 19:38:19,664 -    Registering Data:  Harvest.TimeOfLastEvent.
+2019-08-09 19:38:19,665 -    Registering Data:  Harvest.CohortsDamaged.
+2019-08-09 19:38:19,704 - Loading Forest Roads Simulation extension ...
+2019-08-09 19:38:19,739 - Parameters of the Forest Roads Simulation Extension are loaded
+2019-08-09 19:38:19,769 -    Registering Data:  Wind.TimeOfLastEvent.
+2019-08-09 19:38:19,770 -    Registering Data:  Wind.Severity.
+2019-08-09 19:38:19,772 -    Opening and Initializing Fire log files "./output/disturbances/fire/log.csv" and "./output/disturbances/fire/summary-log.csv"...
+2019-08-09 19:38:19,778 -    Generating event table...
+2019-08-09 19:38:19,778 -    Generating summary table...
+2019-08-09 19:38:19,792 -    Generating event table...
+2019-08-09 19:38:19,793 -    Generating summary table...
+2019-08-09 19:38:19,798 -    Reading management-area map ./input/disturbances/management.tif ...
+2019-08-09 19:38:19,806 -    Inactive management areas: 0
+2019-08-09 19:38:19,806 -    Reading stand map ./input/disturbances/stands.tif ...
+2019-08-09 19:38:19,824 - Initialization of the Forest Roads Simulation Extension...
+2019-08-09 19:38:19,826 - Harvest extension correctly detected.
+2019-08-09 19:38:19,827 - Checking if the wood has somewhere to go...
+2019-08-09 19:38:19,829 - Initializing the road network...
+2019-08-09 19:38:19,834 - Looking to see if the roads can go to a sawmill...
+2019-08-09 19:38:19,863 - FOREST ROAD SIMULATION EXTENSION WARNING : ROADS THAT CAN'T BE CONNECTED TO SAWMILLS OR MAIN NETWORKS HAVE BEEN DETECTED IN THE INPUT MAP
+2019-08-09 19:38:19,864 - The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.
+2019-08-09 19:38:19,865 - Shuffling list of not connected sites with roads on them...
+2019-08-09 19:38:19,872 - Building missing roads...
+2019-08-09 19:38:19,894 - Initialization of the road network is now complete.
+2019-08-09 19:38:19,895 - Initialization of the Forest Roads Simulation Extension is done
+2019-08-09 19:38:19,897 - Using the following extensions ...
    Extension Name            Extension Filename       
    --------------            ------------------       
    Age-only Succession       ./input/succession/succession.txt
@@ -51,328 +59,59 @@
    Base Harvest              ./input/disturbances/harvest.txt
    Forest Roads Simulation   ./input/disturbances/roads.txt
 
-2019-08-08 11:35:52,108 - Current time: 10
-2019-08-08 11:35:52,111 - Running Base Harvest ...
-2019-08-08 11:35:52,198 - Running Age-only Succession ...
-2019-08-08 11:35:52,522 - Current time: 15
-2019-08-08 11:35:52,523 - Running Base Fire ...
-2019-08-08 11:35:52,525 -    Processing landscape for Fire events ...
-2019-08-08 11:35:52,608 - Running Base Wind ...
-2019-08-08 11:35:52,610 - Processing landscape for wind events ...
-2019-08-08 11:35:52,667 -   Wind events: 47
-2019-08-08 11:35:52,678 - Running Forest Roads Simulation ...
-2019-08-08 11:35:52,679 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:52,680 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,680 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,681 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,681 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,682 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,682 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,684 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,684 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,685 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,686 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,686 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,687 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,687 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,687 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,688 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,688 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,689 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,689 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,689 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,690 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,690 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,691 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,691 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,691 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,692 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,692 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,692 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,693 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,693 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,694 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,694 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,694 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,695 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,697 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,697 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,698 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,698 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,698 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,699 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,699 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:52,712 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:52,712 - Running Age-only Succession ...
-2019-08-08 11:35:52,922 - Current time: 20
-2019-08-08 11:35:52,923 - Running Base Harvest ...
-2019-08-08 11:35:52,958 - Running Age-only Succession ...
-2019-08-08 11:35:53,273 - Current time: 30
-2019-08-08 11:35:53,274 - Running Base Fire ...
-2019-08-08 11:35:53,275 -    Processing landscape for Fire events ...
-2019-08-08 11:35:53,311 - Running Base Wind ...
-2019-08-08 11:35:53,311 - Processing landscape for wind events ...
-2019-08-08 11:35:53,362 -   Wind events: 42
-2019-08-08 11:35:53,373 - Running Forest Roads Simulation ...
-2019-08-08 11:35:53,377 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:53,377 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,378 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,378 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,378 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,379 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,379 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,380 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,380 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,381 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,381 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,382 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,383 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,384 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,384 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,384 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,385 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,385 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,385 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,386 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,386 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,386 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,387 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,388 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,388 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,388 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,389 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,389 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,389 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,390 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,390 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,390 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,391 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,393 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,393 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,393 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,394 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,394 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,394 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,395 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,395 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:53,407 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:53,407 - Running Base Harvest ...
-2019-08-08 11:35:53,441 - Running Age-only Succession ...
-2019-08-08 11:35:53,749 - Current time: 40
-2019-08-08 11:35:53,749 - Running Base Harvest ...
-2019-08-08 11:35:53,784 - Running Age-only Succession ...
-2019-08-08 11:35:54,017 - Current time: 45
-2019-08-08 11:35:54,018 - Running Forest Roads Simulation ...
-2019-08-08 11:35:54,019 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:54,019 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,020 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,020 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,021 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,021 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,022 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,022 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,024 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,024 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,025 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,025 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,026 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,026 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,027 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,027 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,027 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,028 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,030 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,030 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,031 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,031 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,031 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,033 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,034 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,034 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,034 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,035 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,035 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,036 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,036 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,037 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,037 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,037 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,038 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,038 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,039 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,039 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,039 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,040 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,040 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,052 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:54,052 - Running Base Fire ...
-2019-08-08 11:35:54,054 -    Processing landscape for Fire events ...
-2019-08-08 11:35:54,087 - Running Base Wind ...
-2019-08-08 11:35:54,088 - Processing landscape for wind events ...
-2019-08-08 11:35:54,127 -   Wind events: 33
-2019-08-08 11:35:54,138 - Running Age-only Succession ...
-2019-08-08 11:35:54,235 - Current time: 50
-2019-08-08 11:35:54,239 - Running Base Harvest ...
-2019-08-08 11:35:54,273 - Running Age-only Succession ...
-2019-08-08 11:35:54,488 - Current time: 60
-2019-08-08 11:35:54,488 - Running Base Wind ...
-2019-08-08 11:35:54,489 - Processing landscape for wind events ...
-2019-08-08 11:35:54,554 -   Wind events: 59
-2019-08-08 11:35:54,565 - Running Forest Roads Simulation ...
-2019-08-08 11:35:54,566 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:54,566 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,567 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,568 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,568 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,569 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,570 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,571 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,572 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,572 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,573 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,573 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,575 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,577 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,577 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,577 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,578 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,578 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,578 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,579 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,579 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,579 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,580 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,580 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,580 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,581 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,581 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,581 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,582 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,582 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,583 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,585 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,585 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,586 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,586 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,586 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,587 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,587 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,588 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,588 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,589 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:54,602 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:54,603 - Running Base Harvest ...
-2019-08-08 11:35:54,634 - Running Base Fire ...
-2019-08-08 11:35:54,634 -    Processing landscape for Fire events ...
-2019-08-08 11:35:54,672 - Running Age-only Succession ...
-2019-08-08 11:35:54,930 - Current time: 70
-2019-08-08 11:35:54,931 - Running Base Harvest ...
-2019-08-08 11:35:54,966 - Running Age-only Succession ...
-2019-08-08 11:35:55,151 - Current time: 75
-2019-08-08 11:35:55,151 - Running Forest Roads Simulation ...
-2019-08-08 11:35:55,152 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:55,153 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,154 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,154 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,155 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,156 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,157 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,158 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,159 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,160 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,160 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,162 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,162 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,162 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,163 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,163 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,163 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,164 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,164 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,165 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,165 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,165 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,166 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,166 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,166 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,167 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,167 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,167 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,168 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,168 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,170 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,172 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,172 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,172 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,173 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,173 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,173 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,174 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,174 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,174 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,175 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,186 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:55,187 - Running Base Fire ...
-2019-08-08 11:35:55,187 -    Processing landscape for Fire events ...
-2019-08-08 11:35:55,218 - Running Base Wind ...
-2019-08-08 11:35:55,219 - Processing landscape for wind events ...
-2019-08-08 11:35:55,257 -   Wind events: 34
-2019-08-08 11:35:55,267 - Running Age-only Succession ...
-2019-08-08 11:35:55,351 - Current time: 80
-2019-08-08 11:35:55,353 - Running Base Harvest ...
-2019-08-08 11:35:55,385 - Running Age-only Succession ...
-2019-08-08 11:35:55,541 - Current time: 90
-2019-08-08 11:35:55,541 - Running Base Harvest ...
-2019-08-08 11:35:55,572 - Running Base Fire ...
-2019-08-08 11:35:55,573 -    Processing landscape for Fire events ...
-2019-08-08 11:35:55,611 - Running Base Wind ...
-2019-08-08 11:35:55,614 - Processing landscape for wind events ...
-2019-08-08 11:35:55,658 -   Wind events: 41
-2019-08-08 11:35:55,669 - Running Forest Roads Simulation ...
-2019-08-08 11:35:55,669 - Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?
-2019-08-08 11:35:55,670 - We should build a road to go to site (26, 54) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,670 - We should build a road to go to site (26, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,671 - We should build a road to go to site (26, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,671 - We should build a road to go to site (27, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,672 - We should build a road to go to site (27, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,672 - We should build a road to go to site (27, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,673 - We should build a road to go to site (28, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,673 - We should build a road to go to site (28, 55) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,674 - We should build a road to go to site (28, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,674 - We should build a road to go to site (28, 57) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,674 - We should build a road to go to site (29, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,675 - We should build a road to go to site (29, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,676 - We should build a road to go to site (29, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,676 - We should build a road to go to site (29, 56) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,677 - We should build a road to go to site (30, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,679 - We should build a road to go to site (30, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,679 - We should build a road to go to site (30, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,680 - We should build a road to go to site (31, 32) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,680 - We should build a road to go to site (31, 33) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,681 - We should build a road to go to site (31, 34) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,681 - We should build a road to go to site (57, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,681 - We should build a road to go to site (57, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,682 - We should build a road to go to site (58, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,682 - We should build a road to go to site (58, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,683 - We should build a road to go to site (59, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,683 - We should build a road to go to site (59, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,683 - We should build a road to go to site (59, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,683 - We should build a road to go to site (60, 82) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (60, 83) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (60, 84) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (72, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (73, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (73, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (73, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,684 - We should build a road to go to site (74, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,685 - We should build a road to go to site (74, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,686 - We should build a road to go to site (74, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,686 - We should build a road to go to site (75, 35) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,687 - We should build a road to go to site (75, 36) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,689 - We should build a road to go to site (75, 37) because it has been harvest 10 years ago.
-2019-08-08 11:35:55,700 - We also wrote a map at this timestep. Wow. amazing !
-2019-08-08 11:35:55,703 - Running Age-only Succession ...
-2019-08-08 11:35:55,958 - Current time: 100
-2019-08-08 11:35:55,959 - Running Base Harvest ...
-2019-08-08 11:35:55,993 - Running Age-only Succession ...
-2019-08-08 11:35:56,142 - Model run is complete.
+2019-08-09 19:38:19,898 - Current time: 10
+2019-08-09 19:38:19,900 - Running Base Harvest ...
+2019-08-09 19:38:19,992 - Running Age-only Succession ...
+2019-08-09 19:38:20,304 - Current time: 15
+2019-08-09 19:38:20,305 - Running Base Fire ...
+2019-08-09 19:38:20,308 -    Processing landscape for Fire events ...
+2019-08-09 19:38:20,382 - Running Base Wind ...
+2019-08-09 19:38:20,384 - Processing landscape for wind events ...
+2019-08-09 19:38:20,441 -   Wind events: 47
+2019-08-09 19:38:20,453 - Running Forest Roads Simulation ...
+2019-08-09 19:38:20,454 - We should build a road to go to site (26, 54) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,456 - We should build a road to go to site (26, 55) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,457 - We should build a road to go to site (26, 56) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,458 - We should build a road to go to site (27, 55) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,458 - We should build a road to go to site (27, 56) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,459 - We should build a road to go to site (27, 57) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,459 - We should build a road to go to site (28, 33) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,459 - We should build a road to go to site (28, 55) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,461 - We should build a road to go to site (28, 56) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,461 - We should build a road to go to site (28, 57) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,461 - We should build a road to go to site (29, 32) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,462 - We should build a road to go to site (29, 33) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,462 - We should build a road to go to site (29, 34) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,462 - We should build a road to go to site (29, 56) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,463 - We should build a road to go to site (30, 32) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,463 - We should build a road to go to site (30, 33) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,463 - We should build a road to go to site (30, 34) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,464 - We should build a road to go to site (31, 32) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,464 - We should build a road to go to site (31, 33) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,464 - We should build a road to go to site (31, 34) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,465 - We should build a road to go to site (57, 83) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,465 - We should build a road to go to site (57, 84) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,465 - We should build a road to go to site (58, 83) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,466 - We should build a road to go to site (58, 84) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,466 - We should build a road to go to site (59, 82) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,466 - We should build a road to go to site (59, 83) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,467 - We should build a road to go to site (59, 84) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,467 - We should build a road to go to site (60, 82) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,468 - We should build a road to go to site (60, 83) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,468 - We should build a road to go to site (60, 84) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,469 - We should build a road to go to site (72, 36) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,469 - We should build a road to go to site (73, 35) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,471 - We should build a road to go to site (73, 36) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,471 - We should build a road to go to site (73, 37) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,472 - We should build a road to go to site (74, 35) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,472 - We should build a road to go to site (74, 36) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,473 - We should build a road to go to site (74, 37) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,473 - We should build a road to go to site (75, 35) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,474 - We should build a road to go to site (75, 36) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,474 - We should build a road to go to site (75, 37) because it has been harvested 10 years ago.
+2019-08-09 19:38:20,488 - We also wrote a map at this timestep. Wow. amazing !
+2019-08-09 19:38:20,488 - Running Age-only Succession ...
+2019-08-09 19:38:20,691 - Current time: 20
+2019-08-09 19:38:20,693 - Running Base Harvest ...
+2019-08-09 19:38:20,731 - Running Age-only Succession ...
+2019-08-09 19:38:21,044 - Model run is complete.

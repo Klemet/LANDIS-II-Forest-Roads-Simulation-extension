@@ -20,13 +20,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// 3 - Tertiary road
 		// 4 - Winter road
 		// 5 - Sawmill
+		// 6 - Main Road Network (Paved)
+		// 7 - Undertermined (but there is a road)
 		public int typeNumber { get; set; }
-		bool isConnectedToSawMill { get; set; }
+		public bool isConnectedToSawMill { get; set; }
 
 		public RoadType(int type)
 		{
 			this.typeNumber = type;
-			this.isConnectedToSawMill = false;
+			if (this.typeNumber == 5 || this.typeNumber == 6) this.isConnectedToSawMill = true;
+			else this.isConnectedToSawMill = false;
 		}
 
 		public string getRoadTypeName()
@@ -37,9 +40,29 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else if (this.typeNumber == 3) name = "Tertiary road";
 			else if (this.typeNumber == 4) name = "Winter road";
 			else if (this.typeNumber == 5) name = "Sawmill";
-			else name = "Invalid road type";
+			else if (this.typeNumber == 6) name = "Main Road Network (Paved)";
+			else if (this.typeNumber == 7) name = "Undertermined (but there is a road)";
+			else name = "Invalid road type/No road";
 
 			return (name);
+		}
+
+		public bool IsARoad
+		{
+			get
+			{
+				if (this.typeNumber <= 5 && this.typeNumber >= 1) return (true);
+				else return (false);
+			}
+		}
+
+		public bool IsAPlaceForTheWoodToGo
+		{
+			get
+			{
+				if (this.typeNumber == 5 || this.typeNumber == 6) return (true);
+				else return (false);
+			}
 		}
 
 	}
