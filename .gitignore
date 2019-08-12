@@ -28,7 +28,9 @@ copyToLandisFolder.bat
 launchLandisIITestScenario.bat
 
 # Build results
-[Dd]ebug/
+bin/Debug/*
+# Except the dll to install the program for users
+!bin/Debug/ForestRoadsSimulation.dll
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -37,7 +39,6 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
