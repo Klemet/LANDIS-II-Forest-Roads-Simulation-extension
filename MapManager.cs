@@ -247,7 +247,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (Site otherSite in sitesWithRoads)
 			{
 				if (connected) if (!SiteVars.RoadsInLandscape[otherSite].isConnectedToSawMill) continue;
+
 				double distanceBetweenSites = GetManhattanDistance(givenSite, otherSite);
+
 				if (distanceBetweenSites > 0 && distanceBetweenSites < minDistance)
 				{
 					minDistance = distanceBetweenSites;

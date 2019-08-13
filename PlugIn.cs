@@ -128,21 +128,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
 			else if (this.harvestExtensionDetected)
 			{
+				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				int roadConstructedAtThisTimestep = 0;
+
 				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 				{
+					// Carefull : the time of last event is the timestep when the last harvest event happened; not the number of years SINCE the last event.
 					int timeOfLastEvent = Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent[site];
-					if (site.IsActive && timeOfLastEvent < Timestep && timeOfLastEvent != -100)
+
+					if (site.IsActive && (ModelCore.CurrentTime - timeOfLastEvent) < Timestep && timeOfLastEvent != -100)
 					{
-						modelCore.UI.WriteLine("We should build a road to go to site " + site.Location + " because it has been harvested " + timeOfLastEvent + " years ago.");
+						// We construct the road only if the cell is at more than 3 sites of distance from an existing road.
+						if (MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site) > 5)
+						{
+							DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
+							listOfSitesWithRoads.Add(site);
+							roadConstructedAtThisTimestep++;
+						}
 					}
 
 				}
+				modelCore.UI.WriteLine("At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 			}
 
 				// On écrit la carte output du réseau de routes
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 
-			modelCore.UI.WriteLine("We also wrote a map at this timestep. Wow. amazing !");
 		}
 	}
 
