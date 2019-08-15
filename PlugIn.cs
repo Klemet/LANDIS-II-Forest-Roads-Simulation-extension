@@ -9,6 +9,7 @@ using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
 
+
 namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class PlugIn
@@ -20,6 +21,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Les propriétés en privées sont accédées en lectures via des propriétés qui masquent les privées (définies plus bas)
 		public static readonly ExtensionType ExtType = new ExtensionType("disturbance:roads");
 		public static readonly string ExtensionName = "Forest Roads Simulation";
+		private bool harvestExtensionDetected = false;
 
 		// Propriété pour contenir les paramètres
 		private IInputParameters parameters;
@@ -87,21 +89,72 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Elle va préparer tout ce qu'il faut pour l'output des données.
 		public override void Initialize()
 		{
+			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension...");
 			Timestep = parameters.Timestep;
-			modelCore.UI.WriteLine("The timestep for the Forest Road Extension is : " + Timestep);
 
+			// Testing if a harvest extension is included in the scenario and thus initialized
+			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
+			else
+			{
+				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
+			}
+
+			// We check if some roads are not connected to sawmills or to a main public network.
+			modelCore.UI.WriteLine("Checking if the wood has somewhere to go...");
+			if (!MapManager.IsThereAPlaceForTheWoodToGo(ModelCore))
+			{
+				throw new Exception("FOREST ROAD SIMULATION EXTENSION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
+									"Please put at least one in the input raster containing the initial road network.");
+			}
+			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
+			else
+			{
+				modelCore.UI.WriteLine("Initializing the road network...");
+				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
+			}
 			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension is done");
 		}
 
 		public override void Run()
 		{
-			modelCore.UI.WriteLine("Wow ! We just activated the new plugin at the correct timestep ! Isn't it amazing ?");
+			// We give a warning back to the user if no harvest extension is detected
+			if (!this.harvestExtensionDetected)
+			{
+				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
+			}
+
+			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
+			else if (this.harvestExtensionDetected)
+			{
+				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				int roadConstructedAtThisTimestep = 0;
+
+				// We get all of the sites for which a road must be constructed
+				List<Site> listOfHarvestedSites = MapManager.GetAllRecentlyHarvestedSites(ModelCore, Timestep);
+
+				// We shuffle the list according to the heuristic given by the user.
+				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
+
+				foreach (Site site in listOfHarvestedSites)
+				{
+					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
+					if (MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site) * ModelCore.CellLength > parameters.SkiddingDistance)
+					{
+						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
+						listOfSitesWithRoads.Add(site);
+						roadConstructedAtThisTimestep++;
+					}
 
 
-			// On écrit la carte output du réseau de routes
-			MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+				}
+				modelCore.UI.WriteLine("At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
+			}
 
-			modelCore.UI.WriteLine("We also wrote a map at this timestep. Wow. amazing !");
+				// On écrit la carte output du réseau de routes
+				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+
 		}
 	}
 

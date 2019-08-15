@@ -1,21 +1,19 @@
 # A LANDIS-II extension to simulate forest roads in a landscape
 
-[WORK IN PROGRESS]
+CAUTION : This is a work in progress, and some functions might be currently missing or not optimized.
 
 This extension is made for use with the LANDIS-II landscape model, available on http://www.landis-ii.org/ .
 It functions in pair with a harvest extension to simulate how the forest road network of the landscape dynamically changes with wood harvesting.
 
 ## Features
-- Detection of an installed harvest extension (without it, the road network will not change)
-- Reading of a raster containing the initial road network
-- Completion of the initial road network to avoid isolated roads that lead to nowhere
-- At each timestep, the extension gets all of the recently harvest sites, and construct a road to them unless they are close enough for to an existing road for skipping wood to them.
+- Detection of an installed harvest extension (without it, the road network will not change) [Completed]
+- Reading of a raster containing the initial road network [Completed]
+- Completion of the initial road network to avoid isolated roads that lead to nowhere [Completed]
+- At each timestep, the extension gets all of the recently harvest sites, and construct a road to them unless they are close enough for to an existing road for skipping wood to them. [Completed]
 - The building of new roads is made by an algorithm that finds the least-cost path according to elevation, lakes/rivers, vegetation, soils and distance.
 - Each road is assigned a type (primary, secondary, tertiary, winter roads...) according to the flux of wood that flows throught them, and the possibilities of using temporary roads.
 - The cost of construction or upgrading of the roads is saved in a log.
-- An output raster is created at each timestep to see the evolution of the road network in the landscape.
-
-CAUTION : This is a work in progress, and some functions might be currently missing or not optimized.
+- An output raster is created at each timestep to see the evolution of the road network in the landscape. [Completed]
 
 ## Screenshots
 

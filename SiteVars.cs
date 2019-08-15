@@ -21,7 +21,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// CAREFULL : By default, LANDIS-II creates variables where the inactive sites all have the same value !
 			// For our variable to work on inactive sites, we have to tell him to create a variable with distinct values
-			// for every inactive site.
+			// for every inactive site
 			roadsInLandscape = (SiteVarDistinct<RoadType>)PlugIn.ModelCore.Landscape.NewSiteVar<RoadType>(InactiveSiteMode.DistinctValues);
 
 			cohorts = PlugIn.ModelCore.GetSiteVar<ISiteCohorts>("Succession.AgeCohorts");
