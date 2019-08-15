@@ -51,28 +51,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				ModelCore.UI.WriteLine("The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.");
 
 				ModelCore.UI.WriteLine("Shuffling list of not connected sites with roads on them...");
+
 				// Then, we shuffle the list according to the heuristic given in the .txt parameter file.
-				if (heuristic == "Random")
-				{
-					Random random = new Random();
-					listOfSitesThatCantConnect = listOfSitesThatCantConnect.OrderBy(site => random.Next()).ToList();
-				}
-				else if (heuristic == "Closestfirst")
-				{
-					// We update the list of sites with roads that we used before; but we want only the connected sites inside of it.
-					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-					// We use it to find the distance to the nearest road for each cell
-					listOfSitesThatCantConnect = listOfSitesThatCantConnect.OrderBy(site => MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site, true)).ToList();
-				}
-				else if (heuristic == "Farthestfirst")
-				{
-					// Same thing, but in reverse order.
-					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-					listOfSitesThatCantConnect = listOfSitesThatCantConnect.OrderByDescending(site => MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site, true)).ToList();
-				}
-				else throw new Exception("Heuristic non recognized");
+				listOfSitesThatCantConnect = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfSitesThatCantConnect, heuristic);
 
 				ModelCore.UI.WriteLine("Building missing roads...");
+
 				foreach (Site site in listOfSitesThatCantConnect)
 				{
 					// If the site has been updated and connected, no need to look at him.

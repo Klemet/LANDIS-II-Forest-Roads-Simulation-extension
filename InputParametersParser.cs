@@ -54,6 +54,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(HeuristicForNetworkConstruction);
 			parameters.HeuristicForNetworkConstruction = HeuristicForNetworkConstruction.Value;
 
+			// On lit la distance de débardage
+			InputVar<int> SkiddingDistance = new InputVar<int>("SkiddingDistance");
+			ReadVar(SkiddingDistance);
+			parameters.SkiddingDistance = SkiddingDistance.Value;
+
 			// On lit le raster initial des routes
 			InputVar<string> roadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
 			ReadVar(roadNetworkMap);

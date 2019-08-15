@@ -30,17 +30,26 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Path to save the output maps of the forest road network
+		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
 		/// </summary>
-		string OutputsOfRoadNetworkMaps
+		string HeuristicForNetworkConstruction
 		{
 			get; set;
 		}
 
 		/// <summary>
-		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
+		/// The distance (in meters) onto which wood can be skidded, rather than transported on a road.
 		/// </summary>
-		string HeuristicForNetworkConstruction
+		int SkiddingDistance
+		{
+			get; set;
+		}
+
+
+		/// <summary>
+		/// Path to save the output maps of the forest road network
+		/// </summary>
+		string OutputsOfRoadNetworkMaps
 		{
 			get; set;
 		}
@@ -59,8 +68,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 	{
 		private int timestep;
 		private string roadNetworkMap;
-		private string outputsOfRoadNetworkMaps;
 		private string heuristicForNetworkConstruction;
+		private int skiddingDistance;
+		private string outputsOfRoadNetworkMaps;
 
 		//---------------------------------------------------------------------
 
@@ -101,25 +111,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Path to save the output maps of the forest road network
-		/// </summary>
-		public string OutputsOfRoadNetworkMaps
-		{
-			get
-			{
-				return outputsOfRoadNetworkMaps;
-			}
-			set
-			{
-				if (value != null)
-				{
-					// FIXME: check for null or empty path (value.Actual);
-					outputsOfRoadNetworkMaps = value;
-				}
-			}
-		}
-
-		/// <summary>
 		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
 		/// </summary>
 		public string HeuristicForNetworkConstruction
@@ -138,7 +129,41 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		
+		/// <summary>
+		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
+		/// </summary>
+		public int SkiddingDistance
+		{
+			get
+			{
+				return skiddingDistance;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				skiddingDistance = value;
+			}
+		}
+
+		/// <summary>
+		/// Path to save the output maps of the forest road network
+		/// </summary>
+		public string OutputsOfRoadNetworkMaps
+		{
+			get
+			{
+				return outputsOfRoadNetworkMaps;
+			}
+			set
+			{
+				if (value != null)
+				{
+					// FIXME: check for null or empty path (value.Actual);
+					outputsOfRoadNetworkMaps = value;
+				}
+			}
+		}
 
 		public InputParameters()
 		{

@@ -1,6 +1,6 @@
 LandisData Scenario
 
-Duration 20
+Duration 100
 
 Species ./input/species_ecoregions/species.txt
 

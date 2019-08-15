@@ -131,21 +131,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 				int roadConstructedAtThisTimestep = 0;
 
-				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
-				{
-					// Carefull : the time of last event is the timestep when the last harvest event happened; not the number of years SINCE the last event.
-					int timeOfLastEvent = Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent[site];
+				// We get all of the sites for which a road must be constructed
+				List<Site> listOfHarvestedSites = MapManager.GetAllRecentlyHarvestedSites(ModelCore, Timestep);
 
-					if (site.IsActive && (ModelCore.CurrentTime - timeOfLastEvent) < Timestep && timeOfLastEvent != -100)
+				// We shuffle the list according to the heuristic given by the user.
+				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
+
+				foreach (Site site in listOfHarvestedSites)
+				{
+					// We construct the road only if the cell is at more than 3 sites of distance from an existing road.
+					if (MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site) * ModelCore.CellLength > parameters.SkiddingDistance)
 					{
-						// We construct the road only if the cell is at more than 3 sites of distance from an existing road.
-						if (MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site) > 5)
-						{
-							DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
-							listOfSitesWithRoads.Add(site);
-							roadConstructedAtThisTimestep++;
-						}
+						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
+						listOfSitesWithRoads.Add(site);
+						roadConstructedAtThisTimestep++;
 					}
+
 
 				}
 				modelCore.UI.WriteLine("At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
