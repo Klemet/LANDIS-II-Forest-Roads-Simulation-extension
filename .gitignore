@@ -27,6 +27,9 @@ mono_crash.*
 copyToLandisFolder.bat
 launchLandisIITestScenario.bat
 
+# Update checklist
+Update_Checklist.txt
+
 # Folder with test scenario
 Test-Files/
 
