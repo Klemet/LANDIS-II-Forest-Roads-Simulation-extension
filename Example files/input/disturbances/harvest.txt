@@ -1,0 +1,62 @@
+>> HARVEST MODULE PARAMETER FILE
+
+>> If a parameter requires SPECIES information, it must be followed by a
+>> table listing a species name, followed by a list of parameters,
+>> as outlined in the documentation.
+
+>>------------------------------------------------------------------------
+>> TYPE OF DATA
+
+LandisData "Base Harvest"
+
+>>------------------------------------------------------------------------
+>> TIMESTEP
+
+Timestep 10
+
+>>------------------------------------------------------------------------
+>> MANAGEMENT AREAS: the .gis file which defines the management areas.
+
+ManagementAreas "./input/disturbances/management.tif"
+
+>>------------------------------------------------------------------------
+>> STANDS: the .gis file which defines the stands. A stand can belong to
+>> one and only one management area.
+
+Stands "./input/disturbances/stands.tif"
+
+>>------------------------------------------------------------------------
+>> PRESCRIPTIONS
+
+Prescription CPRS
+
+>> STAND RANKING:
+StandRanking MaxCohortAge
+>> STAND QUALIFICATION FOR CUTTING:
+MinimumAge 20
+>> SITE SELECTION:
+>> 		      				       Minimum Size Maximum Size
+>> 			  				       ---------- 	 ----------
+SiteSelection PartialStandSpread 		1            10
+>> COHORT REMOVAL METHOD:
+CohortsRemoved ClearCut
+
+>>-----------------------------------------------------------------
+>> HARVEST IMPLEMENTATION TABLE
+>> The following table defines which management areas (defined in the
+>> ManagementArea file) are treated by which prescription(s).
+>> The zone 1 is south, the zone 2 is north.
+
+HarvestImplementations
+
+>> Mgmt Area Prescription   Harvest Area   Begin Time   End Time
+>> --------- ------------   ------------   ----------   --------
+       1     CPRS                10%
+
+>>------------------------------------------------------------------------
+>> OUTPUT FILES
+
+PrescriptionMaps ./output/harvest/prescripts-{timestep}.gis
+EventLog ./output/harvest/log.csv
+SummaryLog ./output/harvest/summarylog.csv
+>>------------------------------------------------------------------------

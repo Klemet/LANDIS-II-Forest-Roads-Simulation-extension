@@ -1,0 +1,9 @@
+LandisData Ecoregions
+
+>> Map
+>> Active  Code  Name   Description
+>> ------  ----  -----  -----------
+       -      1  water  water
+       Y     22  eco22  MesicLoam
+     yes      3   eco3  "Sandy outwash plain"
+      no      0   none  "not in region-of-interest"

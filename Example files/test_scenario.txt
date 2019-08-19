@@ -1,0 +1,34 @@
+LandisData Scenario
+
+>> WARNING : This test scenario requires LANDIS-II-v7,
+>> and the following extensions : Age-only Succession,
+>> Base Wind, Base Fire, Base Harvest and Forest Roads Simulation.
+
+Duration 100
+
+Species ./input/species_ecoregions/species.txt
+
+Ecoregions ./input/species_ecoregions/ecoregions.txt
+EcoregionsMap ./input/species_ecoregions/ecoregions.tif
+
+CellLength 100 << meters, so cell area = 1 ha
+
+>> Succession Extension Initialization File
+>> -------------------- -------------------
+"Age-only Succession" ./input/succession/succession.txt
+
+>> Disturbance Extensions Initialization File
+>> ---------------------- -------------------
+"Base Wind" ./input/disturbances/wind.txt
+"Base Fire" ./input/disturbances/fire.txt
+"Base Harvest" ./input/disturbances/harvest.txt
+"Forest Roads Simulation" ./input/disturbances/roads.txt
+
+
+DisturbancesRandomOrder yes
+
+>> Output Extensions Initialization File
+>> ----------------- -------------------
+>> "Output Max Species Age" ./input/output/max-spp-age.output.txt
+
+RandomNumberSeed 4,357
