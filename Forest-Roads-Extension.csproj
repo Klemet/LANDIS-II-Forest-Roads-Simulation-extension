@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Landis.Extension.ForestRoadsSimulation</RootNamespace>
-    <AssemblyName>ForestRoadsSimulation</AssemblyName>
+    <AssemblyName>Landis.Extension.ForestRoadsSimulation</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

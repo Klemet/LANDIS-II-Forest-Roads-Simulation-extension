@@ -1,9 +1,0 @@
-LandisData   Extension
-
-Name         "Forest Roads Simulation"
-Version      "0.1"
-Type         disturbance:roads
-Assembly     ForestRoadsSimulation
-Class        Landis.Extension.ForestRoadsSimulation.PlugIn
-Description  "Simulate the construction of forest roads for harvesting"
-CoreVersion  7.0
