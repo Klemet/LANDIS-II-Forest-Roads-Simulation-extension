@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
-	class RoadNetwork
+	public class RoadNetwork
 	{
 		/// <summary>
 		/// This function initialize the road network by checking if every road is connected one way or another to a place where the harvested wood can flow to (sawmill, etc.). If not, it construct the road.

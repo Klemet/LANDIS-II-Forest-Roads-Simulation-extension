@@ -7,10 +7,6 @@ using System.IO;
 using System.Collections.Generic;
 using Landis.Core;
 using Landis.Library.AgeOnlyCohorts;
-using Landis.Core;
-using Landis.SpatialModeling;
-using System.Collections.Generic;
-using System.IO;
 using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
@@ -19,16 +15,36 @@ using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
-	class MapManager
+	public class MapManager
 	{
 		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
 		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
-		public static void ReadMap(string path)
+		// SoilRegionsContainer is used to fill up the soils map.
+		public static void ReadMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
 
+			// If the parameter "none" has been given, and if we are talking about an optional raster,
+			// then all of the values for the site will be filled with the default value.
+			if (variableName != "InitialRoadNetworkMap")
+			{
+				if (path == "none" || path == "None" || path == "" || path == null)
+				{
+					foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+					{
+						if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = 0;
+						if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = 0;
+						if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
+						if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
+						if (variableName == "SoilsRaster") SiteVars.Soils[site] = null;
+					}
+				}
+				// If that's the case, no need to go further in the function. we stop here.
+				return;
+			}
+			
 			// We try to open the map; if it fails, we raise an exception
-			try
+				try
 			{
 				map = PlugIn.ModelCore.OpenRaster<UIntPixel>(path);
 			}
@@ -55,9 +71,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 				{
 					map.ReadBufferPixel();
-					int mapCode = (int)pixel.MapCode.Value;
+					int pixelValue = (int)pixel.MapCode.Value;
 
-					SiteVars.RoadsInLandscape[site] = new RoadType(mapCode);
+					// To deal with problems of distorted No Value Data in rasters, which happen often
+					if (pixelValue < 0) pixelValue = 0;
+
+					if (variableName == "InitialRoadNetworkMap") SiteVars.RoadsInLandscape[site] = new RoadType(pixelValue);
+					else if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = pixelValue;
+					else if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = pixelValue;
+					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
+					else if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = pixelValue;
+					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = SoilRegions.GetSoilRegion(pixelValue);
 				}
 			}
 		}

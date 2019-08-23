@@ -24,7 +24,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private bool harvestExtensionDetected = false;
 
 		// Propriété pour contenir les paramètres
-		private IInputParameters parameters;
+		private static IInputParameters parameters;
 
 		// Propriété qui va contenir l'object "Coeur" de LANDIS-II afin de pouvoir y faire référence dans les fonctions.
 		private static ICore modelCore;
@@ -39,13 +39,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		//---------------------------------------------------------------------
-
 		// Propriété pour contenir le coeur du modèle en lecture seule.
 		public static ICore ModelCore
 		{
 			get
 			{
 				return modelCore;
+			}
+		}
+
+		//---------------------------------------------------------------------
+		// Property to contain the parameters in read-only
+		public static IInputParameters Parameters
+		{
+			get
+			{
+				return parameters;
 			}
 		}
 
@@ -64,8 +73,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
-			this.parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
+			parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
 			modelCore.UI.WriteLine("Parameters of the Forest Roads Simulation Extension are loaded");
+
+			// For debugging purposes
+			// InputParameterParser.DisplayParameters(ModelCore, this.parameters);
 
 			// Proof that the input map of roads has been properly read
 			/*
