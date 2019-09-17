@@ -80,7 +80,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			for (int i = 0; i < numberOfRanges; i++)
 			{
-				ModelCore.UI.WriteLine("Lower : " + listOfLowerThresholds[i] + "; Upper : " + listOfUpperThresholds[i] + "; Multi.Value : " + listOfMultiplicativeValues[i]);
+				ModelCore.UI.WriteLine("   Lower : " + listOfLowerThresholds[i] + "; Upper : " + listOfUpperThresholds[i] + "; Multi.Value : " + listOfMultiplicativeValues[i]);
 			}
 		}
 

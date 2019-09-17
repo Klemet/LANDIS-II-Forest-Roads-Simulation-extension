@@ -37,14 +37,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 						if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
 						if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
 						if (variableName == "SoilsRaster") SiteVars.Soils[site] = null;
+
+						// PlugIn.ModelCore.UI.WriteLine("Just put value 0 in raster " + variableName);
 					}
+					// If that's the case, no need to go further in the function. we stop here.
+					return;
 				}
-				// If that's the case, no need to go further in the function. we stop here.
-				return;
 			}
 			
 			// We try to open the map; if it fails, we raise an exception
-				try
+			try
 			{
 				map = PlugIn.ModelCore.OpenRaster<UIntPixel>(path);
 			}
@@ -68,9 +70,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 			using (map)
 			{
 				UIntPixel pixel = map.BufferPixel;
+
 				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 				{
-					map.ReadBufferPixel();
+					// In case of a problem in the value of the pixel.
+					try { map.ReadBufferPixel(); }
+					catch { throw new Exception("Forest Roads Simulation : ERROR : There was a problem while reading the value of raster "
+												+ variableName + " at site at location : " + site.Location + 
+												". The value might be too big or too little. Please check again."); }
+
 					int pixelValue = (int)pixel.MapCode.Value;
 
 					// To deal with problems of distorted No Value Data in rasters, which happen often
@@ -82,6 +90,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
 					else if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = pixelValue;
 					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = SoilRegions.GetSoilRegion(pixelValue);
+					else throw new Exception("Forest roads simulation : ERROR; VARIABLE NAME NOT RECOGNIZED FOR RASTER READING.");
+
+					// PlugIn.ModelCore.UI.WriteLine("Just put value "+ pixelValue + " in raster " + variableName);
 				}
 			}
 		}

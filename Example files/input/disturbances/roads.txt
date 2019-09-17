@@ -7,7 +7,7 @@ LandisData "Forest Roads Simulation"
     
 Timestep 15
 
-HeuristicForNetworkConstruction Closestfirst
+HeuristicForNetworkConstruction Farthestfirst
 
 SkiddingDistance 150
 
@@ -31,9 +31,9 @@ FineElevationRaster ./input/disturbances/fine_elevation.tif
 FineElevationCosts
 >> Lower elevation      Upper elevation      Multiplication
 >>    threshold            threshold             value  
-	    0		             400                   1
-	   400		             2000	               1.5
-       2000		            10000000               2
+	    0		             5                   1
+	   5		             8	               1.5
+       8		            20               2
 
 CoarseWaterRaster ./input/disturbances/coarse_water.tif
 CoarseWaterCost 1000000
@@ -41,7 +41,8 @@ CoarseWaterCost 1000000
 FineWaterRaster ./input/disturbances/fine_water.tif
 FineWaterCost 10000
 
-SoilsRaster ./input/disturbances/soils.tif
+>> SoilsRaster ./input/disturbances/soils.tif
+SoilsRaster none
 SoilsCost
 >> Map Code		Additional Cost
       1	                       0

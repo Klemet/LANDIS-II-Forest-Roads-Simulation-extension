@@ -163,8 +163,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(SoilsRaster);
 			parameters.SoilsRaster = SoilsRaster.Value;
 
-			PlugIn.ModelCore.UI.WriteLine("   ...Is it the soilcost that is fucking things up ?...");
-
 			// We read the soil additive costs
 			// WARNING : Again, because the parser is quite annoying with the construction of objects,
 			// The soil region cost does not go by the "parameters" object. It directly goes
@@ -255,34 +253,34 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </summary>
 		public static void DisplayParameters(ICore ModelCore, IInputParameters Parameters)
 		{
-			ModelCore.UI.WriteLine("Timestep : " + Parameters.Timestep);
-			ModelCore.UI.WriteLine("Heuristic : " + Parameters.HeuristicForNetworkConstruction);
-			ModelCore.UI.WriteLine("Skidding distance : " + Parameters.SkiddingDistance);
-			ModelCore.UI.WriteLine("Outputs of network maps : " + Parameters.OutputsOfRoadNetworkMaps);
-			ModelCore.UI.WriteLine("Outputs of logs : " + Parameters.OutputsOfRoadLog);
+			ModelCore.UI.WriteLine("   Timestep : " + Parameters.Timestep);
+			ModelCore.UI.WriteLine("   Heuristic : " + Parameters.HeuristicForNetworkConstruction);
+			ModelCore.UI.WriteLine("   Skidding distance : " + Parameters.SkiddingDistance);
+			ModelCore.UI.WriteLine("   Outputs of network maps : " + Parameters.OutputsOfRoadNetworkMaps);
+			ModelCore.UI.WriteLine("   Outputs of logs : " + Parameters.OutputsOfRoadLog);
 
-			ModelCore.UI.WriteLine("Initial road raster : " + Parameters.InitialRoadNetworkMap);
-			ModelCore.UI.WriteLine("Distance cost : " + Parameters.DistanceCost);
-			ModelCore.UI.WriteLine("Coarse elevation raster : " + Parameters.CoarseElevationRaster);
-			ModelCore.UI.WriteLine("Coarse elevation cost : " + Parameters.CoarseElevationCost);
-			ModelCore.UI.WriteLine("Fine elevation raster : " + Parameters.FineElevationRaster);
-			ModelCore.UI.WriteLine("Fine elevation costs : ");
+			ModelCore.UI.WriteLine("   Initial road raster : " + Parameters.InitialRoadNetworkMap);
+			ModelCore.UI.WriteLine("   Distance cost : " + Parameters.DistanceCost);
+			ModelCore.UI.WriteLine("   Coarse elevation raster : " + Parameters.CoarseElevationRaster);
+			ModelCore.UI.WriteLine("   Coarse elevation cost : " + Parameters.CoarseElevationCost);
+			ModelCore.UI.WriteLine("   Fine elevation raster : " + Parameters.FineElevationRaster);
+			ModelCore.UI.WriteLine("   Fine elevation costs : ");
 			ElevationCostRanges.DisplayRangesInConsole(ModelCore);
-			ModelCore.UI.WriteLine("Coarse water raster : " + Parameters.CoarseWaterRaster);
-			ModelCore.UI.WriteLine("Coarse water cost :  : " + Parameters.CoarseWaterCost);
-			ModelCore.UI.WriteLine("Fine water raster : " + Parameters.CoarseWaterRaster);
-			ModelCore.UI.WriteLine("Fine water cost : " + Parameters.FineWaterCost);
-			ModelCore.UI.WriteLine("Soils raster : " + Parameters.SoilsRaster);
-			ModelCore.UI.WriteLine("Soil costs : ");
+			ModelCore.UI.WriteLine("   Coarse water raster : " + Parameters.CoarseWaterRaster);
+			ModelCore.UI.WriteLine("   Coarse water cost :  : " + Parameters.CoarseWaterCost);
+			ModelCore.UI.WriteLine("   Fine water raster : " + Parameters.CoarseWaterRaster);
+			ModelCore.UI.WriteLine("   Fine water cost : " + Parameters.FineWaterCost);
+			ModelCore.UI.WriteLine("   Soils raster : " + Parameters.SoilsRaster);
+			ModelCore.UI.WriteLine("   Soil costs : ");
 			SoilRegions.DisplayRegionsInConsole(ModelCore);
 
-			ModelCore.UI.WriteLine("Primary Road Threshold : " + Parameters.PrimaryRoadThreshold);
-			ModelCore.UI.WriteLine("Primary Road Multiplication Value : " + Parameters.PrimaryRoadMultiplication);
-			ModelCore.UI.WriteLine("Secondary Road Threshold : " + Parameters.SecondaryRoadThreshold);
-			ModelCore.UI.WriteLine("Secondary Road Multiplication Value : " + Parameters.SecondaryRoadMultiplication);
-			ModelCore.UI.WriteLine("Percentage of temporary roads : " + Parameters.TemporaryRoadPercentage);
-			ModelCore.UI.WriteLine("Tertiary Road Multiplication Value : " + Parameters.TertiaryRoadMultiplication);
-			ModelCore.UI.WriteLine("Temporary Road Multiplication Value : " + Parameters.TemporaryRoadMultiplication);
+			ModelCore.UI.WriteLine("   Primary Road Threshold : " + Parameters.PrimaryRoadThreshold);
+			ModelCore.UI.WriteLine("   Primary Road Multiplication Value : " + Parameters.PrimaryRoadMultiplication);
+			ModelCore.UI.WriteLine("   Secondary Road Threshold : " + Parameters.SecondaryRoadThreshold);
+			ModelCore.UI.WriteLine("   Secondary Road Multiplication Value : " + Parameters.SecondaryRoadMultiplication);
+			ModelCore.UI.WriteLine("   Percentage of temporary roads : " + Parameters.TemporaryRoadPercentage);
+			ModelCore.UI.WriteLine("   Tertiary Road Multiplication Value : " + Parameters.TertiaryRoadMultiplication);
+			ModelCore.UI.WriteLine("   Temporary Road Multiplication Value : " + Parameters.TemporaryRoadMultiplication);
 		}
 
 	}
