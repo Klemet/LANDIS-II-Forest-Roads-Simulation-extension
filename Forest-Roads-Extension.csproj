@@ -75,6 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BytePixel.cs" />
+    <Compile Include="SoilRegions.cs" />
+    <Compile Include="ElevationCostRanges.cs" />
+    <Compile Include="SoilRegion.cs" />
     <Compile Include="SiteForPathfinding.cs" />
     <Compile Include="DijkstraSearch.cs" />
     <Compile Include="RoadNetwork.cs" />

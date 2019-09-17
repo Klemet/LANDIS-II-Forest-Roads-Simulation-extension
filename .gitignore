@@ -17,11 +17,12 @@
 mono_crash.*
 
 # Results of test simulations
-/Installation Files/examples/Forest Roads Simulation/output
-/Installation Files/examples/Forest Roads Simulation/Metadata
-/Installation Files/examples/Forest Roads Simulation/Landis-Log.txt
-/Installation Files/examples/Forest Roads Simulation/wind-events-log
-/Installation Files/examples/Forest Roads Simulation/
+Example files/output
+Example files/Metadata
+Example files/Landis-Log.txt
+Example files/wind-events-log
+Example files/
+
 
 # BatchFiles for quickly running the program
 copyToLandisFolder.bat

@@ -7,10 +7,6 @@ using System.IO;
 using System.Collections.Generic;
 using Landis.Core;
 using Landis.Library.AgeOnlyCohorts;
-using Landis.Core;
-using Landis.SpatialModeling;
-using System.Collections.Generic;
-using System.IO;
 using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
@@ -19,14 +15,36 @@ using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
-	class MapManager
+	public class MapManager
 	{
 		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
 		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
-		public static void ReadMap(string path)
+		// SoilRegionsContainer is used to fill up the soils map.
+		public static void ReadMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
 
+			// If the parameter "none" has been given, and if we are talking about an optional raster,
+			// then all of the values for the site will be filled with the default value.
+			if (variableName != "InitialRoadNetworkMap")
+			{
+				if (path == "none" || path == "None" || path == "" || path == null)
+				{
+					foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+					{
+						if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = 0;
+						if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = 0;
+						if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
+						if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
+						if (variableName == "SoilsRaster") SiteVars.Soils[site] = null;
+
+						// PlugIn.ModelCore.UI.WriteLine("Just put value 0 in raster " + variableName);
+					}
+					// If that's the case, no need to go further in the function. we stop here.
+					return;
+				}
+			}
+			
 			// We try to open the map; if it fails, we raise an exception
 			try
 			{
@@ -52,12 +70,29 @@ namespace Landis.Extension.ForestRoadsSimulation
 			using (map)
 			{
 				UIntPixel pixel = map.BufferPixel;
+
 				foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 				{
-					map.ReadBufferPixel();
-					int mapCode = (int)pixel.MapCode.Value;
+					// In case of a problem in the value of the pixel.
+					try { map.ReadBufferPixel(); }
+					catch { throw new Exception("Forest Roads Simulation : ERROR : There was a problem while reading the value of raster "
+												+ variableName + " at site at location : " + site.Location + 
+												". The value might be too big or too little. Please check again."); }
 
-					SiteVars.RoadsInLandscape[site] = new RoadType(mapCode);
+					int pixelValue = (int)pixel.MapCode.Value;
+
+					// To deal with problems of distorted No Value Data in rasters, which happen often
+					if (pixelValue < 0) pixelValue = 0;
+
+					if (variableName == "InitialRoadNetworkMap") SiteVars.RoadsInLandscape[site] = new RoadType(pixelValue);
+					else if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = pixelValue;
+					else if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = pixelValue;
+					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
+					else if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = pixelValue;
+					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = SoilRegions.GetSoilRegion(pixelValue);
+					else throw new Exception("Forest roads simulation : ERROR; VARIABLE NAME NOT RECOGNIZED FOR RASTER READING.");
+
+					// PlugIn.ModelCore.UI.WriteLine("Just put value "+ pixelValue + " in raster " + variableName);
 				}
 			}
 		}

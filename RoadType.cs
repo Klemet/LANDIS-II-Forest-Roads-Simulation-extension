@@ -51,7 +51,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			get
 			{
-				if (this.typeNumber <= 5 && this.typeNumber >= 1) return (true);
+				if (this.typeNumber <= 7 && this.typeNumber >= 1) return (true);
 				else return (false);
 			}
 		}

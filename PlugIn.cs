@@ -24,7 +24,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private bool harvestExtensionDetected = false;
 
 		// Propriété pour contenir les paramètres
-		private IInputParameters parameters;
+		private static IInputParameters parameters;
 
 		// Propriété qui va contenir l'object "Coeur" de LANDIS-II afin de pouvoir y faire référence dans les fonctions.
 		private static ICore modelCore;
@@ -39,13 +39,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		//---------------------------------------------------------------------
-
 		// Propriété pour contenir le coeur du modèle en lecture seule.
 		public static ICore ModelCore
 		{
 			get
 			{
 				return modelCore;
+			}
+		}
+
+		//---------------------------------------------------------------------
+		// Property to contain the parameters in read-only
+		public static IInputParameters Parameters
+		{
+			get
+			{
+				return parameters;
 			}
 		}
 
@@ -64,8 +73,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
-			this.parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
-			modelCore.UI.WriteLine("Parameters of the Forest Roads Simulation Extension are loaded");
+			parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
+			modelCore.UI.WriteLine("  Parameters of the Forest Roads Simulation Extension are loaded");
+
+			// For debugging purposes
+			// InputParameterParser.DisplayParameters(ModelCore, this.parameters);
 
 			// Proof that the input map of roads has been properly read
 			/*
@@ -89,31 +101,31 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Elle va préparer tout ce qu'il faut pour l'output des données.
 		public override void Initialize()
 		{
-			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension...");
+			modelCore.UI.WriteLine("  Initialization of the Forest Roads Simulation Extension...");
 			Timestep = parameters.Timestep;
 
 			// Testing if a harvest extension is included in the scenario and thus initialized
 			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
 			else
 			{
-				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
-				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
+				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("   Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
 			}
 
 			// We check if some roads are not connected to sawmills or to a main public network.
-			modelCore.UI.WriteLine("Checking if the wood has somewhere to go...");
+			modelCore.UI.WriteLine("   Checking if the wood has somewhere to go...");
 			if (!MapManager.IsThereAPlaceForTheWoodToGo(ModelCore))
 			{
-				throw new Exception("FOREST ROAD SIMULATION EXTENSION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
-									"Please put at least one in the input raster containing the initial road network.");
+				throw new Exception("   FOREST ROAD SIMULATION EXTENSION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
+									"   Please put at least one in the input raster containing the initial road network.");
 			}
 			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
 			else
 			{
-				modelCore.UI.WriteLine("Initializing the road network...");
+				modelCore.UI.WriteLine("   Initializing the road network...");
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
 			}
-			modelCore.UI.WriteLine("Initialization of the Forest Roads Simulation Extension is done");
+			modelCore.UI.WriteLine("   Initialization of the Forest Roads Simulation Extension is done");
 		}
 
 		public override void Run()
@@ -121,8 +133,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// We give a warning back to the user if no harvest extension is detected
 			if (!this.harvestExtensionDetected)
 			{
-				modelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
-				modelCore.UI.WriteLine("Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
+				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("   Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
 			}
 
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
@@ -149,7 +161,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 
 				}
-				modelCore.UI.WriteLine("At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
+				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 			}
 
 				// On écrit la carte output du réseau de routes

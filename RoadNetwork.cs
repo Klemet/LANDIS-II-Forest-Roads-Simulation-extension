@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
-	class RoadNetwork
+	public class RoadNetwork
 	{
 		/// <summary>
 		/// This function initialize the road network by checking if every road is connected one way or another to a place where the harvested wood can flow to (sawmill, etc.). If not, it construct the road.
@@ -28,7 +28,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 			List<Site> listOfSitesThatCantConnect = new List<Site>();
 
-			ModelCore.UI.WriteLine("Looking to see if the roads can go to a sawmill...");
+			ModelCore.UI.WriteLine("   Looking to see if the roads can go to a sawmill...");
 			foreach (Site site in listOfSitesWithRoads)
 			{
 				// If the site is a sawmill or a main road, no need to do anything further. We indicate it as connected.
@@ -47,26 +47,26 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If there were sites that we couldn't not connect, we throw a warning the user
 			if (listOfSitesThatCantConnect.Count != 0)
 			{
-				ModelCore.UI.WriteLine("FOREST ROAD SIMULATION EXTENSION WARNING : ROADS THAT CAN'T BE CONNECTED TO SAWMILLS OR MAIN NETWORKS HAVE BEEN DETECTED IN THE INPUT MAP");
-				ModelCore.UI.WriteLine("The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.");
+				ModelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : ROADS THAT CAN'T BE CONNECTED TO SAWMILLS OR MAIN NETWORKS HAVE BEEN DETECTED IN THE INPUT MAP");
+				ModelCore.UI.WriteLine("   The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.");
 
-				ModelCore.UI.WriteLine("Shuffling list of not connected sites with roads on them...");
+				ModelCore.UI.WriteLine("   Shuffling list of not connected sites with roads on them...");
 
 				// Then, we shuffle the list according to the heuristic given in the .txt parameter file.
 				listOfSitesThatCantConnect = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfSitesThatCantConnect, heuristic);
 
-				ModelCore.UI.WriteLine("Building missing roads...");
+				ModelCore.UI.WriteLine("   Building missing roads...");
 
 				foreach (Site site in listOfSitesThatCantConnect)
 				{
 					// If the site has been updated and connected, no need to look at him.
 					if (!SiteVars.RoadsInLandscape[site].isConnectedToSawMill)
 					{
-						// ModelCore.UI.WriteLine("Getting the connected neighbours...");
+						ModelCore.UI.WriteLine("   Getting the connected neighbours...");
 						// Now, we get all of the roads that are connected to this one (and, implicitly, in need of being connected too)
 						List<Site> sitesConnectedToTheLonelySite = MapManager.GetAllConnectedRoads(site);
 
-						// ModelCore.UI.WriteLine("Building the missing road...");
+						ModelCore.UI.WriteLine("   Building the missing road...");
 						// We create a new road that will connect the given site to a road that is connected to a sawmill
 						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
 
@@ -76,7 +76,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				}
 
 				// All the sites are now connected. Initialization of the road network is thus complete.
-				ModelCore.UI.WriteLine("Initialization of the road network is now complete.");
+				ModelCore.UI.WriteLine("   Initialization of the road network is now complete.");
 			}
 
 		}
