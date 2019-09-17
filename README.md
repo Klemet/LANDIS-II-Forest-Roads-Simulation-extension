@@ -10,9 +10,11 @@ It functions in pair with a harvest extension to simulate how the forest road ne
 - Reading of a raster containing the initial road network [Completed]
 - Completion of the initial road network to avoid isolated roads that lead to nowhere [Completed]
 - At each timestep, the extension gets all of the recently harvest sites, and construct a road to them unless they are close enough for to an existing road for skipping wood to them [Completed]
-- The building of new roads is made by an algorithm that finds the least-cost path according to elevation, lakes/rivers, vegetation, soils and distance
+- The building of new roads is made by an algorithm that finds the least-cost path according to elevation, lakes/rivers, vegetation, soils and distance [In progress]
 - Each road is assigned a type (primary, secondary, tertiary, winter roads...) according to the flux of wood that flows throught them, and the possibilities of using temporary roads
 - The cost of construction or upgrading of the roads is saved in a log
+- Roads have a lifetime, and have to be maintained with money to keep being used.
+- Roads can be abandonned or destroyed according to several criterias.
 - An output raster is created at each timestep to see the evolution of the road network in the landscape [Completed]
 
 ## Screenshots
@@ -24,6 +26,8 @@ It functions in pair with a harvest extension to simulate how the forest road ne
 A pre-release can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/releases/download/0.5/LANDIS-II-v7.Forest.Road.Simulation.Extension.v.0.5.Setup.exe ). Please be carefull to indicate the correct folder where LANDIS-II-v7 is installed during setup. 
 
 ## Use
+
+Before use, we recommand reading the user guide available for download [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/blob/master/LANDIS-II%20Forest%20Roads%20Simulation%20v0.5%20User%20Guide.pdf). WARNING : Remember that some of the features indicated in the user guide might still be currently missing, and that many are yet to come.
 
 To currently use the extension, you must have a parameter files fed to the extension via the main .txt file of the LANDIS-II scenario.
 An example of parameter file is available in the "Example files" folder.
