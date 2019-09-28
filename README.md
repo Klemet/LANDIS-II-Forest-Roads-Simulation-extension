@@ -23,7 +23,7 @@ It functions in pair with a harvest extension to simulate how the forest road ne
  
 ## Download
  
-A pre-release can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/releases/download/0.5/LANDIS-II-v7.Forest.Road.Simulation.Extension.v.0.5.Setup.exe ). Please be carefull to indicate the correct folder where LANDIS-II-v7 is installed during setup. 
+A pre-release can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/releases/download/0.5/LANDIS-II-V7.Forest.Road.Simulation.Extension.0.5-setup.exe ).
 
 ## Use
 
