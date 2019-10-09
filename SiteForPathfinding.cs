@@ -116,13 +116,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </param>
 		public double CostOfTransition(Site otherSite)
 		{
-			// First, we initialize the cost
-			double cost = 0;
+			// First, we initialize the cost; it is based on the cost raster created during the initialization of the plugin,
+			// and who already contains infos about the basic cost, the coarse water cost, the fine water cost, existing roads
+			// and the soil cost. As it is expressed for the crossing of one site, we put it as a mean between the two (this way,
+			// the cost of transition is like crossing half of a site, and half of the other).
+			double cost = (SiteVars.CostRaster[this.site] + SiteVars.CostRaster[otherSite])/2 ;
 
-			// we add the base cost of crossing the sites
-			cost += PlugIn.Parameters.DistanceCost;
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with distance is : " + cost);
 
 			// We add the cost associated with coarse elevation if there was an input of a coarse elevation raster
 			if (PlugIn.Parameters.CoarseElevationRaster != "none")
@@ -135,28 +134,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				cost = cost * ElevationCostRanges.GetMultiplicativeValue((SiteVars.FineElevation[this.site] + SiteVars.FineElevation[otherSite])/2);
 
 			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with fine elevation is : " + cost);
-
-			// We add the coarse water cost if there was an input for the coarse water raster
-			if (PlugIn.Parameters.CoarseWaterRaster != "none")
-			{
-				if (SiteVars.CoarseWater[this.site] == 1 || SiteVars.CoarseWater[this.site] == 2) cost += PlugIn.Parameters.CoarseWaterCost / 2;
-				if (SiteVars.CoarseWater[otherSite] == 1 || SiteVars.CoarseWater[otherSite] == 2) cost += PlugIn.Parameters.CoarseWaterCost / 2;
-			}
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with coarse water is : " + cost);
-
-			// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed in the mean
-			// for the two cells.
-			if (PlugIn.Parameters.FineWaterRaster != "none")
-				cost += (((SiteVars.FineWater[this.site] + SiteVars.FineWater[otherSite])/2) / PlugIn.ModelCore.CellLength) * PlugIn.Parameters.FineWaterCost;
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with fine water is : " + cost);
-
-			// Finally, we add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
-			if (PlugIn.Parameters.SoilsRaster != "none")
-				cost += (SoilRegions.GetAdditionalValue(SiteVars.Soils[this.site]) + SoilRegions.GetAdditionalValue(SiteVars.Soils[otherSite])) / 2;
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with soils is : " + cost);
 
 			// But if the other site has a road a it, then it's half price ! And if the current site has a road on it, it's free !
 			if (SiteVars.RoadsInLandscape[otherSite].IsARoad)

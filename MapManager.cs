@@ -157,6 +157,52 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// This function exists to create a cost raster based on each site of the landscape that contains a part of the information of the cost of construction of roads in the landscape.
+		/// It is made so as to optimize the pathfinding process, because it has to calculate cost of transition from one cell to another a very large number of time. The more those calculation
+		/// are made in advance, the better.
+		/// </summary>
+		public static void CreateNonElevationCostRaster()
+		{
+			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+			{
+				// First, we initialize the cost
+				double cost = 0;
+
+				// we add the base cost of crossing the sites
+				cost += PlugIn.Parameters.DistanceCost;
+
+				// If there is a road on the site, then the cost of crossing this site is 0.
+				if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
+
+				// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
+				else if (PlugIn.Parameters.CoarseWaterRaster != "none")
+				{
+					if (SiteVars.CoarseWater[site] != 0) { cost = PlugIn.Parameters.CoarseWaterCost; }
+				}
+
+				// Else, we incorporate the fine water cost and the soil cost on top of the basic cost
+				else
+				{
+					// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed is expressed as a probability, depending on the length
+					// of streams in the site, and the length of a cell/site.
+					if (PlugIn.Parameters.FineWaterRaster != "none")
+					{
+						cost += (SiteVars.FineWater[site] / PlugIn.ModelCore.CellLength) * PlugIn.Parameters.FineWaterCost;
+					}
+
+					// Finally, we add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
+					if (PlugIn.Parameters.SoilsRaster != "none")
+					{
+						cost += SoilRegions.GetAdditionalValue(SiteVars.Soils[site]);
+					}
+				}
+
+				// We associate this cost to the site
+				SiteVars.CostRaster[site] = (float)cost;
+			}
+		}
+
+		/// <summary>
 		/// Gets the 8 neighbours surounding a site as a list of sites.
 		/// </summary>
 		/// <returns>
