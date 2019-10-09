@@ -22,6 +22,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static readonly ExtensionType ExtType = new ExtensionType("disturbance:roads");
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 		private bool harvestExtensionDetected = false;
+		private List<RelativeLocation> skiddingNeighborhood;
 
 		// Propriété pour contenir les paramètres
 		private static IInputParameters parameters;
@@ -126,6 +127,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
 			}
 			modelCore.UI.WriteLine("   Initialization of the Forest Roads Simulation Extension is done");
+			// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
+			skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
+			modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
 		}
 
 		public override void Run()
@@ -152,14 +156,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				foreach (Site site in listOfHarvestedSites)
 				{
 					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
-					if (MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site) * ModelCore.CellLength > parameters.SkiddingDistance)
+					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, site))
 					{
 						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
 						listOfSitesWithRoads.Add(site);
 						roadConstructedAtThisTimestep++;
 					}
-
-
 				}
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 			}

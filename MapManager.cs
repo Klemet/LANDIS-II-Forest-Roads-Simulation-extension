@@ -124,7 +124,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			using (map)
 			{
 				// We get the number of the site to know where the pixel to read is (from upper-left to lower-right)
-				// CAREFUL : Pixels and sites are read by reading a column from top to bottom, and the column from left to right.
+				// CAREFUL : Pixels and sites are read by reading a row from top to bottom, and the column from left to right.
 				// NOT like a text from left to right AND top to bottom ; more rather like the japanese writing, top to bottom AND left to right.
 				int sitePixelNumber = (int)(site.Location.Column + ((site.Location.Row - 1) * map.Dimensions.Rows));
 				UIntPixel pixel = map.BufferPixel;
@@ -163,7 +163,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// A list of sites containing the neighbouring sites of the given site. 
 		/// </returns>
 		/// /// <param name="givenSite">
-		/// The starting site of the search.
+		/// A site for which the neighbouring sites must be found.
 		/// </param>
 		/// /// <param name="onlyRoads">
 		/// If true, only add neighbouring sites with a road on it to the resulting list.
@@ -198,6 +198,80 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			return (listOfNeighbouringSites);
 		}
+
+		/// <summary>
+		/// Creates a list of relative locations around a site that will be checked to see if their is a road at skidding distance
+		/// from a given site.
+		/// </summary>
+		/// <returns>
+		/// A list of relative locations.
+		/// </returns>
+		/// <param name="skiddingDistance">
+		/// The skidding distance given as a parameter to the plugin.
+		/// </param>
+		/// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		public static List<RelativeLocation> CreateSkiddingNeighborhood(int skiddingDistance, ICore ModelCore)
+		{
+			List<RelativeLocation> relativeCircleNeighborhood = new List<RelativeLocation>();
+
+			float landscapeResolution = ModelCore.CellLength;
+
+			int squareSizeOfNeighborhood = (int)Math.Floor(skiddingDistance / landscapeResolution) + 1;
+
+			for (int col = -squareSizeOfNeighborhood; col < squareSizeOfNeighborhood + 1; col++)
+			{
+				for (int row = -squareSizeOfNeighborhood; row < squareSizeOfNeighborhood + 1; row++)
+				{
+					// We avoid checking the reference cell.
+					if (col != 0 || row != 0)
+					{
+						// We check the euclidian distance between centroids to know if a site is with the skidding distance of the reference site.
+						if (Math.Sqrt(Math.Pow((row * landscapeResolution), 2) + Math.Pow((col * landscapeResolution), 2)) <= skiddingDistance)
+						{
+							// If it is, it will be part of the skidding neighborhood.
+							relativeCircleNeighborhood.Add(new RelativeLocation(row, col));
+						}
+					}
+				}
+			}
+
+			return (relativeCircleNeighborhood);
+		}
+
+		/// <summary>
+		/// Checks in the skidding neighborhood of a site if there is an existing road.
+		/// </summary>
+		/// <returns>
+		/// True if there is an existing road nearby; False overwise.
+		/// </returns>
+		/// <param name="skiddingNeighborhood">
+		/// A list of relativeLocations that we will explore to check if there is a road on the corresponding sites.
+		/// </param>
+		/// <param name="site">
+		/// A site for which we want to check if there is a road nearby.
+		/// </param>
+		public static bool IsThereANearbyRoad(List<RelativeLocation> skiddingNeighborhood, Site site)
+		{
+			bool isThereANearbyRoad = false;
+
+			foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
+			{
+				Site neighbour = site.GetNeighbor(relativeNeighbour);
+				// Seems like the GetNeighbor function cannot check if the neighbour is part of the landscape. We have to check.
+				if (neighbour.Landscape == null) continue;
+				// If the neighbour site has a road in it, we can stop right there.
+				if (SiteVars.RoadsInLandscape[neighbour].IsARoad)
+				{
+					isThereANearbyRoad = true;
+					break;
+				}
+			}
+
+			return (isThereANearbyRoad);
+		}
+
 
 
 		/// <summary>

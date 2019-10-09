@@ -17,11 +17,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public Site site;
 		public double distanceToStart;
 		public SiteForPathfinding predecessor;
+		public bool isClosed;
+		public bool isOpen;
 
 		public SiteForPathfinding(Site site)
 		{
 			this.site = site;
 			this.distanceToStart = double.PositiveInfinity;
+			this.predecessor = null;
+			this.isClosed = false;
+			this.isOpen = false;
 		}
 
 		/// <summary>

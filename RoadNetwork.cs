@@ -75,9 +75,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 					}
 				}
 
-				// All the sites are now connected. Initialization of the road network is thus complete.
-				ModelCore.UI.WriteLine("   Initialization of the road network is now complete.");
 			}
+
+			// All the sites are now connected. Initialization of the road network is thus complete.
+			ModelCore.UI.WriteLine("   Initialization of the road network is now complete.");
 
 		}
 

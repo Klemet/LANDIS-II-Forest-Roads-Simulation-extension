@@ -13,6 +13,53 @@ namespace Landis.Extension.ForestRoadsSimulation
 	class DijkstraSearch
 	{
 		/// <summary>
+		/// Create an array of SiteForPathfinding objects, which are sites with additonal information to facilitate pathfinding.
+		/// This resulting array can be used in dijkstra searches to avoid looking into lists to check if sites are "opened" or "closeed" by the algorithm.
+		/// The resulting array have for dimensions [columns (x axis), rows (y axis)] of the LANDIS-II landscape.
+		/// </summary>
+		/// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		public static SiteForPathfinding[,] CreateArrayOfSitesForPathFinding(ICore ModelCore)
+		{
+			// We have to use dimensions+1 because for C#, things start at 0; for LANDIS-II, rows and columns start at 1. This means there will be empty slots in the array, but this has no impacts.
+			SiteForPathfinding[,] tableOfSitesForPathfinding = new SiteForPathfinding[PlugIn.ModelCore.Landscape.Dimensions.Columns+1, PlugIn.ModelCore.Landscape.Dimensions.Rows+1];
+
+			foreach (Site site in ModelCore.Landscape.AllSites)
+			{
+				tableOfSitesForPathfinding[site.Location.Column, site.Location.Row] = new SiteForPathfinding(site);
+			}
+
+			return (tableOfSitesForPathfinding);
+		}
+
+		/// <summary>
+		/// Gives back the SiteForPathfinding object that has the lowest distance to start value. Exists to avoid the "sort" function of C# that might take more time than this one.
+		/// It return it as a tuple containing the index of the returned SiteForPathfinding in the enumerable, and the SiteForPathfinding object in itself.
+		/// </summary>
+		/// <param name="enumerableOfSitesForPathfinding">
+		/// A list or an array containing the SiteForPathfinding objects.
+		/// </param>
+		public static Tuple<int, SiteForPathfinding> GetOpenedSiteWithSmallestDistance(IEnumerable<SiteForPathfinding> enumerableOfSitesForPathfinding)
+		{
+			SiteForPathfinding siteToReturn = enumerableOfSitesForPathfinding.First();
+			int indexOfSiteToReturn = 0;
+			int i = 0;
+
+			foreach (SiteForPathfinding site in enumerableOfSitesForPathfinding)
+			{
+				if (site.isOpen && site.distanceToStart < siteToReturn.distanceToStart)
+				{
+					siteToReturn = site;
+					indexOfSiteToReturn = i;
+				}
+				i++;
+			}
+
+			return (new Tuple<int, SiteForPathfinding>(indexOfSiteToReturn, siteToReturn));
+		}
+
+		/// <summary>
 		/// Searches for a place where the harvested wood can flow (sawmill, main road network) starting from a given site with a road via the Dijkstra Algorithm. 
 		/// It only looks for a path through neighbors (8) that have a road on them.
 		/// </summary>
@@ -20,95 +67,80 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// A boolean indicating if a site has been found; if not, that means that the road on the site isn't connected to a place where the wood must flow. If it's found,
 		/// the road on the starting site - and also of all of the sites that have been opened during the search - are considered "connected". 
 		/// </returns>
-		/// /// <param name="ModelCore">
+		/// <param name="ModelCore">
 		/// The model's core framework.
 		/// </param>
-		/// /// <param name="startingSite">
+		/// <param name="startingSite">
 		/// The starting site of the search.
 		/// </param>
 		public static bool DijkstraSearchForPlaceToPutWood(ICore ModelCore, Site startingSite)
 		{
 			// We get the open and closed lists ready
 			List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
-			List<SiteForPathfinding> closedSearchList = new List<SiteForPathfinding>();
+			List<SiteForPathfinding> exploredRoadsList = new List<SiteForPathfinding>();
+			SiteForPathfinding[,] tableOfSitesForPathFinding = CreateArrayOfSitesForPathFinding(ModelCore);
 			bool haveWeFoundPlaceToPutWood = false;
-			// Assignation made to please the gods of C# and their rules that prevent a clean initialization.
-			SiteForPathfinding startingSiteAsPathfinding = new SiteForPathfinding(startingSite);
-			SiteForPathfinding arrivalAsPathfindingSite = startingSiteAsPathfinding;
+			// Useless assignation made to please the gods of C# and their rules that prevent a clean initialization.
+			SiteForPathfinding startingSiteAsPathfinding = tableOfSitesForPathFinding[startingSite.Location.Column, startingSite.Location.Row];
+			SiteForPathfinding arrivalAsPathfindingSite = null;
 
-			// We put the first site in the open list
+			// We put the first site in the open list and give it the proper starting distance.
+			startingSiteAsPathfinding.distanceToStart = 0;
 			openSearchList.Add(startingSiteAsPathfinding);
 
 			// We loop until the list is ready, or when we found what we're looking for
 			while (openSearchList.Count > 0 && !haveWeFoundPlaceToPutWood)
 			{
-				// We sort the sites on the open list according to their distance to start
-				openSearchList = openSearchList.OrderBy(SiteForPathfinding => SiteForPathfinding.distanceToStart).ToList();
+				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
+				Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
+				SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
 
-				// We select the site that is closest, and get him out of the list; and we add him to the "closed" list.
-				SiteForPathfinding siteToClose = openSearchList[0];
-				openSearchList.RemoveAt(0);
-				closedSearchList.Add(siteToClose);
-
-				// ModelCore.UI.WriteLine("Looking at site " + siteToClose.site.Location);
-
-				// We look at each of its neighbours that have a road on them.
+				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site, true))
 				{
-					// ModelCore.UI.WriteLine("Looking at neighbour " + neighbourToOpen.Location);
-					// For each, we check if they are not already in the open/closed list. If so, we select them.
-					SiteForPathfinding neighbourToOpenAsPathfinding = new SiteForPathfinding(neighbourToOpen);
-					if (closedSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen) != null)
+					// We get the neighbour as a SiteForPathfinding object
+					SiteForPathfinding neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
+
+					// We don't consider the neighbour if it is closed.
+					if (!neighbourToOpenAsPathfinding.isClosed)
 					{
-						neighbourToOpenAsPathfinding = closedSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen);
-					}
-					else if (openSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen) != null)
-					{
-						neighbourToOpenAsPathfinding = openSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen);
-					}
-					// If they are not already in the open/closed list, we put them in the open list.
-					else { openSearchList.Add(neighbourToOpenAsPathfinding); }
-					// If the distance to start have never been calculated (= double.PositiveInfinity), we calculate it
-					// We also add the current site as predecessor.
-					if (neighbourToOpenAsPathfinding.distanceToStart == double.PositiveInfinity)
-					{
-						neighbourToOpenAsPathfinding.predecessor = siteToClose;
-						// ModelCore.UI.WriteLine("Checking a distance to start (Site not opened)...");
-						neighbourToOpenAsPathfinding.distanceToStart = neighbourToOpenAsPathfinding.FindDistanceToStart(startingSiteAsPathfinding);
-						// ModelCore.UI.WriteLine("Distance checked.");
-					}
-					// If this neighbour was already open, and if he is not the predecessor of this very site
-					else if (neighbourToOpenAsPathfinding != siteToClose.predecessor)
-					{
-						// We calculate the distance to start if the current site was used as predecessor.
-						SiteForPathfinding predecessorWeMightKeep = neighbourToOpenAsPathfinding.predecessor;
-						neighbourToOpenAsPathfinding.predecessor = siteToClose;
-						// ModelCore.UI.WriteLine("Checking a distance to start (site already opened)...");
-						double distanceThroughtNodeToClose = neighbourToOpenAsPathfinding.FindDistanceToStart(startingSiteAsPathfinding);
-						// ModelCore.UI.WriteLine("Distance checked.");
-						// If this distance is smaller, he then becomes the predecessor.
-						if (distanceThroughtNodeToClose < neighbourToOpenAsPathfinding.distanceToStart) { neighbourToOpenAsPathfinding.distanceToStart = distanceThroughtNodeToClose; }
-						else { neighbourToOpenAsPathfinding.predecessor = predecessorWeMightKeep; }
+						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+						// from the node to close + the cost between it and the neighbor.
+						double newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (newDistanceToStart < neighbourToOpenAsPathfinding.distanceToStart)
+						{
+							neighbourToOpenAsPathfinding.distanceToStart = newDistanceToStart;
+							neighbourToOpenAsPathfinding.predecessor = siteToClose;
+							neighbourToOpenAsPathfinding.isOpen = true;
+							openSearchList.Add(neighbourToOpenAsPathfinding);
+						}
+
+						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
+						// is connected to such a place. If so, we can stop the search.
+						haveWeFoundPlaceToPutWood = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
+						if (haveWeFoundPlaceToPutWood) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
 					}
 
-					// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
-					// is connected to such a place. If so, we can stop the search.
-					haveWeFoundPlaceToPutWood = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
-					if (haveWeFoundPlaceToPutWood) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
 				}
-				// ModelCore.UI.WriteLine("Closing the site.");
+
 				// Now that we have checked all of its neighbours, we can close the current node.
-				closedSearchList.Add(siteToClose);
+				siteToClose.isClosed = true;
+				exploredRoadsList.Add(siteToClose);
+				openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
+				siteToClose.isOpen = false;
 			}
 			// ModelCore.UI.WriteLine("Dijkstra search is over.");
 
 			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
-			// We can now retrieve the list of the sites that
-			// are the least cost path, and make sure that all of these site are indicated as connected to a place where we can make wood go.
+			// We can now retrieve the list of the sites that are the least cost path, and make sure that all of these site are indicated as 
+			// connected to a place where we can make wood go.
 			if (haveWeFoundPlaceToPutWood)
 			{
-				closedSearchList.AddRange(openSearchList);
-				foreach (SiteForPathfinding site in closedSearchList) { SiteVars.RoadsInLandscape[site.site].isConnectedToSawMill = true; }
+				exploredRoadsList.AddRange(openSearchList);
+				foreach (SiteForPathfinding site in exploredRoadsList) { SiteVars.RoadsInLandscape[site.site].isConnectedToSawMill = true; }
 			}
 
 			// Whatever happens, we give back an indication that we found - or not - a place to go through the neighbors.
@@ -130,68 +162,58 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// We get the open and closed lists ready
 			List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
-			List<SiteForPathfinding> closedSearchList = new List<SiteForPathfinding>();
+			SiteForPathfinding[,] tableOfSitesForPathFinding = CreateArrayOfSitesForPathFinding(ModelCore);
 			bool haveWeFoundARoadToConnectTo = false;
-			// Assignation made to please the gods of C# and their rules that prevent a clean initialization.
-			SiteForPathfinding startingSiteAsPathfinding = new SiteForPathfinding(startingSite);
-			SiteForPathfinding arrivalAsPathfindingSite = startingSiteAsPathfinding;
+			// Useless assignation made to please the gods of C# and their rules that prevent a clean initialization.
+			SiteForPathfinding startingSiteAsPathfinding = tableOfSitesForPathFinding[startingSite.Location.Column, startingSite.Location.Row];
+			SiteForPathfinding arrivalAsPathfindingSite = null;
 
-			// We put the first site in the open list
+			// We put the first site in the open list and give it the proper starting distance.
+			startingSiteAsPathfinding.distanceToStart = 0;
 			openSearchList.Add(startingSiteAsPathfinding);
 
 			// We loop until the list is ready, or when we found what we're looking for
 			while (openSearchList.Count > 0 && !haveWeFoundARoadToConnectTo)
 			{
-				// We sort the sites on the open list according to their distance to start
-				openSearchList = openSearchList.OrderBy(SiteForPathfinding => SiteForPathfinding.distanceToStart).ToList();
-
-				// We select the site that is closest, and get him out of the list; and we add him to the "closed" list.
-				SiteForPathfinding siteToClose = openSearchList[0];
-				openSearchList.RemoveAt(0);
-				closedSearchList.Add(siteToClose);
+				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
+				Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
+				SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
 
 				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site, false))
 				{
-					// For each, we check if they are not already in the open/closed list. If so, we select them.
-					SiteForPathfinding neighbourToOpenAsPathfinding = new SiteForPathfinding(neighbourToOpen);
-					if (closedSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen) != null)
+					// We get the neighbour as a SiteForPathfinding object
+					SiteForPathfinding neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
+
+					// We don't consider the neighbour if it is closed.
+					if (!neighbourToOpenAsPathfinding.isClosed)
 					{
-						neighbourToOpenAsPathfinding = closedSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen);
-					}
-					else if (openSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen) != null)
-					{
-						neighbourToOpenAsPathfinding = openSearchList.Find(SiteForPathfinding => SiteForPathfinding.site == neighbourToOpen);
-					}
-					// If they are not already in the open/closed list, we put them in the open list.
-					else { openSearchList.Add(neighbourToOpenAsPathfinding); }
-					// If the distance to start have never been calculated (= double.PositiveInfinity), we calculate it
-					// We also add the current site as predecessor.
-					if (neighbourToOpenAsPathfinding.distanceToStart == double.PositiveInfinity)
-					{
-						neighbourToOpenAsPathfinding.predecessor = siteToClose;
-						neighbourToOpenAsPathfinding.distanceToStart = neighbourToOpenAsPathfinding.FindDistanceToStart(startingSiteAsPathfinding);
-					}
-					// If this neighbour was already open, and if he is not the predecessor of this very site
-					else if (neighbourToOpenAsPathfinding != siteToClose.predecessor)
-					{
-						// We calculate the distance to start if the current site was used as predecessor.
-						SiteForPathfinding predecessorWeMightKeep = neighbourToOpenAsPathfinding.predecessor;
-						neighbourToOpenAsPathfinding.predecessor = siteToClose;
-						double distanceThroughtNodeToClose = neighbourToOpenAsPathfinding.FindDistanceToStart(startingSiteAsPathfinding);
-						// If this distance is smaller, he then becomes the predecessor.
-						if (distanceThroughtNodeToClose < neighbourToOpenAsPathfinding.distanceToStart) { neighbourToOpenAsPathfinding.distanceToStart = distanceThroughtNodeToClose; }
-						else { neighbourToOpenAsPathfinding.predecessor = predecessorWeMightKeep; }
+						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+						// from the node to close + the cost between it and the neighbor.
+						double newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (newDistanceToStart < neighbourToOpenAsPathfinding.distanceToStart)
+						{
+							neighbourToOpenAsPathfinding.distanceToStart = newDistanceToStart;
+							neighbourToOpenAsPathfinding.predecessor = siteToClose;
+							neighbourToOpenAsPathfinding.isOpen = true;
+							openSearchList.Add(neighbourToOpenAsPathfinding);
+						}
+
+						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
+						// is connected to such a place. If so, we can stop the search.
+						haveWeFoundARoadToConnectTo = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
+						if (haveWeFoundARoadToConnectTo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
 					}
 
-					// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
-					// is connected to such a place. If so, we can stop the search.
-					haveWeFoundARoadToConnectTo = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
-					if (haveWeFoundARoadToConnectTo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
 				}
 
 				// Now that we have checked all of its neighbours, we can close the current node.
-				closedSearchList.Add(siteToClose);
+				siteToClose.isClosed = true;
+				openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
+				siteToClose.isOpen = false;
 			}
 			// ModelCore.UI.WriteLine("Dijkstra search is over.");
 
