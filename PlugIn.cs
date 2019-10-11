@@ -144,24 +144,35 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
 			else if (this.harvestExtensionDetected)
 			{
-				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 				int roadConstructedAtThisTimestep = 0;
 
 				// We get all of the sites for which a road must be constructed
+				modelCore.UI.WriteLine("  Getting sites recently harvested...");
 				List<Site> listOfHarvestedSites = MapManager.GetAllRecentlyHarvestedSites(ModelCore, Timestep);
 
 				// We shuffle the list according to the heuristic given by the user.
+				modelCore.UI.WriteLine("  Shuffling sites according to the heuristic...");
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
+
+				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
+				int i = 1;
 
 				foreach (Site site in listOfHarvestedSites)
 				{
 					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
 					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, site))
 					{
+						modelCore.UI.WriteLine("  Creation of a road to site at location : " + site.Location);
 						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
-						listOfSitesWithRoads.Add(site);
 						roadConstructedAtThisTimestep++;
+						modelCore.UI.WriteLine("  Road created !");
 					}
+					else
+					{
+						modelCore.UI.WriteLine("  Site at location " + site.Location + " was already near a road. No road constructed.");
+					}
+					modelCore.UI.WriteLine("  Sites remaining : " + (listOfHarvestedSites.Count - i));
+					i++;
 				}
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 			}

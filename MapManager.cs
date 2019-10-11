@@ -480,6 +480,25 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// Gets the coordinates of sites and put it into an array of coordinates. This function is used to feed the kdTree search functions.
+		/// </summary>
+		/// /// <param name="listOfSites">
+		/// The list of sites to get the coordinates from.
+		/// </param>
+		public static double[][] GetSitesCoordinates(List<Site> listOfSites)
+		{
+			var data = new List<double[]>();
+
+			foreach (Site site in listOfSites)
+			{
+				// The coordinates will have the format row, column; that's the one LANDIS-II uses for some of its functions.
+				data.Add(new double[] { (double)site.Location.Row, (double)site.Location.Column });
+			}
+
+			return (data.ToArray());
+		}
+
+		/// <summary>
 		/// Shuffle a list of given sites according to their distance to the closest road, and the heuristic given by the user.
 		/// </summary>
 		/// <returns>
@@ -497,27 +516,51 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static List<Site> ShuffleAccordingToHeuristic(ICore ModelCore, List<Site> listOfSites, string heuristic)
 		{
 			List<Site> shuffledListOfSites = new List<Site>();
-			List<Site> listOfSitesWithRoads = new List<Site>();
 
+			// If the heuristic is random, we just randomly shuffle the list of sites.
 			if (heuristic == "Random")
 			{
 				Random random = new Random();
 				listOfSites = listOfSites.OrderBy(site => random.Next()).ToList();
 			}
-			else if (heuristic == "Closestfirst")
+			// If not, we are going to construct a kdTree to make quick searches about the closest road to each given site, in order to order them afterward.
+			else
 			{
-				// We update the list of sites with roads that we used before; but we want only the connected sites inside of it.
-				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-				// We use it to find the distance to the nearest road for each cell
-				shuffledListOfSites = listOfSites.OrderBy(site => MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site, true)).ToList();
+				// To create the tree, we need the sites with roads on them; their coordinates in a array; and the function used to compare
+				// two sets of coordinates, which will be the euclidian distance.
+				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				double[][] coordinnatesOfSitesWithRoads = MapManager.GetSitesCoordinates(listOfSitesWithRoads);
+				Func<double[], double[], double> L2Norm = (x, y) =>
+				{
+					double dist = 0;
+					for (int i = 0; i < x.Length; i++)
+					{
+						dist += (x[i] - y[i]) * (x[i] - y[i]);
+					}
+
+					return dist;
+				};
+				var searchTree = new Supercluster.KDTree.KDTree<double, Site>(2, coordinnatesOfSitesWithRoads, listOfSitesWithRoads.ToArray(), L2Norm);
+
+				// Now that the tree is made, we calculate the distances and sort according to each heuristic.
+				if (heuristic == "Closestfirst")
+				{
+					// Buckle up, cause this is a complex Link function. We ask to order the sites according to a value linked to a given site of the list;
+					// This value is the euclidian distance (L2Norm function) between a double[] containing the coordinates of the sites, and a double[] containing
+					// the coordinates of the closest site found via the kdtree search. The search needs the same double[] coordinates of the given site, and return
+					// a list of tuples where each tuple contains the coordinates of the closest site, and the site object. Complex, but it works fast.
+					shuffledListOfSites = listOfSites.OrderBy(site => L2Norm(new double[] { (double)site.Location.Row, (double)site.Location.Column },
+						searchTree.NearestNeighbors(new double[] { (double)site.Location.Row, (double)site.Location.Column }, 1)[0].Item1)).ToList();
+				}
+				else if (heuristic == "Farthestfirst")
+				{
+					// Same thing, but in reverse order.
+					shuffledListOfSites = listOfSites.OrderByDescending(site => L2Norm(new double[] { (double)site.Location.Row, (double)site.Location.Column },
+						searchTree.NearestNeighbors(new double[] { (double)site.Location.Row, (double)site.Location.Column }, 1)[0].Item1)).ToList();
+				}
+				else throw new Exception("Heuristic non recognized");
+
 			}
-			else if (heuristic == "Farthestfirst")
-			{
-				// Same thing, but in reverse order.
-				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-				shuffledListOfSites = listOfSites.OrderByDescending(site => MapManager.DistanceToNearestRoad(listOfSitesWithRoads, site, true)).ToList();
-			}
-			else throw new Exception("Heuristic non recognized");
 
 			return (shuffledListOfSites);
 		}
