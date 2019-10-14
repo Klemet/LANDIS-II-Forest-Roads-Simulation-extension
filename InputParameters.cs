@@ -61,6 +61,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// INPUT RASTERS AND COST PARAMETERS
 
 		/// <summary>
+		/// Path of the raster file containing the zones of the landscape where roads can be built
+		/// </summary>
+		string ZonesForRoadCreation
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Path of the raster file containing the initial road network
 		/// </summary>
 		string InitialRoadNetworkMap
@@ -233,6 +241,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private string outputsOfRoadNetworkMaps;
 		private string outputsOfRoadLog;
 
+		private string zonesForRoadCreation;
 		private string initialRoadNetworkMap;
 		private int distanceCost;
 		private string coarseElevationRaster;
@@ -353,6 +362,25 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		// ------------------------------------------------------------------------------
 		// INPUT RASTERS AND COST PARAMETERS
+
+		/// <summary>
+		/// Path of the raster file containing the zones where the roads can be built.
+		/// </summary>
+		public string ZonesForRoadCreation
+		{
+			get
+			{
+				return zonesForRoadCreation;
+			}
+			set
+			{
+				if (value != null)
+				{
+					zonesForRoadCreation = value;
+				}
+				else throw new InputValueException(value.ToString(), "A correct path to a file must be given");
+			}
+		}
 
 		/// <summary>
 		/// Path of the raster file containing the initial road network

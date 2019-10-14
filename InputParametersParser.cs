@@ -75,6 +75,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// ------------------------------------------------------------------------------
 			// INPUT RASTERS AND COST PARAMETERS
 
+			// We read the raster containing the zones where the roads can be built.
+			InputVar<string> ZonesForRoadCreation = new InputVar<string>("RasterOfBuildableZones");
+			ReadVar(ZonesForRoadCreation);
+			parameters.InitialRoadNetworkMap = ZonesForRoadCreation.Value;
+			MapManager.ReadMap(ZonesForRoadCreation.Value, "ZonesForRoadCreation");
+
 			// On lit le raster initial des routes
 			InputVar<string> InitialRoadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
 			ReadVar(InitialRoadNetworkMap);

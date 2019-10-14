@@ -75,7 +75,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On charge les paramêtres du fichier .txt
 			InputParameterParser parser = new InputParameterParser();
 			parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
-			modelCore.UI.WriteLine("  Parameters of the Forest Roads Simulation Extension are loaded");
+			modelCore.UI.WriteLine("   Parameters of the Forest Roads Simulation Extension are loaded");
 
 			// For debugging purposes
 			// InputParameterParser.DisplayParameters(ModelCore, this.parameters);
@@ -125,11 +125,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				modelCore.UI.WriteLine("   Initializing the road network...");
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
+				// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
+				skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
+				modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
+				// We also initialize the "cost raster" on which the path of our roads will be based.
+				MapManager.CreateCostRaster();
+				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
 			}
 			modelCore.UI.WriteLine("   Initialization of the Forest Roads Simulation Extension is done");
-			// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
-			skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
-			modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
+
 		}
 
 		public override void Run()
@@ -144,8 +148,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
 			else if (this.harvestExtensionDetected)
 			{
-				int roadConstructedAtThisTimestep = 0;
-
 				// We get all of the sites for which a road must be constructed
 				modelCore.UI.WriteLine("  Getting sites recently harvested...");
 				List<Site> listOfHarvestedSites = MapManager.GetAllRecentlyHarvestedSites(ModelCore, Timestep);
@@ -155,26 +157,26 @@ namespace Landis.Extension.ForestRoadsSimulation
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
 
 				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
-				int i = 1;
+				modelCore.UI.WriteLine("  Generating roads to harvested sites...");
+				var progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
+				var watch = System.Diagnostics.Stopwatch.StartNew();
+				int roadConstructedAtThisTimestep = 0;
 
-				foreach (Site site in listOfHarvestedSites)
+				foreach (Site harvestedSite in listOfHarvestedSites)
 				{
 					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
-					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, site))
+					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, harvestedSite))
 					{
-						modelCore.UI.WriteLine("  Creation of a road to site at location : " + site.Location);
-						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
+						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
 						roadConstructedAtThisTimestep++;
-						modelCore.UI.WriteLine("  Road created !");
 					}
-					else
-					{
-						modelCore.UI.WriteLine("  Site at location " + site.Location + " was already near a road. No road constructed.");
-					}
-					modelCore.UI.WriteLine("  Sites remaining : " + (listOfHarvestedSites.Count - i));
-					i++;
+
+					progressBar.IncrementWorkDone(1);
 				}
+
+				watch.Stop();
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
+				Console.Write("The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 			}
 
 				// On écrit la carte output du réseau de routes

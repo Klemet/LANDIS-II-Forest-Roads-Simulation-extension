@@ -11,6 +11,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	public static class SiteVars
 	{
+		// Variable that indicates the zones where roads can be built
+		private static SiteVarDistinct<int> buildableZones;
 		// Variable that indicates what road is in this site
 		private static SiteVarDistinct<RoadType> roadsInLandscape;
 		// Variables relative to different characteristics of sites :
@@ -31,6 +33,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// CAREFULL : By default, LANDIS-II creates variables where the inactive sites all have the same value !
 			// For our variable to work on inactive sites, we have to tell him to create a variable with distinct values
 			// for every inactive site
+			buildableZones = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
 			roadsInLandscape = (SiteVarDistinct<RoadType>)PlugIn.ModelCore.Landscape.NewSiteVar<RoadType>(InactiveSiteMode.DistinctValues);
 			coarseElevation = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
 			fineElevation = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
@@ -43,6 +46,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		//---------------------------------------------------------------------
+
+		public static SiteVarDistinct<int> BuildableZones
+		{
+			get
+			{
+				return buildableZones;
+			}
+		}
 
 		public static SiteVarDistinct<RoadType> RoadsInLandscape
 		{

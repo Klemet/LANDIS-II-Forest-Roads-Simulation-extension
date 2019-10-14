@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
+      <HintPath>packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
+    </Reference>
     <Reference Include="Landis.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.Core.2.0.0\lib\netstandard2.0\Landis.Core.dll</HintPath>
     </Reference>

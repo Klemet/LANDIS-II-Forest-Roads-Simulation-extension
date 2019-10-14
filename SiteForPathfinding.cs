@@ -12,7 +12,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 	/// <summary>
 	/// A class made to help the Dijkstra algorithm to be simpler. See "DijkstraSearch" class for use.
 	/// </summary>
-	class SiteForPathfinding
+	public class SiteForPathfinding : IComparable<SiteForPathfinding>
 	{
 		public Site site;
 		public double distanceToStart;
@@ -116,48 +116,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </param>
 		public double CostOfTransition(Site otherSite)
 		{
-			// First, we initialize the cost; it is based on the cost raster created during the initialization of the plugin,
-			// and who already contains infos about the basic cost, the coarse water cost, the fine water cost, existing roads
-			// and the soil cost. As it is expressed for the crossing of one site, we put it as a mean between the two (this way,
-			// the cost of transition is like crossing half of a site, and half of the other).
+			// The cost of transition is half the transition in this pixel, and half the transition in the other, as we're going from centroid to centroid.
 			double cost = (SiteVars.CostRaster[this.site] + SiteVars.CostRaster[otherSite])/2 ;
 
-
-			// We add the cost associated with coarse elevation if there was an input of a coarse elevation raster
-			if (PlugIn.Parameters.CoarseElevationRaster != "none")
-				cost += (Math.Abs(SiteVars.CoarseElevation[this.site] - SiteVars.CoarseElevation[otherSite]) * PlugIn.Parameters.CoarseElevationCost);
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with coarse elevation is : " + cost);
-
-			// We multiply with the fine elevation cost if there was a input of fine elevation raster The fine elevation value is the mean of the value for both sites.
-			if (PlugIn.Parameters.FineElevationRaster != "none")
-				cost = cost * ElevationCostRanges.GetMultiplicativeValue((SiteVars.FineElevation[this.site] + SiteVars.FineElevation[otherSite])/2);
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with fine elevation is : " + cost);
-
-			// But if the other site has a road a it, then it's half price ! And if the current site has a road on it, it's free !
-			if (SiteVars.RoadsInLandscape[otherSite].IsARoad)
-			{
-				if (SiteVars.RoadsInLandscape[this.site].IsARoad) cost = 0;
-				else cost = cost * 0.5;
-			}
-			else if (SiteVars.RoadsInLandscape[this.site].IsARoad) cost = cost * 0.5;
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with existing roads is : " + cost);
-
-			// We influence the cost of transition according to the position of the othersite
-			// If they share the same row or the same column, then the othersite isn't in a diagonal
-			// If not, they are in diagonal, and the score is multiplied by the square root of 2.
+			// We multiply the cost according to the distance (diagonal or not)
 			if (otherSite.Location.Row != this.site.Location.Row && otherSite.Location.Column == this.site.Location.Column) cost = cost * Math.Sqrt(2.0);
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition with diagonal or not is : " + cost);
-
-			// PlugIn.ModelCore.UI.WriteLine("Cost of transition is finally : " + cost);
 
 			return (cost);
 		}
 
-
-
+		/// <summary>
+		/// A function to compare two sites for the priority queue in the dijkstra algorithm. If one of the two sites has a smaller distance to start than the other, then it has a bigger priority.
+		/// </summary>
+		/// <param name="other">The other site to compare this one too.</param>
+		public int CompareTo(SiteForPathfinding other)
+		{
+			if (other.distanceToStart > this.distanceToStart) { return (-1); }
+			else if (other.distanceToStart < this.distanceToStart) { return (1); }
+			else { return (0); }
+		}
 	}
 }
