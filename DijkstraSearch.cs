@@ -12,7 +12,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	class DijkstraSearch
 	{
-		/// <summary>
 		/// Create an array of SiteForPathfinding objects, which are sites with additonal information to facilitate pathfinding.
 		/// This resulting array can be used in dijkstra searches to avoid looking into lists to check if sites are "opened" or "closeed" by the algorithm.
 		/// The resulting array have for dimensions [columns (x axis), rows (y axis)] of the LANDIS-II landscape.
@@ -101,8 +100,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// We get the neighbour as a SiteForPathfinding object
 					SiteForPathfinding neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
 
-					// We don't consider the neighbour if it is closed.
-					if (!neighbourToOpenAsPathfinding.isClosed)
+					// We don't consider the neighbour if it is closed, or if its cost in the cost raster is negative (meaning he's on a zone where we can't build roads)
+					if (!neighbourToOpenAsPathfinding.isClosed || SiteVars.CostRaster[neighbourToOpen] < 0)
 					{
 						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
 						// from the node to close + the cost between it and the neighbor.
@@ -160,81 +159,131 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </param>
 		public static void DijkstraLeastCostPathToClosestConnectedRoad(ICore ModelCore, Site startingSite)
 		{
+			// Measures of time
+			long timeForFrontierRetrieval = 0;
+			long timeForneighbourOpening = 0;
+			long timeForEnding = 0;
+
+			// We initialize the dictionnaries that are going to be used during the search
+			var distanceToStart = new Dictionary<Site, double>();
+			var predecessors = new Dictionary<Site, Site>();
+			var isClosed = new Dictionary<Site, bool>();
+			var isOpen = new Dictionary<Site, bool>();
+
 			// We get the open and closed lists ready
-			List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
-			SiteForPathfinding[,] tableOfSitesForPathFinding = CreateArrayOfSitesForPathFinding(ModelCore);
+			// List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
+			C5.IntervalHeap<Site> frontier = new C5.IntervalHeap<Site>(new comparerOfSites(distanceToStart));
 			bool haveWeFoundARoadToConnectTo = false;
-			// Useless assignation made to please the gods of C# and their rules that prevent a clean initialization.
-			SiteForPathfinding startingSiteAsPathfinding = tableOfSitesForPathFinding[startingSite.Location.Column, startingSite.Location.Row];
-			SiteForPathfinding arrivalAsPathfindingSite = null;
+			// Fake assignation to please the capricious gods of C#
+			Site arrival = startingSite;
 
 			// We put the first site in the open list and give it the proper starting distance.
-			startingSiteAsPathfinding.distanceToStart = 0;
-			openSearchList.Add(startingSiteAsPathfinding);
+			distanceToStart[startingSite] = 0;
+			// openSearchList.Add(startingSiteAsPathfinding);
+			frontier.Add(startingSite);
 
 			// We loop until the list is ready, or when we found what we're looking for
-			while (openSearchList.Count > 0 && !haveWeFoundARoadToConnectTo)
+			while (frontier.Count > 0)
 			{
+				var watch = System.Diagnostics.Stopwatch.StartNew();
 				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
-				Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
-				SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
+				// Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
+				// SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
+				Site siteToClose = frontier.FindMin();
+				frontier.DeleteMin();
+				watch.Stop();
+				timeForFrontierRetrieval += watch.ElapsedTicks;
 
+				watch.Restart();
 				// We look at each of its neighbours, road on them or not.
-				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site, false))
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose, false))
 				{
-					// We get the neighbour as a SiteForPathfinding object
-					SiteForPathfinding neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
 
-					// We don't consider the neighbour if it is closed.
-					if (!neighbourToOpenAsPathfinding.isClosed)
+					// We don't consider the neighbour if it is closed, or if its cost in the cost raster is negative (meaning he's on a zone where we can't build roads)
+					if (!isClosed.ContainsKey(neighbourToOpen) || SiteVars.CostRaster[neighbourToOpen] >= 0)
 					{
 						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
 						// from the node to close + the cost between it and the neighbor.
-						double newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
+						double newDistanceToStart = distanceToStart[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
 
 						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
 						// this node to close will become its predecessor, and its distance to start will become this one.
-						if (newDistanceToStart < neighbourToOpenAsPathfinding.distanceToStart)
+						if (!distanceToStart.ContainsKey(neighbourToOpen) || newDistanceToStart < distanceToStart[neighbourToOpen])
 						{
-							neighbourToOpenAsPathfinding.distanceToStart = newDistanceToStart;
-							neighbourToOpenAsPathfinding.predecessor = siteToClose;
-							neighbourToOpenAsPathfinding.isOpen = true;
-							openSearchList.Add(neighbourToOpenAsPathfinding);
+							distanceToStart[neighbourToOpen] = newDistanceToStart;
+							predecessors[neighbourToOpen] = siteToClose;
+							isOpen[neighbourToOpen] = true;
+							// openSearchList.Add(neighbourToOpenAsPathfinding);
+							frontier.Add(neighbourToOpen);
 						}
 
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
-						haveWeFoundARoadToConnectTo = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
-						if (haveWeFoundARoadToConnectTo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
+						if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { arrival = neighbourToOpen; haveWeFoundARoadToConnectTo = true;  goto End; }
 					}
 
 				}
 
+				watch.Stop();
+				timeForneighbourOpening += watch.ElapsedTicks;
 				// Now that we have checked all of its neighbours, we can close the current node.
-				siteToClose.isClosed = true;
-				openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
-				siteToClose.isOpen = false;
+				isClosed[siteToClose] = true;
+				// openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
+				isOpen[siteToClose] = false;
 			}
-			// ModelCore.UI.WriteLine("Dijkstra search is over.");
 
+			End:
+			// ModelCore.UI.WriteLine("Dijkstra search is over.");
+			var watch2 = System.Diagnostics.Stopwatch.StartNew();
 			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
 			// We can now retrieve the list of the sites that
 			// are the least cost path, and make sure that all of these site now have a road constructed on them, and that it is
 			// indicated as connected to a place where we can make wood go.
 			if (haveWeFoundARoadToConnectTo)
 			{
-				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
+				List<Site> listOfSitesInLeastCostPath = MapManager.FindPathToStart(startingSite, arrival, predecessors);
 				foreach (Site site in listOfSitesInLeastCostPath)
 				{
 					// If there is no road on this site, we construct it.
 					if (!SiteVars.RoadsInLandscape[site].IsARoad) SiteVars.RoadsInLandscape[site].typeNumber = 7;
-					// Whatever it is, we indicate it as connected.
+					// Whatever it is, we indicate it as connected and that the cost of constructing on it is now 0.
+					SiteVars.CostRaster[site] = 0;
 					SiteVars.RoadsInLandscape[site].isConnectedToSawMill = true;
 				}
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect two sites. This isn't supposed to happen.");
+
+			watch2.Stop();
+			timeForEnding += watch2.ElapsedTicks;
+
+			long totalTime = timeForEnding + timeForFrontierRetrieval + timeForneighbourOpening;
+			PlugIn.ModelCore.UI.WriteLine("Total time : " + totalTime);
+			PlugIn.ModelCore.UI.WriteLine("timeForFrontierRetrieval : " + timeForFrontierRetrieval);
+			PlugIn.ModelCore.UI.WriteLine("timeForneighbourOpening : " + timeForneighbourOpening);
+			PlugIn.ModelCore.UI.WriteLine("timeForEnding: " + timeForEnding);
+			PlugIn.ModelCore.UI.WriteLine("Road is done. Time taken :\n Time for frontier retrival : " + (double)((double)timeForFrontierRetrieval/(double)totalTime)*100.000 
+				+ "% ; \n Time for neighbour opening : " + (double)((double)timeForneighbourOpening / (double)totalTime)*100.000 + "% ; \n Time for ending : " + (double)((double)timeForEnding / (double)totalTime)*100.000 + "%");
 		}
 
 
 	}
+
+	public class comparerOfSites : IComparer<Site>
+	{
+		private Dictionary<Site, double> distanceToStart;
+
+		public comparerOfSites(Dictionary<Site, double> distanceToStart)
+		{
+			this.distanceToStart = distanceToStart;
+		}
+
+		int IComparer<Site>.Compare(Site site, Site otherSite)
+		{
+			if (distanceToStart[otherSite] > distanceToStart[site]) { return (-1); }
+			else if (distanceToStart[otherSite] < distanceToStart[site]) { return (1); }
+			else { return (0); }
+		}
+
+	}
+
 }

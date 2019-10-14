@@ -1,4 +1,4 @@
-//  Author: Clément Hardy
+﻿//  Author: Clément Hardy
 // With mant elements shamelessely copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
@@ -612,6 +612,64 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 			return (shuffledListOfSites);
+		}
+
+		/// <summary>
+		/// Calculate the cost of going from a site to another.
+		/// </summary>
+		/// <returns>
+		/// A double which is the cost of transition.
+		/// </returns>
+		/// /// <param name="otherSite">
+		/// The other site where we want to go to.
+		/// </param>
+		public static double CostOfTransition(Site site, Site otherSite)
+		{
+			// The cost of transition is half the transition in this pixel, and half the transition in the other, as we're going from centroid to centroid.
+			double cost = (SiteVars.CostRaster[site] + SiteVars.CostRaster[otherSite]) / 2;
+
+			// We multiply the cost according to the distance (diagonal or not)
+			if (otherSite.Location.Row != site.Location.Row && otherSite.Location.Column == site.Location.Column) cost = cost * Math.Sqrt(2.0);
+
+			return (cost);
+		}
+
+		/// <summary>
+		/// This function retrieves the list of sites that are used in a least-cost path
+		/// to go back to the starting site. Best used if the current site is the goal that
+		/// have been reached.
+		/// </summary>
+		/// <returns>
+		/// A list of sites that are the least-cost path. The list will not contain the current
+		/// site, as it is the goal.
+		/// </returns>
+		/// /// <param name="startingSite">
+		/// The starting site of the search.
+		/// </param>
+		public static List<Site> FindPathToStart(Site startingSite, Site givenSite, Dictionary<Site, Site> predecessors)
+		{
+			List<Site> ListOfSitesInThePath = new List<Site>();
+			Site currentSite = givenSite;
+			Site nextPredecessor;
+			bool foundStartingSite = false;
+			// Case of this node being the starting site (you never know)
+			// so as to avoid potential errors.
+			if (givenSite.Location == startingSite.Location) { foundStartingSite = true; nextPredecessor = currentSite; }
+			else nextPredecessor = predecessors[givenSite];
+
+			while (!foundStartingSite)
+			{
+
+				ListOfSitesInThePath.Add(nextPredecessor);
+				if (nextPredecessor.Location == startingSite.Location) foundStartingSite = true;
+				else
+				{
+					currentSite = nextPredecessor;
+					nextPredecessor = predecessors[currentSite];
+				}
+			}
+
+			return (ListOfSitesInThePath);
 		}
 
 	}
