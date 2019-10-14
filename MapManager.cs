@@ -1,4 +1,4 @@
-﻿//  Author: Clément Hardy
+//  Author: Clément Hardy
 // With mant elements shamelessely copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
@@ -26,7 +26,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// If the parameter "none" has been given, and if we are talking about an optional raster,
 			// then all of the values for the site will be filled with the default value.
-			if (variableName != "InitialRoadNetworkMap")
+			if (variableName != "ZonesForRoadCreation" && variableName != "InitialRoadNetworkMap")
 			{
 				if (path == "none" || path == "None" || path == "" || path == null)
 				{
@@ -84,7 +84,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// To deal with problems of distorted No Value Data in rasters, which happen often
 					if (pixelValue < 0) pixelValue = 0;
 
-					if (variableName == "InitialRoadNetworkMap") SiteVars.RoadsInLandscape[site] = new RoadType(pixelValue);
+					if (variableName == "ZonesForRoadCreation") SiteVars.BuildableZones[site] = pixelValue;
+					else if (variableName == "InitialRoadNetworkMap") SiteVars.RoadsInLandscape[site] = new RoadType(pixelValue);
 					else if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = pixelValue;
 					else if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = pixelValue;
 					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
@@ -140,16 +141,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		// Cette fonction va écrire la carte à l'endroit donné par "Path" (qui contient le nom du fichier .tif auquel on va rajouter le timestep).
 		// Cette carte va contenir le réseau routier actuel au timestep donné
-		public static void WriteMap(string path, ICore ModelCore)
+		public static void WriteMap(string path, ICore ModelCore, string mapType = "roads")
 		{
 			// On écrit la carte output du réseau de routes
-			path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif");
+			if (mapType == "roads") { path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif"); }
+			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
 			using (IOutputRaster<BytePixel> outputRaster = ModelCore.CreateRaster<BytePixel>(path, ModelCore.Landscape.Dimensions))
 			{
 				BytePixel pixel = outputRaster.BufferPixel;
 				foreach (Site site in ModelCore.Landscape.AllSites)
 				{
-					pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
+					if (mapType == "roads")
+					{
+						pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
+					}
+					else if (mapType == "costRaster")
+					{
+						pixel.MapCode.Value = (byte)SiteVars.CostRaster[site];
+					}
 
 					outputRaster.WriteBufferPixel();
 				}
@@ -157,49 +166,92 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// This function gets the highest slope between a site and its neighbors. WARNING : Should be used only for sites that have an elevation value associated to them.
+		/// </summary>
+		public static double GetHighestSlopeAmongstNeighbors(Site site)
+		{
+			double highestSlope = 0;
+
+			foreach (Site neighbor in MapManager.GetNeighbouringSites(site, false))
+			{
+				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row),2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2));
+
+				double elevationDifference = Math.Abs(SiteVars.CoarseElevation[site] - SiteVars.CoarseElevation[neighbor]);
+
+				double slope = (elevationDifference / horizontalDistance) * 100;
+
+				if (slope > highestSlope) { highestSlope = slope; }
+			}
+
+			return (highestSlope);
+		}
+
+		/// <summary>
 		/// This function exists to create a cost raster based on each site of the landscape that contains a part of the information of the cost of construction of roads in the landscape.
 		/// It is made so as to optimize the pathfinding process, because it has to calculate cost of transition from one cell to another a very large number of time. The more those calculation
 		/// are made in advance, the better.
 		/// </summary>
-		public static void CreateNonElevationCostRaster()
+		public static void CreateCostRaster()
 		{
 			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 			{
-				// First, we initialize the cost
-				double cost = 0;
+				// First of all; if the pixel is in a non-buildable zone, the cost is negative. No road will be created on this cell.
+				if (SiteVars.BuildableZones[site] == 0) { SiteVars.CostRaster[site] = -1; }
 
-				// we add the base cost of crossing the sites
-				cost += PlugIn.Parameters.DistanceCost;
-
-				// If there is a road on the site, then the cost of crossing this site is 0.
-				if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
-
-				// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
-				else if (PlugIn.Parameters.CoarseWaterRaster != "none")
-				{
-					if (SiteVars.CoarseWater[site] != 0) { cost = PlugIn.Parameters.CoarseWaterCost; }
-				}
-
-				// Else, we incorporate the fine water cost and the soil cost on top of the basic cost
 				else
 				{
-					// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed is expressed as a probability, depending on the length
-					// of streams in the site, and the length of a cell/site.
-					if (PlugIn.Parameters.FineWaterRaster != "none")
+					// First, we initialize the cost
+					double cost = 0;
+
+					// If there is a road on the site, then the cost of crossing this site is 0.
+					if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
+
+					// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
+					else if (PlugIn.Parameters.CoarseWaterRaster != "none")
 					{
-						cost += (SiteVars.FineWater[site] / PlugIn.ModelCore.CellLength) * PlugIn.Parameters.FineWaterCost;
+						if (SiteVars.CoarseWater[site] != 0) { cost = PlugIn.Parameters.CoarseWaterCost; }
 					}
 
-					// Finally, we add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
-					if (PlugIn.Parameters.SoilsRaster != "none")
+					// Else, we incorporate all of the other costs into the mix.
+					else
 					{
-						cost += SoilRegions.GetAdditionalValue(SiteVars.Soils[site]);
+						// we add the base cost of crossing the sites
+						cost += PlugIn.Parameters.DistanceCost;
+
+						// We add the slope cost, which depends on the highest slope towards one of the neighbours of the site.
+						if (PlugIn.Parameters.CoarseElevationRaster != "none")
+						{
+							cost += (MapManager.GetHighestSlopeAmongstNeighbors(site) * PlugIn.Parameters.CoarseElevationCost);
+						}
+
+						// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed is expressed as a probability, depending on the length
+						// of streams in the site, and the length of a cell/site.
+						if (PlugIn.Parameters.FineWaterRaster != "none")
+						{
+							cost += (SiteVars.FineWater[site] / PlugIn.ModelCore.CellLength) * PlugIn.Parameters.FineWaterCost;
+						}
+
+						// We add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
+						if (PlugIn.Parameters.SoilsRaster != "none")
+						{
+							cost += SoilRegions.GetAdditionalValue(SiteVars.Soils[site]);
+						}
+
+						// Finally, we multiply with the fine elevation cost if there was a input of fine elevation rasters. This multiplication represents a detour taken to avoid the fine topography.
+						if (PlugIn.Parameters.FineElevationRaster != "none")
+						{
+							cost = cost * ElevationCostRanges.GetMultiplicativeValue(SiteVars.FineElevation[site]);
+						}
 					}
+
+					// We associate this cost to the site
+					SiteVars.CostRaster[site] = (float)cost;
 				}
-
-				// We associate this cost to the site
-				SiteVars.CostRaster[site] = (float)cost;
 			}
+
+			// Once all of the sites are treated, we export the cost raster so that it can be seen by the user.
+			// For now, we will put it in the same folder as the ouput raster for the model
+			MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps, PlugIn.ModelCore, "costRaster");
 		}
 
 		/// <summary>
@@ -304,11 +356,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
 			{
-				Site neighbour = site.GetNeighbor(relativeNeighbour);
-				// Seems like the GetNeighbor function cannot check if the neighbour is part of the landscape. We have to check.
-				if (neighbour.Landscape == null) continue;
 				// If the neighbour site has a road in it, we can stop right there.
-				if (SiteVars.RoadsInLandscape[neighbour].IsARoad)
+				if (SiteVars.RoadsInLandscape[site.GetNeighbor(relativeNeighbour)].IsARoad)
 				{
 					isThereANearbyRoad = true;
 					break;
