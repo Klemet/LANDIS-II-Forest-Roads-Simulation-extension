@@ -162,23 +162,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On écrit la carte output du réseau de routes
 			if (mapType == "roads") { path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif"); }
 			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
-			using (IOutputRaster<BytePixel> outputRaster = ModelCore.CreateRaster<BytePixel>(path, ModelCore.Landscape.Dimensions))
+			if (mapType == "roads")
 			{
-				BytePixel pixel = outputRaster.BufferPixel;
-				foreach (Site site in ModelCore.Landscape.AllSites)
+				using (IOutputRaster<BytePixel> outputRaster = ModelCore.CreateRaster<BytePixel>(path, ModelCore.Landscape.Dimensions))
 				{
-					if (mapType == "roads")
+					BytePixel pixel = outputRaster.BufferPixel;
+					foreach (Site site in ModelCore.Landscape.AllSites)
 					{
-						pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
-					}
-					else if (mapType == "costRaster")
-					{
-						pixel.MapCode.Value = (byte)SiteVars.CostRaster[site];
-					}
 
-					outputRaster.WriteBufferPixel();
+						pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
+						outputRaster.WriteBufferPixel();
+					}
 				}
 			}
+			else if (mapType == "costRaster")
+			{
+				using (IOutputRaster<UIntPixel> outputRaster = ModelCore.CreateRaster<UIntPixel>(path, ModelCore.Landscape.Dimensions))
+				{
+					UIntPixel pixel = outputRaster.BufferPixel;
+					foreach (Site site in ModelCore.Landscape.AllSites)
+					{
+						pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
+						outputRaster.WriteBufferPixel();
+					}
+				}
+			}
+
 		}
 
 		/// <summary>
@@ -223,9 +232,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 					if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
 
 					// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
-					else if (PlugIn.Parameters.CoarseWaterRaster != "none")
+					else if (PlugIn.Parameters.CoarseWaterRaster != "none" && SiteVars.CoarseWater[site] != 0)
 					{
-						if (SiteVars.CoarseWater[site] != 0) { cost = PlugIn.Parameters.CoarseWaterCost; }
+						cost = PlugIn.Parameters.CoarseWaterCost;
 					}
 
 					// Else, we incorporate all of the other costs into the mix.

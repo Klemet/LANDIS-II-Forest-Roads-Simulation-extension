@@ -8,7 +8,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class UIntPixel : Pixel
 	{
-		public Band<uint> MapCode = "The numeric code for each raster cell";
+		public Band<int> MapCode = "The numeric code for each raster cell";
 
 		public UIntPixel()
 		{
