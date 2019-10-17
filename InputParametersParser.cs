@@ -88,7 +88,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			MapManager.ReadMap(InitialRoadNetworkMap.Value, "InitialRoadNetworkMap");
 
 			// We read the distance cost
-			InputVar<int> DistanceCost = new InputVar<int>("DistanceCost");
+			InputVar<double> DistanceCost = new InputVar<double>("DistanceCost");
 			ReadVar(DistanceCost);
 			parameters.DistanceCost = DistanceCost.Value;
 

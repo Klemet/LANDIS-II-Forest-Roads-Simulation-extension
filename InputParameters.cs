@@ -79,7 +79,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// The basic cost of building a forest road on the distance of a site
 		/// </summary>
-		int DistanceCost
+		double DistanceCost
 		{
 			get; set;
 		}
@@ -235,7 +235,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		private string zonesForRoadCreation;
 		private string initialRoadNetworkMap;
-		private int distanceCost;
+		private double distanceCost;
 		private string coarseElevationRaster;
 		private int coarseElevationCost;
 		private string fineElevationRaster;
@@ -395,7 +395,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// The basic cost of building a forest road on the distance of a site
 		/// </summary>
-		public int DistanceCost
+		public double DistanceCost
 		{
 			get
 			{
