@@ -52,7 +52,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = 0;
 						if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
 						if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
-						if (variableName == "SoilsRaster") SiteVars.Soils[site] = null;
+						if (variableName == "SoilsRaster") SiteVars.Soils[site] = 0;
 
 						// PlugIn.ModelCore.UI.WriteLine("Just put value 0 in raster " + variableName);
 					}
@@ -106,7 +106,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					else if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = pixelValue;
 					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
 					else if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = pixelValue;
-					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = SoilRegions.GetSoilRegion(pixelValue);
+					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = (double)pixelValue;
 					else throw new Exception("Forest roads simulation : ERROR; VARIABLE NAME NOT RECOGNIZED FOR RASTER READING.");
 
 					// PlugIn.ModelCore.UI.WriteLine("Just put value "+ pixelValue + " in raster " + variableName);
@@ -259,7 +259,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// We add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
 						if (PlugIn.Parameters.SoilsRaster != "none")
 						{
-							cost += SoilRegions.GetAdditionalValue(SiteVars.Soils[site]);
+							cost += SiteVars.Soils[site];
 						}
 
 						// Finally, we multiply with the fine elevation cost if there was a input of fine elevation rasters. This multiplication represents a detour taken to avoid the fine topography.

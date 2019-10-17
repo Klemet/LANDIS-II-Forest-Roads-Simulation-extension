@@ -21,7 +21,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private static SiteVarDistinct<int> fineElevation;
 		private static SiteVarDistinct<int> coarseWater;
 		private static SiteVarDistinct<int> fineWater;
-		private static SiteVarDistinct<SoilRegion> soils;
+		private static SiteVarDistinct<double> soils;
 		private static SiteVarDistinct<float> costRaster;
 		// The cohorts on the sites.
 		private static ISiteVar<ISiteCohorts> cohorts;
@@ -39,7 +39,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			fineElevation = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
 			coarseWater = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
 			fineWater = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
-			soils = (SiteVarDistinct<SoilRegion>)PlugIn.ModelCore.Landscape.NewSiteVar<SoilRegion>(InactiveSiteMode.DistinctValues);
+			soils = (SiteVarDistinct<double>)PlugIn.ModelCore.Landscape.NewSiteVar<double>(InactiveSiteMode.DistinctValues);
 			costRaster = (SiteVarDistinct<float>)PlugIn.ModelCore.Landscape.NewSiteVar<float>(InactiveSiteMode.DistinctValues);
 
 			cohorts = PlugIn.ModelCore.GetSiteVar<ISiteCohorts>("Succession.AgeCohorts");
@@ -95,7 +95,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		public static SiteVarDistinct<SoilRegion> Soils
+		public static SiteVarDistinct<double> Soils
 		{
 			get
 			{
