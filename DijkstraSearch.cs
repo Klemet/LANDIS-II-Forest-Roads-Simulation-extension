@@ -88,7 +88,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			startingSiteAsPathfinding.distanceToStart = 0;
 			openSearchList.Add(startingSiteAsPathfinding);
 
-			// We loop until the list is ready, or when we found what we're looking for
+			// We loop until the list is empty, or when we found what we're looking for
 			while (openSearchList.Count > 0 && !haveWeFoundPlaceToPutWood)
 			{
 				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
@@ -96,7 +96,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
 
 				// We look at each of its neighbours, road on them or not.
-				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site, true))
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSitesWithRoads(siteToClose.site))
 				{
 					// We get the neighbour as a SiteForPathfinding object
 					SiteForPathfinding neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
@@ -162,7 +162,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// We get the open and closed lists ready
 			// List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
-			C5.IntervalHeap<SiteForPathfinding> frontier = new C5.IntervalHeap<SiteForPathfinding>();
+			// C5.IntervalHeap<SiteForPathfinding> frontier = new C5.IntervalHeap<SiteForPathfinding>();
+			Priority_Queue.FastPriorityQueue<SiteForPathfinding> frontier = new Priority_Queue.FastPriorityQueue<SiteForPathfinding>(PlugIn.ModelCore.Landscape.SiteCount);
 			SiteForPathfinding[,] tableOfSitesForPathFinding = new SiteForPathfinding[ModelCore.Landscape.Dimensions.Columns + 1, ModelCore.Landscape.Dimensions.Rows + 1];
 			bool haveWeFoundARoadToConnectTo = false;
 			// Useless assignation made to please the gods of C# and their rules that prevent a clean initialization.
@@ -173,28 +174,29 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// We put the first site in the open list and give it the proper starting distance.
 			startingSiteAsPathfinding.distanceToStart = 0;
 			// openSearchList.Add(startingSiteAsPathfinding);
-			frontier.Add(startingSiteAsPathfinding);
+			// frontier.Add(startingSiteAsPathfinding);
+			frontier.Enqueue(startingSiteAsPathfinding, (float)startingSiteAsPathfinding.distanceToStart);
 
-			// We loop until the list is ready, or when we found what we're looking for
+			// Pre-allocation of objects to be faster.
+			SiteForPathfinding siteToClose;
+			SiteForPathfinding neighbourToOpenAsPathfinding;
+			double newDistanceToStart;
+
+			// We loop until the list is empty
 			while (frontier.Count > 0)
 			{
 				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
 				// Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
 				// SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
-				var siteToClose = frontier.FindMin();
-				frontier.DeleteMin();
+				// var siteToClose = frontier.FindMin();
+				// frontier.DeleteMin();
+				siteToClose = frontier.Dequeue();
 
 				// We look at each of its neighbours, road on them or not.
-				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site, false))
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose.site))
 				{
-					SiteForPathfinding neighbourToOpenAsPathfinding;
-					// We get the neighbour as a SiteForPathfinding object
-					if (tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row] != null)
-					{
-						neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
-					}
-					// If it doesn't exist, we initialize a new SiteForPathfinding object
-					else
+					neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
+					if (neighbourToOpenAsPathfinding == null)
 					{
 						neighbourToOpenAsPathfinding = new SiteForPathfinding(neighbourToOpen);
 						tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row] = neighbourToOpenAsPathfinding;
@@ -205,22 +207,33 @@ namespace Landis.Extension.ForestRoadsSimulation
 					{
 						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
 						// from the node to close + the cost between it and the neighbor.
-						double newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
+						newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
 
 						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
 						// this node to close will become its predecessor, and its distance to start will become this one.
 						if (newDistanceToStart < neighbourToOpenAsPathfinding.distanceToStart)
 						{
 							neighbourToOpenAsPathfinding.distanceToStart = newDistanceToStart;
-							neighbourToOpenAsPathfinding.predecessor = siteToClose;
-							neighbourToOpenAsPathfinding.isOpen = true;
+							// Case of the node not being opened
+							if (neighbourToOpenAsPathfinding.predecessor == null)
+							{
+								neighbourToOpenAsPathfinding.isOpen = true;
+								neighbourToOpenAsPathfinding.predecessor = siteToClose;
+								frontier.Enqueue(neighbourToOpenAsPathfinding, (float)neighbourToOpenAsPathfinding.distanceToStart);
+							}
+							// Case of the node being already open
+							else
+							{
+								neighbourToOpenAsPathfinding.predecessor = siteToClose;
+								frontier.UpdatePriority(neighbourToOpenAsPathfinding, (float)neighbourToOpenAsPathfinding.distanceToStart);
+							}
 							// openSearchList.Add(neighbourToOpenAsPathfinding);
-							frontier.Add(neighbourToOpenAsPathfinding);
+							// frontier.Add(neighbourToOpenAsPathfinding);
 						}
 
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
-						if (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; haveWeFoundARoadToConnectTo = true; break; }
+						if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; haveWeFoundARoadToConnectTo = true; goto End; }
 					}
 
 				}
@@ -230,6 +243,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
 				siteToClose.isOpen = false;
 			}
+
+			End:
 			// ModelCore.UI.WriteLine("Dijkstra search is over.");
 
 			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 

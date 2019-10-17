@@ -17,6 +17,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class MapManager
 	{
+		/// <summary>
+		/// The 8-neighbors neighborhood used in the functions to retrieve neighbors
+		/// </summary>
+		public static RelativeLocation[] neighborhood = new RelativeLocation[]
+			{
+				new RelativeLocation(-1,  0),  // north
+                new RelativeLocation(-1,  1),  // northeast
+                new RelativeLocation( 0,  1),  // east
+                new RelativeLocation( 1,  1),  // southeast
+                new RelativeLocation( 1,  0),  // south
+                new RelativeLocation( 1, -1),  // southwest
+                new RelativeLocation( 0, -1),  // west
+                new RelativeLocation(-1, -1),  // northwest
+			};
+
+
 		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
 		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
 		// SoilRegionsContainer is used to fill up the soils map.
@@ -172,7 +188,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			double highestSlope = 0;
 
-			foreach (Site neighbor in MapManager.GetNeighbouringSites(site, false))
+			foreach (Site neighbor in MapManager.GetNeighbouringSites(site))
 			{
 				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row),2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2));
 
@@ -263,35 +279,37 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// /// <param name="givenSite">
 		/// A site for which the neighbouring sites must be found.
 		/// </param>
-		/// /// <param name="onlyRoads">
-		/// If true, only add neighbouring sites with a road on it to the resulting list.
-		/// </param>
-		public static List<Site> GetNeighbouringSites(Site givenSite, bool onlyRoads = false)
+		public static List<Site> GetNeighbouringSites(Site givenSite)
 		{
 			List<Site> listOfNeighbouringSites = new List<Site>();
 
-			RelativeLocation[] neighborhood = new RelativeLocation[]
-{
-				new RelativeLocation(-1,  0),  // north
-                new RelativeLocation(-1,  1),  // northeast
-                new RelativeLocation( 0,  1),  // east
-                new RelativeLocation( 1,  1),  // southeast
-                new RelativeLocation( 1,  0),  // south
-                new RelativeLocation( 1, -1),  // southwest
-                new RelativeLocation( 0, -1),  // west
-                new RelativeLocation(-1, -1),  // northwest
-};
+			foreach (RelativeLocation relativeLocation in MapManager.neighborhood)
+			{
+				Site neighbour = givenSite.GetNeighbor(relativeLocation);
+				// Checks if the site is rightly in the landscape. See https://github.com/LANDIS-II-Foundation/Library-Spatial/blob/master/src/api/Site.cs for more infos.
+				if (neighbour) listOfNeighbouringSites.Add(neighbour);
+			}
 
-			int siteRow = givenSite.Location.Row;
-			int siteColumn = givenSite.Location.Column;
+			return (listOfNeighbouringSites);
+		}
+
+		/// <summary>
+		/// Gets the 8 neighbours that have roads on them surounding a site as a list of sites
+		/// </summary>
+		/// <returns>
+		/// A list of sites containing the neighbouring sites of the given site. 
+		/// </returns>
+		/// /// <param name="givenSite">
+		/// A site for which the neighbouring sites must be found.
+		/// </param>
+		public static List<Site> GetNeighbouringSitesWithRoads(Site givenSite)
+		{
+			List<Site> listOfNeighbouringSites = new List<Site>();
 
 			foreach (RelativeLocation relativeLocation in neighborhood)
 			{
 				Site neighbour = givenSite.GetNeighbor(relativeLocation);
-				// Seems like the GetNeighbor function cannot check if the neighbour is part of the landscape. We have to check.
-				if (neighbour.Landscape == null) continue;
-				else if (onlyRoads) { if (SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour); }
-				else listOfNeighbouringSites.Add(neighbour);
+				 if (SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
 
 			return (listOfNeighbouringSites);
@@ -353,15 +371,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static bool IsThereANearbyRoad(List<RelativeLocation> skiddingNeighborhood, Site site)
 		{
 			bool isThereANearbyRoad = false;
+			Site neighbor;
 
 			foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
 			{
-				// If the neighbour site has a road in it, we can stop right there.
-				if (SiteVars.RoadsInLandscape[site.GetNeighbor(relativeNeighbour)].IsARoad)
+				neighbor = site.GetNeighbor(relativeNeighbour);
+				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
+				if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows)
 				{
-					isThereANearbyRoad = true;
-					break;
+					if (SiteVars.RoadsInLandscape[neighbor].IsARoad)
+					{
+						// If the neighbour site has a road in it, we can stop right there.
+						isThereANearbyRoad = true;
+						break;
+					}
 				}
+
 			}
 
 			return (isThereANearbyRoad);
@@ -485,7 +510,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				Site currentSite = openSearchList.ToList()[0];
 				openSearchList.Remove(currentSite);
 
-				foreach (Site neighbour in GetNeighbouringSites(currentSite, true))
+				foreach (Site neighbour in GetNeighbouringSitesWithRoads(currentSite))
 				{
 					listOfConnectedNeighborsWithRoads.Add(neighbour);
 					if(!closedSearchList.Contains(neighbour)) openSearchList.Add(neighbour);

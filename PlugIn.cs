@@ -37,6 +37,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public PlugIn()
 			: base(ExtensionName, ExtType)
 		{
+
 		}
 
 		//---------------------------------------------------------------------
@@ -176,7 +177,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				watch.Stop();
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
-				Console.Write("The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
+				modelCore.UI.WriteLine("   The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 			}
 
 				// On écrit la carte output du réseau de routes

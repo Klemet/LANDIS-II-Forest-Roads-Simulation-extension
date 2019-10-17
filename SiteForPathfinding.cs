@@ -12,7 +12,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 	/// <summary>
 	/// A class made to help the Dijkstra algorithm to be simpler. See "DijkstraSearch" class for use.
 	/// </summary>
-	public class SiteForPathfinding : IComparable<SiteForPathfinding>
+	public class SiteForPathfinding : Priority_Queue.FastPriorityQueueNode, IComparable<SiteForPathfinding>
 	{
 		public Site site;
 		public double distanceToStart;
