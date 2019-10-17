@@ -157,14 +157,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
-		/// <summary>
-		/// Path of the raster file containing the soil regions
-		/// </summary>
-		List<SoilRegion> SoilsCost
-		{
-			get; set;
-		}
-
 		// ------------------------------------------------------------------------------
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
@@ -253,7 +245,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private string fineWaterRaster;
 		private int fineWaterCost;
 		private string soilsRaster;
-		List<SoilRegion> soilsCost;
 
 		private int primaryRoadThreshold;
 		private double primaryRoadMultiplication;
@@ -564,25 +555,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					soilsRaster = value;
 				}
 				else if (value == "None" || value == "none" || value == "" || value == null) soilsRaster = "none";
-			}
-		}
-
-		/// <summary>
-		/// Path of the raster file containing the soil regions
-		/// </summary>
-		public List<SoilRegion> SoilsCost
-		{
-			get
-			{
-				return soilsCost;
-			}
-			set
-			{
-				// If no fine elevation raster has been given, we make this parameter an empty list.
-				if (this.SoilsRaster == "none") soilsCost = new List<SoilRegion>();
-				// If a raster has been given, but no value has been given, we throw an exception.
-				else if (this.SoilsRaster != "none" && value.Count == 0) throw new InputValueException(value.ToString(), "Need at least one soil region.");
-				else soilsCost = value;
 			}
 		}
 

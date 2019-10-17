@@ -168,37 +168,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> SoilsRaster = new InputVar<string>("SoilsRaster");
 			ReadVar(SoilsRaster);
 			parameters.SoilsRaster = SoilsRaster.Value;
-
-			// We read the soil additive costs
-			// WARNING : Again, because the parser is quite annoying with the construction of objects,
-			// The soil region cost does not go by the "parameters" object. It directly goes
-			// to the SoilRegions static class.
-			SoilRegions.Initialize();
-
-			const string SoilsCost = "SoilsCost";
-			ReadName(SoilsCost);
-
-			InputVar<int> MapCode = new InputVar<int>("MapCode of soil region");
-			InputVar<int> AdditionalCost = new InputVar<int>("Additional Cost for this soil region");
-
-			const string PrimaryRoadThresholdName = "PrimaryRoadThreshold";
-
-			while (!AtEndOfInput && CurrentName != PrimaryRoadThresholdName)
-			{
-				StringReader currentLine = new StringReader(CurrentLine);
-
-				ReadValue(MapCode, currentLine);
-				ReadValue(AdditionalCost, currentLine);
-
-				SoilRegions.AddRegion(new SoilRegion(MapCode.Value, AdditionalCost.Value));
-
-				CheckNoDataAfter("the " + MapCode.Name + " column",
-								 currentLine);
-				GetNextLine();
-			}
-
-			// And THEN we read the soil map; so that this way, we were able to initialize the soil regions first.
-			// we give the soil costs so that we can properly insert the soilregions of the user into the sites.
 			MapManager.ReadMap(SoilsRaster.Value, "SoilsRaster");
 
 
@@ -277,8 +246,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ModelCore.UI.WriteLine("   Fine water raster : " + Parameters.CoarseWaterRaster);
 			ModelCore.UI.WriteLine("   Fine water cost : " + Parameters.FineWaterCost);
 			ModelCore.UI.WriteLine("   Soils raster : " + Parameters.SoilsRaster);
-			ModelCore.UI.WriteLine("   Soil costs : ");
-			SoilRegions.DisplayRegionsInConsole(ModelCore);
 
 			ModelCore.UI.WriteLine("   Primary Road Threshold : " + Parameters.PrimaryRoadThreshold);
 			ModelCore.UI.WriteLine("   Primary Road Multiplication Value : " + Parameters.PrimaryRoadMultiplication);
