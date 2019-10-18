@@ -199,7 +199,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			foreach (Site neighbor in MapManager.GetNeighbouringSites(site))
 			{
-				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row),2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2));
+				// The distance between cells is unitary; we have to multiply it by the length of a pixel.
+				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row),2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2)) * PlugIn.ModelCore.CellLength;
 
 				double elevationDifference = Math.Abs(SiteVars.CoarseElevation[site] - SiteVars.CoarseElevation[neighbor]);
 
@@ -246,7 +247,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// We add the slope cost, which depends on the highest slope towards one of the neighbours of the site.
 						if (PlugIn.Parameters.CoarseElevationRaster != "none")
 						{
-							cost += (MapManager.GetHighestSlopeAmongstNeighbors(site) * PlugIn.Parameters.CoarseElevationCost);
+							cost += PlugIn.Parameters.CoarseElevationCosts.GetCorrespondingValue(MapManager.GetHighestSlopeAmongstNeighbors(site));
 						}
 
 						// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed is expressed as a probability, depending on the length
@@ -265,7 +266,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// Finally, we multiply with the fine elevation cost if there was a input of fine elevation rasters. This multiplication represents a detour taken to avoid the fine topography.
 						if (PlugIn.Parameters.FineElevationRaster != "none")
 						{
-							cost = cost * ElevationCostRanges.GetMultiplicativeValue(SiteVars.FineElevation[site]);
+							cost = cost * PlugIn.Parameters.FineElevationCosts.GetCorrespondingValue(SiteVars.FineElevation[site]);
 						}
 					}
 

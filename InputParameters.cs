@@ -95,7 +95,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// The multiplication value used to increase cost of construction with elevation differences.
 		/// </summary>
-		int CoarseElevationCost
+		ElevationCostRanges CoarseElevationCosts
 		{
 			get; set;
 		}
@@ -108,14 +108,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
-		// ElevationCosts is now static to accomodate for the parameter parser
 		/// <summary>
 		/// The multiplication value used to increase cost of construction with elevation differences.
 		/// </summary>
-		// ElevationCostRanges FineElevationCosts
-		// {
-		// 	get; set;
-		// }
+		ElevationCostRanges FineElevationCosts
+		{
+			get; set;
+		}
 
 		/// <summary>
 		/// Path of the raster file containing the coarse water values
@@ -237,9 +236,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private string initialRoadNetworkMap;
 		private double distanceCost;
 		private string coarseElevationRaster;
-		private int coarseElevationCost;
+		private ElevationCostRanges coarseElevationCosts;
 		private string fineElevationRaster;
-		// ElevationCosts is now static to accomodate for the parameter parser
+		private ElevationCostRanges fineElevationCosts;
 		private string coarseWaterRaster;
 		private int coarseWaterCost;
 		private string fineWaterRaster;
@@ -431,18 +430,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// The multiplication value used to increase cost of construction with elevation differences.
 		/// </summary>
-		public int CoarseElevationCost
+		public ElevationCostRanges CoarseElevationCosts
 		{
 			get
 			{
-				return coarseElevationCost;
+				return coarseElevationCosts;
 			}
 			set
 			{
-				if (this.CoarseElevationRaster == "none") coarseElevationCost = 1;
-				else if (this.CoarseElevationRaster == "none" && value < 0)
-					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
-				else coarseElevationCost = value;
+				if (this.CoarseElevationRaster == "none") coarseElevationCosts = null;
+				else if (this.CoarseElevationRaster != "none" && value == null)
+					throw new InputValueException(value.ToString(), "Problem with the coarse elevation costs. Please check your parameter file.");
+				else coarseElevationCosts = value;
 			}
 		}
 
@@ -462,6 +461,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 					fineElevationRaster = value;
 				}
 				else if (value == "None" || value == "none" || value == "" || value == null) fineElevationRaster = "none";
+			}
+		}
+
+		/// <summary>
+		/// The multiplication value used to increase cost of construction with elevation differences.
+		/// </summary>
+		public ElevationCostRanges FineElevationCosts
+		{
+			get
+			{
+				return fineElevationCosts;
+			}
+			set
+			{
+				if (this.FineElevationRaster == "none") fineElevationCosts = null;
+				else if (this.FineElevationRaster != "none" && value == null)
+					throw new InputValueException(value.ToString(), "Problem with the fine elevation costs. Please check your parameter file.");
+				else fineElevationCosts = value;
 			}
 		}
 
@@ -496,7 +513,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			set
 			{
 				if (this.CoarseWaterRaster == "none") coarseWaterCost = 0;
-				else if (this.CoarseWaterRaster == "none" && value < 0)
+				else if (this.CoarseWaterRaster != "none" && value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				else coarseWaterCost = value;
 			}
@@ -533,7 +550,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			set
 			{
 				if (this.FineWaterRaster == "none") fineWaterCost = 0;
-				else if (this.FineWaterRaster == "none" && value < 0)
+				else if (this.FineWaterRaster != "none" && value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				else fineWaterCost = value;
 			}

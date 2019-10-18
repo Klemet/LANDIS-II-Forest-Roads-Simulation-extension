@@ -99,9 +99,35 @@ namespace Landis.Extension.ForestRoadsSimulation
 			MapManager.ReadMap(CoarseElevationRaster.Value, "CoarseElevationRaster");
 
 			// We read the coarse elevation cost
-			InputVar<int> CoarseElevationCost = new InputVar<int>("CoarseElevationCost");
-			ReadVar(CoarseElevationCost);
-			parameters.CoarseElevationCost = CoarseElevationCost.Value;
+			ElevationCostRanges CoarseElevationCostsTable = new ElevationCostRanges();
+
+			const string CoarseElevationCosts = "CoarseElevationCosts";
+			ReadName(CoarseElevationCosts);
+
+			InputVar<int> LowerThresholdCoarse = new InputVar<int>("Lower Threshold for current range of elevation");
+			InputVar<int> UpperThresholdCoarse = new InputVar<int>("Upper Threshold for current range of elevation");
+			InputVar<double> AdditionalValueCoarse = new InputVar<double>("Additional value for this range of elevation");
+
+			const string FineElevationRasterName = "FineElevationRaster";
+
+			while (!AtEndOfInput && CurrentName != FineElevationRasterName)
+			{
+				StringReader currentLine = new StringReader(CurrentLine);
+
+				ReadValue(LowerThresholdCoarse, currentLine);
+				ReadValue(UpperThresholdCoarse, currentLine);
+				ReadValue(AdditionalValueCoarse, currentLine);
+
+				CoarseElevationCostsTable.AddRange(LowerThresholdCoarse.Value, UpperThresholdCoarse.Value, AdditionalValueCoarse.Value);
+
+				CheckNoDataAfter("the " + LowerThresholdCoarse.Name + " column",
+								currentLine);
+
+				GetNextLine();
+			}
+
+			CoarseElevationCostsTable.VerifyRanges();
+			parameters.CoarseElevationCosts = CoarseElevationCostsTable;
 
 			// We read the fine elevation raster if he is given
 			InputVar<string> FineElevationRaster = new InputVar<string>("FineElevationRaster");
@@ -110,17 +136,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			MapManager.ReadMap(FineElevationRaster.Value, "FineElevationRaster");
 
 			// We read the fine elevation costs
-			// WARNING : Because the parser is quite annoying with the construction of objects,
-			// The fine elevation cost does not go by the "parameters" object. It directly goes
-			// to the ElevationCostRanges static class.
-			ElevationCostRanges.Initialize();
+			ElevationCostRanges FineElevationCostsTable = new ElevationCostRanges();
 
 			const string FineElevationCosts = "FineElevationCosts";
 			ReadName(FineElevationCosts);
 
-			InputVar<int> LowerThreshold = new InputVar<int>("Lower Threshold for current range of elevation");
-			InputVar<int> UpperThreshold = new InputVar<int>("Upper Threshold for current range of elevation");
-			InputVar<double> MultiplicationValue = new InputVar<double>("Multiplication value for this range of elevation");
+			InputVar<int> LowerThresholdFine = new InputVar<int>("Lower Threshold for current range of elevation");
+			InputVar<int> UpperThresholdFine = new InputVar<int>("Upper Threshold for current range of elevation");
+			InputVar<double> MultiplicationValueFine = new InputVar<double>("Multiplication value for this range of elevation");
 
 			const string CoarseWaterRasterName = "CoarseWaterRaster";
 
@@ -128,19 +151,20 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				StringReader currentLine = new StringReader(CurrentLine);
 
-				ReadValue(LowerThreshold, currentLine);
-				ReadValue(UpperThreshold, currentLine);
-				ReadValue(MultiplicationValue, currentLine);
+				ReadValue(LowerThresholdFine, currentLine);
+				ReadValue(UpperThresholdFine, currentLine);
+				ReadValue(MultiplicationValueFine, currentLine);
 
-				ElevationCostRanges.AddRange(LowerThreshold.Value, UpperThreshold.Value, MultiplicationValue.Value);
+				FineElevationCostsTable.AddRange(LowerThresholdFine.Value, UpperThresholdFine.Value, MultiplicationValueFine.Value);
 
-				CheckNoDataAfter("the " + LowerThreshold.Name + " column",
+				CheckNoDataAfter("the " + LowerThresholdFine.Name + " column",
 								currentLine);
 
 				GetNextLine();
 			}
 
-			ElevationCostRanges.VerifyRanges();
+			FineElevationCostsTable.VerifyRanges();
+			parameters.FineElevationCosts = FineElevationCostsTable;
 
 			// We read the coarse water raster if he is given
 			InputVar<string> CoarseWaterRaster = new InputVar<string>("CoarseWaterRaster");
@@ -226,8 +250,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// A function for debugging purposes. It display all of the parameters in a parameter object
 		/// in the LANDIS-II console.
 		/// </summary>
-		public static void DisplayParameters(ICore ModelCore, IInputParameters Parameters)
+		public static void DisplayParameters()
 		{
+			ICore ModelCore = PlugIn.ModelCore;
+			IInputParameters Parameters = PlugIn.Parameters;
+
 			ModelCore.UI.WriteLine("   Timestep : " + Parameters.Timestep);
 			ModelCore.UI.WriteLine("   Heuristic : " + Parameters.HeuristicForNetworkConstruction);
 			ModelCore.UI.WriteLine("   Skidding distance : " + Parameters.SkiddingDistance);
@@ -237,10 +264,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ModelCore.UI.WriteLine("   Initial road raster : " + Parameters.InitialRoadNetworkMap);
 			ModelCore.UI.WriteLine("   Distance cost : " + Parameters.DistanceCost);
 			ModelCore.UI.WriteLine("   Coarse elevation raster : " + Parameters.CoarseElevationRaster);
-			ModelCore.UI.WriteLine("   Coarse elevation cost : " + Parameters.CoarseElevationCost);
+			ModelCore.UI.WriteLine("   Coarse elevation costs : ");
+			PlugIn.Parameters.CoarseElevationCosts.DisplayRangesInConsole(ModelCore);
 			ModelCore.UI.WriteLine("   Fine elevation raster : " + Parameters.FineElevationRaster);
 			ModelCore.UI.WriteLine("   Fine elevation costs : ");
-			ElevationCostRanges.DisplayRangesInConsole(ModelCore);
+			PlugIn.Parameters.FineElevationCosts.DisplayRangesInConsole(ModelCore);
 			ModelCore.UI.WriteLine("   Coarse water raster : " + Parameters.CoarseWaterRaster);
 			ModelCore.UI.WriteLine("   Coarse water cost :  : " + Parameters.CoarseWaterCost);
 			ModelCore.UI.WriteLine("   Fine water raster : " + Parameters.CoarseWaterRaster);
