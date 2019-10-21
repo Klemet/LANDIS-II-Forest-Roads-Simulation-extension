@@ -23,6 +23,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 		private bool harvestExtensionDetected = false;
 		private List<RelativeLocation> skiddingNeighborhood;
+		public static MetadataTable<RoadLog> roadConstructionLog;
+
 
 		// Propriété pour contenir les paramètres
 		private static IInputParameters parameters;
@@ -132,6 +134,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// We also initialize the "cost raster" on which the path of our roads will be based.
 				MapManager.CreateCostRaster();
 				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
+				// We initialize the metadatas
+				MetadataHandler.InitializeMetadata();
 			}
 			modelCore.UI.WriteLine("   Initialization of the Forest Roads Simulation Extension is done");
 
@@ -178,12 +182,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 				watch.Stop();
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 				modelCore.UI.WriteLine("   The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
-			}
 
 				// On écrit la carte output du réseau de routes
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 
-		}
-	}
+				// We write the log
+				roadConstructionLog.Clear();
+				RoadLog roadLog = new RoadLog();
+				roadLog.Timestep = modelCore.CurrentTime;
+				roadLog.NumberOfHarvestedSitesToConnect = listOfHarvestedSites.Count;
+				roadLog.NumberOfRoadsConstructed = roadConstructedAtThisTimestep;
+				roadLog.TimeTaken = (int)watch.ElapsedMilliseconds / (1000 * 60);
+				roadConstructionLog.AddObject(roadLog);
+				roadConstructionLog.WriteToFile();
 
-}
+			} // End of if harvest extension detected
+
+		} // End of run function
+
+	} // End of PlugIn class
+
+} // End of namespace

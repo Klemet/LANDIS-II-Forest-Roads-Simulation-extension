@@ -84,6 +84,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BytePixel.cs" />
+    <Compile Include="MetadataHandler.cs" />
+    <Compile Include="RoadLog.cs" />
     <Compile Include="ElevationCostRanges.cs" />
     <Compile Include="SiteForPathfinding.cs" />
     <Compile Include="DijkstraSearch.cs" />

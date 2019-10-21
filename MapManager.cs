@@ -164,28 +164,44 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
 			if (mapType == "roads")
 			{
-				using (IOutputRaster<BytePixel> outputRaster = ModelCore.CreateRaster<BytePixel>(path, ModelCore.Landscape.Dimensions))
+				try
 				{
-					BytePixel pixel = outputRaster.BufferPixel;
-					foreach (Site site in ModelCore.Landscape.AllSites)
+					using (IOutputRaster<BytePixel> outputRaster = ModelCore.CreateRaster<BytePixel>(path, ModelCore.Landscape.Dimensions))
 					{
+						BytePixel pixel = outputRaster.BufferPixel;
+						foreach (Site site in ModelCore.Landscape.AllSites)
+						{
 
-						pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
-						outputRaster.WriteBufferPixel();
+							pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
+							outputRaster.WriteBufferPixel();
+						}
 					}
 				}
+				catch
+				{
+					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
+				}
+
 			}
 			else if (mapType == "costRaster")
 			{
-				using (IOutputRaster<UIntPixel> outputRaster = ModelCore.CreateRaster<UIntPixel>(path, ModelCore.Landscape.Dimensions))
+				try
 				{
-					UIntPixel pixel = outputRaster.BufferPixel;
-					foreach (Site site in ModelCore.Landscape.AllSites)
+					using (IOutputRaster<UIntPixel> outputRaster = ModelCore.CreateRaster<UIntPixel>(path, ModelCore.Landscape.Dimensions))
 					{
-						pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
-						outputRaster.WriteBufferPixel();
+						UIntPixel pixel = outputRaster.BufferPixel;
+						foreach (Site site in ModelCore.Landscape.AllSites)
+						{
+							pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
+							outputRaster.WriteBufferPixel();
+						}
 					}
 				}
+				catch
+				{
+					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
+				}
+
 			}
 
 		}
@@ -387,7 +403,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				neighbor = site.GetNeighbor(relativeNeighbour);
 				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
-				if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows)
+				if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns-1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows-1)
 				{
 					if (SiteVars.RoadsInLandscape[neighbor].IsARoad)
 					{

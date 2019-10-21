@@ -202,8 +202,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 						tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row] = neighbourToOpenAsPathfinding;
 					}
 
-					// We don't consider the neighbour if it is closed.
-					if (!neighbourToOpenAsPathfinding.isClosed)
+					// We don't consider the neighbour if it is closed or if it's non-constructible.
+					if ((SiteVars.CostRaster[neighbourToOpen] >= 0) && (!neighbourToOpenAsPathfinding.isClosed))
 					{
 						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
 						// from the node to close + the cost between it and the neighbor.
@@ -262,7 +262,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					SiteVars.RoadsInLandscape[site].isConnectedToSawMill = true;
 				}
 			}
-			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect two sites. This isn't supposed to happen.");
+			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
 
 
