@@ -266,5 +266,114 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 
-	}
-}
+		/// <summary>
+		/// Finds the least cost path from roads to roads to a exit point for the wood in the landscape, and add the given wood flux to every road visited.
+		/// </summary>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		/// /// <param name="startingSite">
+		/// The starting site of the search.
+		/// </param>
+		/// /// <param name="Woodflux">
+		/// The flux of wood that is going to flow to the exit point.
+		/// </param>
+		public static void DijkstraWoodFlux(ICore ModelCore, Site startingSite, double woodFlux)
+		{
+			// We get the open and closed lists ready
+			// List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
+			Priority_Queue.FastPriorityQueue<SiteForPathfinding> frontier = new Priority_Queue.FastPriorityQueue<SiteForPathfinding>(PlugIn.ModelCore.Landscape.SiteCount);
+			SiteForPathfinding[,] tableOfSitesForPathFinding = new SiteForPathfinding[ModelCore.Landscape.Dimensions.Columns + 1, ModelCore.Landscape.Dimensions.Rows + 1];
+			bool haveWeFoundARoadToConnectTo = false;
+			// Useless assignation made to please the gods of C# and their rules that prevent a clean initialization.
+			SiteForPathfinding startingSiteAsPathfinding = new SiteForPathfinding(startingSite);
+			tableOfSitesForPathFinding[startingSite.Location.Column, startingSite.Location.Row] = startingSiteAsPathfinding;
+			SiteForPathfinding arrivalAsPathfindingSite = startingSiteAsPathfinding;
+
+			// We put the first site in the open list and give it the proper starting distance.
+			startingSiteAsPathfinding.distanceToStart = 0;
+			frontier.Enqueue(startingSiteAsPathfinding, (float)startingSiteAsPathfinding.distanceToStart);
+
+			// Pre-allocation of objects to be faster.
+			SiteForPathfinding siteToClose;
+			SiteForPathfinding neighbourToOpenAsPathfinding;
+			double newDistanceToStart;
+
+			// We loop until the list is empty
+			while (frontier.Count > 0)
+			{
+				// We take the site with the lowest distance to start.
+				siteToClose = frontier.Dequeue();
+
+				// We look at each of its neighbours, but only those with roads on them.
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSitesWithRoads(siteToClose.site))
+				{
+					neighbourToOpenAsPathfinding = tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row];
+					if (neighbourToOpenAsPathfinding == null)
+					{
+						neighbourToOpenAsPathfinding = new SiteForPathfinding(neighbourToOpen);
+						tableOfSitesForPathFinding[neighbourToOpen.Location.Column, neighbourToOpen.Location.Row] = neighbourToOpenAsPathfinding;
+					}
+
+					// We don't consider the neighbour if it is closed
+					if (!neighbourToOpenAsPathfinding.isClosed)
+					{
+						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+						// from the node to close + the arbitrary cost of using one road pixel (1). No need to use the detailed cost informations here, as we're just going from road to road.
+						newDistanceToStart = siteToClose.distanceToStart + 1;
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (newDistanceToStart < neighbourToOpenAsPathfinding.distanceToStart)
+						{
+							neighbourToOpenAsPathfinding.distanceToStart = newDistanceToStart;
+							// Case of the node not being opened
+							if (neighbourToOpenAsPathfinding.predecessor == null)
+							{
+								neighbourToOpenAsPathfinding.isOpen = true;
+								neighbourToOpenAsPathfinding.predecessor = siteToClose;
+								frontier.Enqueue(neighbourToOpenAsPathfinding, (float)neighbourToOpenAsPathfinding.distanceToStart);
+							}
+							// Case of the node being already open
+							else
+							{
+								neighbourToOpenAsPathfinding.predecessor = siteToClose;
+								frontier.UpdatePriority(neighbourToOpenAsPathfinding, (float)neighbourToOpenAsPathfinding.distanceToStart);
+							}
+
+						}
+
+						// We check if the neighbour is a exit node for the wood. If that's the case, search is other.
+						if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; haveWeFoundARoadToConnectTo = true; goto End; }
+					}
+
+				}
+
+				// Now that we have checked all of its neighbours, we can close the current node.
+				siteToClose.isClosed = true;
+				// openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
+				siteToClose.isOpen = false;
+			}
+
+		End:
+			// ModelCore.UI.WriteLine("Dijkstra search is over.");
+
+			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
+			// We can now retrieve the list of the sites that
+			// are the least cost path, and make sure that all of these site now have a road constructed on them, and that it is
+			// indicated as connected to a place where we can make wood go.
+			if (haveWeFoundARoadToConnectTo)
+			{
+				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
+				foreach (Site site in listOfSitesInLeastCostPath)
+				{
+					SiteVars.RoadsInLandscape[site].timestepWoodFlux += woodFlux;
+				}
+			}
+			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen.");
+		}
+
+
+	} // End of DijkstraSearch class
+
+} // End of namespace

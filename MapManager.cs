@@ -162,6 +162,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On écrit la carte output du réseau de routes
 			if (mapType == "roads") { path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif"); }
 			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
+			else if (mapType == "WoodFlux") { path = (path.Remove(path.Length - 4)) + ("-" + "Wood Flux" + ModelCore.CurrentTime + ".tif"); }
 			if (mapType == "roads")
 			{
 				try
@@ -194,6 +195,35 @@ namespace Landis.Extension.ForestRoadsSimulation
 						{
 							pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
 							outputRaster.WriteBufferPixel();
+						}
+					}
+				}
+				catch
+				{
+					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
+				}
+
+			}
+			else if (mapType == "WoodFlux")
+			{
+				try
+				{
+					using (IOutputRaster<UIntPixel> outputRaster = ModelCore.CreateRaster<UIntPixel>(path, ModelCore.Landscape.Dimensions))
+					{
+						UIntPixel pixel = outputRaster.BufferPixel;
+						foreach (Site site in ModelCore.Landscape.AllSites)
+						{
+							if (SiteVars.RoadsInLandscape[site].IsARoad)
+							{
+								pixel.MapCode.Value = (int)SiteVars.RoadsInLandscape[site].timestepWoodFlux;
+								outputRaster.WriteBufferPixel();
+							}
+							else
+							{
+								pixel.MapCode.Value = 0;
+								outputRaster.WriteBufferPixel();
+							}
+
 						}
 					}
 				}
@@ -335,7 +365,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (RelativeLocation relativeLocation in neighborhood)
 			{
 				Site neighbour = givenSite.GetNeighbor(relativeLocation);
-				 if (SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
+				 if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
 
 			return (listOfNeighbouringSites);
@@ -547,6 +577,48 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			return (listOfConnectedNeighborsWithRoads.ToList());
 		}
+
+		/// <summary>
+		/// Gets the closest existing site with a road on it. It has to be at a skidding distance; if not, the road will be built by another function during the road of the plugin.
+		/// </summary>
+		/// <returns>
+		/// A site with the closest road on it. 
+		/// </returns>
+		public static Site GetClosestSiteWithRoad(List<RelativeLocation> skiddingNeighborhood, Site site)
+		{
+			// If the given site is a road, then it is the one we want.
+			if (SiteVars.RoadsInLandscape[site].IsARoad)
+			{
+				return (site);
+			}
+			// If not, we check the skidding neighborhood
+			else
+			{
+				Site neighbor;
+				// Useless assignation to please the gods of C#
+				Site siteToReturn = site;
+				double minimumDistance = double.PositiveInfinity;
+
+				foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
+				{
+					neighbor = site.GetNeighbor(relativeNeighbour);
+					// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
+					if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns - 1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows - 1)
+					{
+						if (SiteVars.RoadsInLandscape[neighbor].IsARoad && MapManager.GetDistance(site, neighbor) < minimumDistance)
+						{
+							siteToReturn = neighbor;
+							minimumDistance = MapManager.GetDistance(site, neighbor);
+						}
+					}
+
+				}
+
+				return (siteToReturn);
+			}
+
+		}
+
 
 		/// <summary>
 		/// Get all of the sites that have been harvested recently by the harvest extension, and to which we need to create a road to.

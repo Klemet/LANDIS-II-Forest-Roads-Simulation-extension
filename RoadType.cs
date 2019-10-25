@@ -23,11 +23,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// 6 - Main Road Network (Paved)
 		// 7 - Undertermined (but there is a road)
 		public int typeNumber { get; set; }
+		public double timestepWoodFlux { get; set; }
 		public bool isConnectedToSawMill { get; set; }
 
 		public RoadType(int type)
 		{
 			this.typeNumber = type;
+			this.timestepWoodFlux = 0;
 			if (this.typeNumber == 5 || this.typeNumber == 6) this.isConnectedToSawMill = true;
 			else this.isConnectedToSawMill = false;
 		}
@@ -63,6 +65,19 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (this.typeNumber == 5 || this.typeNumber == 6) return (true);
 				else return (false);
 			}
+		}
+
+		/// <summary>
+		/// Updates the type of the road on the pixel according to the flux of wood going on it and the parameters of the extension
+		/// </summary>
+		public void UpdateAccordingToWoodFlux()
+		{
+			// If the flux of wood is lower than the threshold for a secondary road, and if the road is undertimined, then it updates to a tertiary road.
+			if (this.timestepWoodFlux < PlugIn.Parameters.SecondaryRoadThreshold && this.typeNumber == 7) { this.typeNumber = 3; }
+			// If the flux is enough to become a secondary road, and if the road is not already a secondary or primary road, it becomes a secondary road.
+			else if (this.timestepWoodFlux < PlugIn.Parameters.PrimaryRoadThreshold && (this.typeNumber == 7 || this.typeNumber == 3)) { this.typeNumber = 2; }
+			// If the flux is enought to become a primary road, and if the road is not already primary, it becomes a primary road.
+			else if (this.timestepWoodFlux >= PlugIn.Parameters.PrimaryRoadThreshold && (this.typeNumber == 7 || this.typeNumber == 3 || this.typeNumber == 2)) { this.typeNumber = 1;  }
 		}
 
 	}

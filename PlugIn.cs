@@ -126,14 +126,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
 			else
 			{
+				// We initialize the "cost raster" on which the path of our roads will be based.
+				MapManager.CreateCostRaster();
+				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
+				// We initialize the initial road network
 				modelCore.UI.WriteLine("   Initializing the road network...");
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
 				// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
 				skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
 				modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
-				// We also initialize the "cost raster" on which the path of our roads will be based.
-				MapManager.CreateCostRaster();
-				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
 				// We initialize the metadatas
 				MetadataHandler.InitializeMetadata();
 			}
@@ -162,7 +163,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
 
 				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
-				modelCore.UI.WriteLine("  Generating roads to harvested sites...");
+				modelCore.UI.WriteLine("  Generating roads to harvested sites and fluxing the wood...");
+				// We reset the wood flux going through the roads for the current timestep.
+				RoadNetwork.RestTimestepWoodFlux();
+				// We initialize some UI elements because this step takes time.
 				var progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
 				var watch = System.Diagnostics.Stopwatch.StartNew();
 				int roadConstructedAtThisTimestep = 0;
@@ -176,15 +180,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 						roadConstructedAtThisTimestep++;
 					}
 
+					// We add the woodflux from the harvested area to the closest road, and we then used a dijkstra search that only goes through roads
+					// in order to reach an exit point for the wood. Every road used will see its flux value for the timestep augment by one.
+					// The quantity of woodflux is based on the number of cohorts harvested in the cell.
+					int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
+					Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
+
+					DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+
 					progressBar.IncrementWorkDone(1);
 				}
 
 				watch.Stop();
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
-				modelCore.UI.WriteLine("   The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
+				modelCore.UI.WriteLine("   The construction and the fluxing of wood took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
+
+				// We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user.
+				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+
+				foreach (Site siteWithRoad in listOfSitesWithRoads)
+				{
+					SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux();
+				}
 
 				// On écrit la carte output du réseau de routes
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore, "WoodFlux");
 
 				// We write the log
 				roadConstructionLog.Clear();

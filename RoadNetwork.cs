@@ -82,5 +82,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		}
 
+		/// <summary>
+		/// Function to reset the woodflux going through the roads for the current timestep.
+		/// </summary>
+		public static void RestTimestepWoodFlux()
+		{
+			List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(PlugIn.ModelCore);
+
+			foreach (Site siteWithRoad in listOfSitesWithRoads)
+			{
+				SiteVars.RoadsInLandscape[siteWithRoad].timestepWoodFlux = 0;
+			}
+		}
+
 	}
 }
