@@ -158,7 +158,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// /// <param name="startingSite">
 		/// The starting site of the search.
 		/// </param>
-		public static void DijkstraLeastCostPathToClosestConnectedRoad(ICore ModelCore, Site startingSite)
+		/// <param name="individualRoadDefinition">
+		/// Indicate if a new IndividualRoad object should be created containing the newly created road. The "False" value is only used in the initialization of the road network.
+		/// </param>
+		public static void DijkstraLeastCostPathToClosestConnectedRoad(ICore ModelCore, Site startingSite, bool individualRoadDefinition = true)
 		{
 			// We get the open and closed lists ready
 			// List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
@@ -253,6 +256,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// indicated as connected to a place where we can make wood go.
 			if (haveWeFoundARoadToConnectTo)
 			{
+				// We transform the pixels into roads
 				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
 				foreach (Site site in listOfSitesInLeastCostPath)
 				{
@@ -261,10 +265,33 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// Whatever it is, we indicate it as connected.
 					SiteVars.RoadsInLandscape[site].isConnectedToSawMill = true;
 				}
+
+				// If it's time to define a new individual road in the process, we do it.
+				if (individualRoadDefinition)
+				{
+					IndividualRoad newRoad = new IndividualRoad();
+
+					foreach (Site site in listOfSitesInLeastCostPath)
+					{
+						// We add this site to a new road
+						newRoad.sitesInTheRoad.Add(site);
+						SiteVars.Roads[site].Add(newRoad);
+					}
+
+					// We add the extremities of the road.
+					// First, the extremity that is now a branch of the network
+					newRoad.extremities.Add(listOfSitesInLeastCostPath[0]);
+					// And second, the extrimity with the connection to another road
+					newRoad.extremities.Add(listOfSitesInLeastCostPath.Last());
+					foreach (IndividualRoad otherRoad in SiteVars.Roads[listOfSitesInLeastCostPath.Last()])
+					{
+						newRoad.CreateConnection(otherRoad);
+					}
+				}
 			}
+
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
 
-
-	}
-}
+	} // End of class
+} // End of namespace

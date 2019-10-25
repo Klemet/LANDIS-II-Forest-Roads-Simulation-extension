@@ -126,14 +126,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
 			else
 			{
+				// We initialize the "cost raster" on which the path of our roads will be based.
+				MapManager.CreateCostRaster();
+				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
+				// We initialize the road network - it will construct roads so that every existing road can lead to an exit point for the wood to go to,
+				// but it will also split the road in order to make them individual for the later flux algorithm.
 				modelCore.UI.WriteLine("   Initializing the road network...");
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
 				// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
 				skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
 				modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
-				// We also initialize the "cost raster" on which the path of our roads will be based.
-				MapManager.CreateCostRaster();
-				modelCore.UI.WriteLine("   Cost raster created. It can be visualised in the output folder of the extension.");
+				
 				// We initialize the metadatas
 				MetadataHandler.InitializeMetadata();
 			}
@@ -185,6 +188,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				// On écrit la carte output du réseau de routes
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
+				MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps, ModelCore, "RoadID");
 
 				// We write the log
 				roadConstructionLog.Clear();

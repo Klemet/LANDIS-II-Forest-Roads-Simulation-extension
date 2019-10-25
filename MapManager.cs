@@ -162,6 +162,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// On écrit la carte output du réseau de routes
 			if (mapType == "roads") { path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif"); }
 			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
+			else if (mapType == "RoadIDIni") { path = (path.Remove(path.Length - 4)) + ("-" + "Road IDs Initial" + ".tif"); }
+			else if (mapType == "RoadID") { path = (path.Remove(path.Length - 4)) + ("-" + "Road IDs" + ModelCore.CurrentTime  + ".tif"); }
 			if (mapType == "roads")
 			{
 				try
@@ -194,6 +196,39 @@ namespace Landis.Extension.ForestRoadsSimulation
 						{
 							pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
 							outputRaster.WriteBufferPixel();
+						}
+					}
+				}
+				catch
+				{
+					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
+				}
+
+			}
+			else if (mapType == "RoadIDIni" || mapType == "RoadID")
+			{
+				try
+				{
+					using (IOutputRaster<UIntPixel> outputRaster = ModelCore.CreateRaster<UIntPixel>(path, ModelCore.Landscape.Dimensions))
+					{
+						UIntPixel pixel = outputRaster.BufferPixel;
+						foreach (Site site in ModelCore.Landscape.AllSites)
+						{
+							if (SiteVars.Roads[site].Count == 0)
+							{
+								pixel.MapCode.Value = 0;
+								outputRaster.WriteBufferPixel();
+							}
+							else if (SiteVars.Roads[site].Count > 1)
+							{
+								pixel.MapCode.Value = -1;
+								outputRaster.WriteBufferPixel();
+							}
+							else
+							{
+								pixel.MapCode.Value = (int)SiteVars.Roads[site][0].ID;
+								outputRaster.WriteBufferPixel();
+							}
 						}
 					}
 				}
@@ -335,7 +370,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (RelativeLocation relativeLocation in neighborhood)
 			{
 				Site neighbour = givenSite.GetNeighbor(relativeLocation);
-				 if (SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
+				 if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
 
 			return (listOfNeighbouringSites);

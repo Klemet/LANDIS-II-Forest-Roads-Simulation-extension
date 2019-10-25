@@ -6,6 +6,12 @@ using Landis.Landscapes;
 using Landis.Core;
 using Landis.SpatialModeling;
 using Landis.Library.AgeOnlyCohorts;
+using System.Collections.Generic;
+using System.IO;
+using Landis.Library.Metadata;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -25,6 +31,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private static SiteVarDistinct<float> costRaster;
 		// The cohorts on the sites.
 		private static ISiteVar<ISiteCohorts> cohorts;
+		// The road objects associated with each site
+		private static SiteVarDistinct<List<IndividualRoad>> roads;
 
 		//---------------------------------------------------------------------
 
@@ -41,6 +49,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			fineWater = (SiteVarDistinct<int>)PlugIn.ModelCore.Landscape.NewSiteVar<int>(InactiveSiteMode.DistinctValues);
 			soils = (SiteVarDistinct<double>)PlugIn.ModelCore.Landscape.NewSiteVar<double>(InactiveSiteMode.DistinctValues);
 			costRaster = (SiteVarDistinct<float>)PlugIn.ModelCore.Landscape.NewSiteVar<float>(InactiveSiteMode.DistinctValues);
+			roads = (SiteVarDistinct<List<IndividualRoad>>)PlugIn.ModelCore.Landscape.NewSiteVar<List<IndividualRoad>>(InactiveSiteMode.DistinctValues);
+
+			// It's not pretty, and it's going to use memory; but as things stand, I have to initialize all of the lists objects
+			// in this variable to make things easier.
+			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+			{
+				roads[site] = new List<IndividualRoad>();
+			}
 
 			cohorts = PlugIn.ModelCore.GetSiteVar<ISiteCohorts>("Succession.AgeCohorts");
 		}
@@ -117,6 +133,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get
 			{
 				return costRaster;
+			}
+		}
+
+		public static SiteVarDistinct<List<IndividualRoad>> Roads
+		{
+			get
+			{
+				return roads;
 			}
 		}
 
