@@ -57,7 +57,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// Then, we check if there are holes between the ranges
 			for (int i = 0; i < this.numberOfRanges - 1; i++)
 			{
-				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of fine elevation " + i + " and " + (i+1) + ". This must be fixed.");
+				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of elevation " + i + " and " + (i+1) + ". This must be fixed.");
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			for (int i = 0; i < this.numberOfRanges; i++)
 			{
-				ModelCore.UI.WriteLine("   Lower : " + this.listOfLowerThresholds[i] + "; Upper : " + this.listOfUpperThresholds[i] + "; Multi.Value : " + this.listOfCorrespondingValues[i]);
+				ModelCore.UI.WriteLine("   Lower : " + this.listOfLowerThresholds[i] + "; Upper : " + this.listOfUpperThresholds[i] + "; Associated Value : " + this.listOfCorrespondingValues[i]);
 			}
 		}
 

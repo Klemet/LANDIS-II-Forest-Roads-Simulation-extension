@@ -32,11 +32,25 @@ namespace Landis.Extension.ForestRoadsSimulation
                 new RelativeLocation(-1, -1),  // northwest
 			};
 
+		/// <summary>
+		/// Reads all of the inputed raster. Has to be called after the reading of the parameters.
+		/// </summary>
+		public static void ReadAllMaps()
+		{
+			MapManager.ReadMap(PlugIn.Parameters.ZonesForRoadCreation, "ZonesForRoadCreation");
+			MapManager.ReadMap(PlugIn.Parameters.InitialRoadNetworkMap, "InitialRoadNetworkMap");
+			MapManager.ReadMap(PlugIn.Parameters.CoarseElevationRaster, "CoarseElevationRaster");
+			MapManager.ReadMap(PlugIn.Parameters.FineElevationRaster, "FineElevationRaster");
+			MapManager.ReadMap(PlugIn.Parameters.CoarseWaterRaster, "CoarseWaterRaster");
+			MapManager.ReadMap(PlugIn.Parameters.FineWaterRaster, "FineWaterRaster");
+			MapManager.ReadMap(PlugIn.Parameters.SoilsRaster, "SoilsRaster");
+		}
 
-		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
-		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
-		// SoilRegionsContainer is used to fill up the soils map.
-		public static void ReadMap(string path, string variableName)
+
+			// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
+			// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
+			// SoilRegionsContainer is used to fill up the soils map.
+			public static void ReadMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
 
@@ -413,7 +427,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Checks in the skidding neighborhood of a site if there is an existing road.
+		/// Checks in the skidding neighborhood of a site if there is an existing road connected to a sawmill.
 		/// </summary>
 		/// <returns>
 		/// True if there is an existing road nearby; False overwise.
@@ -435,7 +449,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
 				if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns-1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows-1)
 				{
-					if (SiteVars.RoadsInLandscape[neighbor].IsARoad)
+					if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill)
 					{
 						// If the neighbour site has a road in it, we can stop right there.
 						isThereANearbyRoad = true;
@@ -579,15 +593,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Gets the closest existing site with a road on it. It has to be at a skidding distance; if not, the road will be built by another function during the road of the plugin.
+		/// Gets the closest existing site with a road on it that is connected to an exit point for the wood. It has to be at a skidding distance; if not, the road will be built by another function during the road of the plugin.
 		/// </summary>
 		/// <returns>
 		/// A site with the closest road on it. 
 		/// </returns>
 		public static Site GetClosestSiteWithRoad(List<RelativeLocation> skiddingNeighborhood, Site site)
 		{
-			// If the given site is a road, then it is the one we want.
-			if (SiteVars.RoadsInLandscape[site].IsARoad)
+			// If the given site is a connected road, then it is the one we want.
+			if (SiteVars.RoadsInLandscape[site].isConnectedToSawMill)
 			{
 				return (site);
 			}
@@ -605,7 +619,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
 					if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns - 1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows - 1)
 					{
-						if (SiteVars.RoadsInLandscape[neighbor].IsARoad && MapManager.GetDistance(site, neighbor) < minimumDistance)
+						if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill && MapManager.GetDistance(site, neighbor) < minimumDistance)
 						{
 							siteToReturn = neighbor;
 							minimumDistance = MapManager.GetDistance(site, neighbor);

@@ -78,14 +78,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// We read the raster containing the zones where the roads can be built.
 			InputVar<string> ZonesForRoadCreation = new InputVar<string>("RasterOfBuildableZones");
 			ReadVar(ZonesForRoadCreation);
-			parameters.InitialRoadNetworkMap = ZonesForRoadCreation.Value;
-			MapManager.ReadMap(ZonesForRoadCreation.Value, "ZonesForRoadCreation");
+			parameters.ZonesForRoadCreation = ZonesForRoadCreation.Value;
 
 			// On lit le raster initial des routes
 			InputVar<string> InitialRoadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
 			ReadVar(InitialRoadNetworkMap);
 			parameters.InitialRoadNetworkMap = InitialRoadNetworkMap.Value;
-			MapManager.ReadMap(InitialRoadNetworkMap.Value, "InitialRoadNetworkMap");
 
 			// We read the distance cost
 			InputVar<double> DistanceCost = new InputVar<double>("DistanceCost");
@@ -96,7 +94,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> CoarseElevationRaster = new InputVar<string>("CoarseElevationRaster");
 			ReadVar(CoarseElevationRaster);
 			parameters.CoarseElevationRaster = CoarseElevationRaster.Value;
-			MapManager.ReadMap(CoarseElevationRaster.Value, "CoarseElevationRaster");
 
 			// We read the coarse elevation cost
 			ElevationCostRanges CoarseElevationCostsTable = new ElevationCostRanges();
@@ -133,7 +130,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> FineElevationRaster = new InputVar<string>("FineElevationRaster");
 			ReadVar(FineElevationRaster);
 			parameters.FineElevationRaster = FineElevationRaster.Value;
-			MapManager.ReadMap(FineElevationRaster.Value, "FineElevationRaster");
 
 			// We read the fine elevation costs
 			ElevationCostRanges FineElevationCostsTable = new ElevationCostRanges();
@@ -170,7 +166,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> CoarseWaterRaster = new InputVar<string>("CoarseWaterRaster");
 			ReadVar(CoarseWaterRaster);
 			parameters.CoarseWaterRaster = CoarseWaterRaster.Value;
-			MapManager.ReadMap(CoarseWaterRaster.Value, "CoarseWaterRaster");
 
 			// We read the coarse water cost
 			InputVar<int> CoarseWaterCost = new InputVar<int>("CoarseWaterCost");
@@ -181,7 +176,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> FineWaterRaster = new InputVar<string>("FineWaterRaster");
 			ReadVar(FineWaterRaster);
 			parameters.FineWaterRaster = FineWaterRaster.Value;
-			MapManager.ReadMap(FineWaterRaster.Value, "FineWaterRaster");
 
 			// We read the fine water cost
 			InputVar<int> FineWaterCost = new InputVar<int>("FineWaterCost");
@@ -192,47 +186,75 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<string> SoilsRaster = new InputVar<string>("SoilsRaster");
 			ReadVar(SoilsRaster);
 			parameters.SoilsRaster = SoilsRaster.Value;
-			MapManager.ReadMap(SoilsRaster.Value, "SoilsRaster");
 
 
 			// ------------------------------------------------------------------------------
 			// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
-			// We read the primary road threshold
-			InputVar<int> PrimaryRoadThreshold = new InputVar<int>("PrimaryRoadThreshold");
-			ReadVar(PrimaryRoadThreshold);
-			parameters.PrimaryRoadThreshold = PrimaryRoadThreshold.Value;
+			// We read the road catalogue for non-exit roads
+			RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
 
-			// We read the primary multiplicative value
-			InputVar<double> PrimaryRoadMultiplication = new InputVar<double>("PrimaryRoadMultiplication");
-			ReadVar(PrimaryRoadMultiplication);
-			parameters.PrimaryRoadMultiplication = PrimaryRoadMultiplication.Value;
+			const string RoadCatalogueName = "RoadTypes";
+			ReadName(RoadCatalogueName);
 
-			// We read the secondary road threshold
-			InputVar<int> SecondaryRoadThreshold = new InputVar<int>("SecondaryRoadThreshold");
-			ReadVar(SecondaryRoadThreshold);
-			parameters.SecondaryRoadThreshold = SecondaryRoadThreshold.Value;
+			InputVar<double> LowerThresholdRoadTypes = new InputVar<double>("Lower Threshold for current road type");
+			InputVar<double> UpperThresholdRoadTypes = new InputVar<double>("Upper Threshold for current road type");
+			InputVar<int> RoadTypeID = new InputVar<int>("ID for the current road type");
+			InputVar<double> multiplicativeCostValue = new InputVar<double>("Multiplicative cost to construct this road type");
+			InputVar<int> maximumAgeBeforeDestruction = new InputVar<int>("Maximum age of use after wich the road goes back to nature");
+			InputVar<string> RoadTypeName = new InputVar<string>("Name for the current road type");
 
-			// We read the secondary multiplicative value
-			InputVar<double> SecondaryRoadMultiplication = new InputVar<double>("SecondaryRoadMultiplication");
-			ReadVar(SecondaryRoadMultiplication);
-			parameters.SecondaryRoadMultiplication = SecondaryRoadMultiplication.Value;
+			const string ExitRoadsCatalogueName = "RoadTypesForExitingWood";
 
-			// We read the temporary road percentage
-			InputVar<int> TemporaryRoadPercentage = new InputVar<int>("TemporaryRoadPercentage");
-			ReadVar(TemporaryRoadPercentage);
-			parameters.TemporaryRoadPercentage = TemporaryRoadPercentage.Value;
+			while (!AtEndOfInput && CurrentName != ExitRoadsCatalogueName)
+			{
+				StringReader currentLine = new StringReader(CurrentLine);
 
-			// We read the tertiary multiplicative value
-			InputVar<double> TertiaryRoadMultiplication = new InputVar<double>("TertiaryRoadMultiplication");
-			ReadVar(TertiaryRoadMultiplication);
-			parameters.TertiaryRoadMultiplication = TertiaryRoadMultiplication.Value;
+				ReadValue(LowerThresholdRoadTypes, currentLine);
+				ReadValue(UpperThresholdRoadTypes, currentLine);
+				ReadValue(RoadTypeID, currentLine);
+				ReadValue(multiplicativeCostValue, currentLine);
+				ReadValue(maximumAgeBeforeDestruction, currentLine);
+				ReadValue(RoadTypeName, currentLine);
 
-			// We read the temporary multiplicative value
-			InputVar<double> TemporaryRoadMultiplication = new InputVar<double>("TemporaryRoadMultiplication");
-			ReadVar(TemporaryRoadMultiplication);
-			parameters.TemporaryRoadMultiplication = TemporaryRoadMultiplication.Value;
+				RoadCatalogueNonExit.AddRange(LowerThresholdRoadTypes.Value, UpperThresholdRoadTypes.Value, RoadTypeID.Value, multiplicativeCostValue.Value, RoadTypeName.Value, maximumAgeBeforeDestruction.Value);
 
+				CheckNoDataAfter("the " + LowerThresholdRoadTypes.Name + " column",
+								currentLine);
+
+				GetNextLine();
+			}
+
+			RoadCatalogueNonExit.VerifyRanges();
+			parameters.RoadCatalogueNonExit = RoadCatalogueNonExit;
+
+			// We read the road catalogue for roads to exit the wood to
+			RoadCatalogue RoadCatalogueExit = new RoadCatalogue(true);
+
+			ReadName(ExitRoadsCatalogueName);
+
+			InputVar<int> RoadTypeIDExit = new InputVar<int>("ID for the current road type");
+			InputVar<string> RoadTypeNameExit = new InputVar<string>("Name for the current road type");
+
+			while (!AtEndOfInput)
+			{
+				StringReader currentLine = new StringReader(CurrentLine);
+
+				ReadValue(RoadTypeIDExit, currentLine);
+				ReadValue(RoadTypeNameExit, currentLine);
+
+
+				RoadCatalogueExit.AddExitRoadType(RoadTypeIDExit.Value, RoadTypeNameExit.Value);
+
+				CheckNoDataAfter("the " + RoadTypeIDExit.Name + " column",
+								currentLine);
+
+				GetNextLine();
+			}
+
+			parameters.RoadCatalogueExit = RoadCatalogueExit;
+
+			// Now that everything is done, we return the parameter object.
 			return (parameters);
 		}
 
@@ -274,14 +296,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ModelCore.UI.WriteLine("   Fine water raster : " + Parameters.CoarseWaterRaster);
 			ModelCore.UI.WriteLine("   Fine water cost : " + Parameters.FineWaterCost);
 			ModelCore.UI.WriteLine("   Soils raster : " + Parameters.SoilsRaster);
-
-			ModelCore.UI.WriteLine("   Primary Road Threshold : " + Parameters.PrimaryRoadThreshold);
-			ModelCore.UI.WriteLine("   Primary Road Multiplication Value : " + Parameters.PrimaryRoadMultiplication);
-			ModelCore.UI.WriteLine("   Secondary Road Threshold : " + Parameters.SecondaryRoadThreshold);
-			ModelCore.UI.WriteLine("   Secondary Road Multiplication Value : " + Parameters.SecondaryRoadMultiplication);
-			ModelCore.UI.WriteLine("   Percentage of temporary roads : " + Parameters.TemporaryRoadPercentage);
-			ModelCore.UI.WriteLine("   Tertiary Road Multiplication Value : " + Parameters.TertiaryRoadMultiplication);
-			ModelCore.UI.WriteLine("   Temporary Road Multiplication Value : " + Parameters.TemporaryRoadMultiplication);
+			ModelCore.UI.WriteLine("   Road types : ");
+			PlugIn.Parameters.RoadCatalogueNonExit.DisplayRangesInConsole(ModelCore);
+			ModelCore.UI.WriteLine("   Road types for exiting wood off the landscape : ");
+			PlugIn.Parameters.RoadCatalogueExit.DisplayRangesInConsole(ModelCore);
 		}
 
 	}

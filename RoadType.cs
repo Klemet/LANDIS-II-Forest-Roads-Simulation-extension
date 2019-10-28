@@ -5,6 +5,7 @@
 using Landis.SpatialModeling;
 // using Landis.SpatialModeling.CoreServices;
 using Landis.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace Landis.Extension.ForestRoadsSimulation
@@ -14,46 +15,45 @@ namespace Landis.Extension.ForestRoadsSimulation
 	/// </summary>
 	public class RoadType
 	{
-		// The type number is :
-		// 1 - Primary road
-		// 2 - Secondary road
-		// 3 - Tertiary road
-		// 4 - Winter road
-		// 5 - Sawmill
-		// 6 - Main Road Network (Paved)
-		// 7 - Undertermined (but there is a road)
 		public int typeNumber { get; set; }
 		public double timestepWoodFlux { get; set; }
 		public bool isConnectedToSawMill { get; set; }
+		public int roadAge { get; set; }
 
 		public RoadType(int type)
 		{
 			this.typeNumber = type;
 			this.timestepWoodFlux = 0;
-			if (this.typeNumber == 5 || this.typeNumber == 6) this.isConnectedToSawMill = true;
+			this.roadAge = 0;
+			if (PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber)) this.isConnectedToSawMill = true;
 			else this.isConnectedToSawMill = false;
 		}
 
 		public string getRoadTypeName()
 		{
-			string name = "";
-			if (this.typeNumber == 1) name = "Primary road";
-			else if (this.typeNumber == 2) name = "Secondary road";
-			else if (this.typeNumber == 3) name = "Tertiary road";
-			else if (this.typeNumber == 4) name = "Winter road";
-			else if (this.typeNumber == 5) name = "Sawmill";
-			else if (this.typeNumber == 6) name = "Main Road Network (Paved)";
-			else if (this.typeNumber == 7) name = "Undertermined (but there is a road)";
-			else name = "Invalid road type/No road";
-
-			return (name);
+			if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber))
+			{
+				return (PlugIn.Parameters.RoadCatalogueNonExit.roadNames[this.typeNumber]);
+			}
+			else if (PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
+			{
+				return (PlugIn.Parameters.RoadCatalogueExit.roadNames[this.typeNumber]);
+			}
+			else if (this.typeNumber == 0)
+			{
+				return ("No road");
+			}
+			else
+			{
+				throw new Exception("Forest Roads Simulation : A road type name couldn't be found. This is an internal problem, or a parameter file issue.");
+			}
 		}
 
 		public bool IsARoad
 		{
 			get
 			{
-				if (this.typeNumber <= 7 && this.typeNumber >= 1) return (true);
+				if (this.typeNumber != 0) return (true);
 				else return (false);
 			}
 		}
@@ -62,8 +62,27 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			get
 			{
-				if (this.typeNumber == 5 || this.typeNumber == 6) return (true);
+				if (PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber)) return (true);
 				else return (false);
+			}
+		}
+
+		/// <summary>
+		/// Makes the road age according to the timestep of the extension. If the age of the road is above the limit of age for her type before it gets destroyed, then the road gets destroyed (back to type 0)
+		/// </summary>
+		/// <returns></returns>
+		public void agingTheRoad()
+		{
+			this.roadAge += PlugIn.Parameters.Timestep;
+
+			// We only take into account the roads that are not exit points for the wood. Those are immortal.
+			if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber))
+			{
+				if (this.roadAge > PlugIn.Parameters.RoadCatalogueNonExit.maximumAgeBeforeDestruction[this.typeNumber])
+				{
+					this.typeNumber = 0;
+					this.isConnectedToSawMill = false;
+				}
 			}
 		}
 
@@ -72,12 +91,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </summary>
 		public void UpdateAccordingToWoodFlux()
 		{
-			// If the flux of wood is lower than the threshold for a secondary road, and if the road is undertimined, then it updates to a tertiary road.
-			if (this.timestepWoodFlux < PlugIn.Parameters.SecondaryRoadThreshold && this.typeNumber == 7) { this.typeNumber = 3; }
-			// If the flux is enough to become a secondary road, and if the road is not already a secondary or primary road, it becomes a secondary road.
-			else if (this.timestepWoodFlux < PlugIn.Parameters.PrimaryRoadThreshold && (this.typeNumber == 7 || this.typeNumber == 3)) { this.typeNumber = 2; }
-			// If the flux is enought to become a primary road, and if the road is not already primary, it becomes a primary road.
-			else if (this.timestepWoodFlux >= PlugIn.Parameters.PrimaryRoadThreshold && (this.typeNumber == 7 || this.typeNumber == 3 || this.typeNumber == 2)) { this.typeNumber = 1;  }
+			// If the road ID of this road corresponds to an exit point for the road, we won't update it.
+			if (!PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
+			{
+				int roadIDCorrespondingToFlux = PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingID(this.timestepWoodFlux);
+				// We make the update only if the current road is not of a higher rank, wood-flux-wise, or if it is an undertimined type of road (code : -1)
+				if (this.typeNumber == -1 || PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadIDCorrespondingToFlux, this.typeNumber))
+				{
+					this.typeNumber = roadIDCorrespondingToFlux;
+					// As this is a road update, the age of the road goes back to 0.
+					this.roadAge = 0;
+				}
+			}
 		}
 
 	}

@@ -73,7 +73,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <param name="startingSite">
 		/// The starting site of the search.
 		/// </param>
-		public static bool DijkstraSearchForPlaceToPutWood(ICore ModelCore, Site startingSite)
+		public static bool DijkstraSearchForPlaceToPutWood(ICore ModelCore, Site startingSite, Dictionary<Site, bool> connectionDictonnary)
 		{
 			// We get the open and closed lists ready
 			List<SiteForPathfinding> openSearchList = new List<SiteForPathfinding>();
@@ -89,11 +89,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 			openSearchList.Add(startingSiteAsPathfinding);
 
 			// We loop until the list is empty, or when we found what we're looking for
-			while (openSearchList.Count > 0 && !haveWeFoundPlaceToPutWood)
+			while (openSearchList.Count > 0)
 			{
 				// We take the site with the lowest distance to start. We don't use the "sort" function as it could take more time than needed for what we want.
 				Tuple<int, SiteForPathfinding> siteToCloseWithIndex = GetOpenedSiteWithSmallestDistance(openSearchList);
 				SiteForPathfinding siteToClose = siteToCloseWithIndex.Item2;
+				exploredRoadsList.Add(siteToClose);
 
 				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSitesWithRoads(siteToClose.site))
@@ -118,29 +119,47 @@ namespace Landis.Extension.ForestRoadsSimulation
 							openSearchList.Add(neighbourToOpenAsPathfinding);
 						}
 
-						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
-						// is connected to such a place. If so, we can stop the search.
-						haveWeFoundPlaceToPutWood = (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].isConnectedToSawMill);
-						if (haveWeFoundPlaceToPutWood) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; break; }
+						// We stop if we reach a site that has already been checked by the grander algorithm of the road network, as indicated
+						// by the presence of the neighbor in the connectionDictonnary.
+						if (connectionDictonnary.ContainsKey(neighbourToOpenAsPathfinding.site) || SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].IsAPlaceForTheWoodToGo)
+						{
+							// If the site was an exit point, everybody was connected.
+							if (SiteVars.RoadsInLandscape[neighbourToOpenAsPathfinding.site].IsAPlaceForTheWoodToGo)
+							{
+								haveWeFoundPlaceToPutWood = true;
+							}
+							// If the reached site has been checked as not connected, then all of the roads we have been exploring are not connected too.
+							// We stop the loop, and indicate that we have not found a place to put the wood.
+							else if (!connectionDictonnary[neighbourToOpenAsPathfinding.site])
+							{
+								haveWeFoundPlaceToPutWood = false;
+							}
+							// If the site reached is indicated as connected, then we stop the loop and indicate that we found a exit point to connect.
+							else
+							{
+								haveWeFoundPlaceToPutWood = true;
+							}
+							goto End;
+						}
 					}
 
 				}
 
 				// Now that we have checked all of its neighbours, we can close the current node.
 				siteToClose.isClosed = true;
-				exploredRoadsList.Add(siteToClose);
 				openSearchList.RemoveAt(siteToCloseWithIndex.Item1);
 				siteToClose.isOpen = false;
 			}
-			// ModelCore.UI.WriteLine("Dijkstra search is over.");
+		// ModelCore.UI.WriteLine("Dijkstra search is over.");
 
-			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
-			// We can now retrieve the list of the sites that are the least cost path, and make sure that all of these site are indicated as 
-			// connected to a place where we can make wood go.
-			if (haveWeFoundPlaceToPutWood)
+		End:
+
+			// Now that we reached the end, we are going to look at all the explored site, and update their status in the connectionDictonnary
+			// according to if we found an exit point to connect to or not.
+			foreach (SiteForPathfinding exploredSite in exploredRoadsList)
 			{
-				exploredRoadsList.AddRange(openSearchList);
-				foreach (SiteForPathfinding site in exploredRoadsList) { SiteVars.RoadsInLandscape[site.site].isConnectedToSawMill = true; }
+				if (haveWeFoundPlaceToPutWood) { connectionDictonnary[exploredSite.site] = true; }
+				else { connectionDictonnary[exploredSite.site] = false; }
 			}
 
 			// Whatever happens, we give back an indication that we found - or not - a place to go through the neighbors.
@@ -256,8 +275,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
 				foreach (Site site in listOfSitesInLeastCostPath)
 				{
-					// If there is no road on this site, we construct it.
-					if (!SiteVars.RoadsInLandscape[site].IsARoad) SiteVars.RoadsInLandscape[site].typeNumber = 7;
+					// If there is no road on this site, we construct it. We give it the code of an undefiened road for now.
+					if (!SiteVars.RoadsInLandscape[site].IsARoad) SiteVars.RoadsInLandscape[site].typeNumber = -1;
 					// Whatever it is, we indicate it as connected.
 					SiteVars.RoadsInLandscape[site].isConnectedToSawMill = true;
 				}

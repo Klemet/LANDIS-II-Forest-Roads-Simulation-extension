@@ -159,61 +159,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// ------------------------------------------------------------------------------
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
-		/// <summary>
-		/// Threshold of timber flux above which the forest road must be a primary road
-		/// </summary>
-		int PrimaryRoadThreshold
+		RoadCatalogue RoadCatalogueNonExit
 		{
 			get; set;
 		}
 
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a primary road.
-		/// </summary>
-		double PrimaryRoadMultiplication
+		RoadCatalogue RoadCatalogueExit
 		{
 			get; set;
 		}
 
-		/// <summary>
-		/// Threshold of timber flux above which the forest road must be a secondary road
-		/// </summary>
-		int SecondaryRoadThreshold
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a secondary road.
-		/// </summary>
-		double SecondaryRoadMultiplication
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Percentage of constructed road that accodomate a flux for a tertiary road that will be able to become a temporary road.
-		/// </summary>
-		int TemporaryRoadPercentage
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a tertiary road.
-		/// </summary>
-		double TertiaryRoadMultiplication
-		{
-			get; set;
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a temporary road.
-		/// </summary>
-		double TemporaryRoadMultiplication
-		{
-			get; set;
-		}
 	}
 }
 
@@ -245,13 +200,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private int fineWaterCost;
 		private string soilsRaster;
 
-		private int primaryRoadThreshold;
-		private double primaryRoadMultiplication;
-		private int secondaryRoadThreshold;
-		private double secondaryRoadMultiplication;
-		private int temporaryRoadPercentage;
-		private double tertiaryRoadMultiplication;
-		private double temporaryRoadMultiplication;
+		private RoadCatalogue roadCatalogueNonExit;
+		private RoadCatalogue roadCatalogueExit;
 
 		// ------------------------------------------------------------------------------
 		// BASIC PARAMETERS
@@ -579,121 +529,36 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
 		/// <summary>
-		/// Threshold of timber flux above which the forest road must be a primary road
+		/// The object containing all of the informations on the road types.
 		/// </summary>
-		public int PrimaryRoadThreshold
+		public RoadCatalogue RoadCatalogueNonExit
 		{
 			get
 			{
-				return primaryRoadThreshold;
+				return roadCatalogueNonExit;
 			}
 			set
 			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else primaryRoadThreshold = value;
+				if (value == null)
+					throw new InputValueException(value.ToString(), "Value must not be null.");
+				else roadCatalogueNonExit = value;
 			}
 		}
 
 		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a primary road.
+		/// The object containing all of the informations on the road type where the wood can exit.
 		/// </summary>
-		public double PrimaryRoadMultiplication
+		public RoadCatalogue RoadCatalogueExit
 		{
 			get
 			{
-				return primaryRoadMultiplication;
+				return roadCatalogueExit;
 			}
 			set
 			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else primaryRoadMultiplication = value;
-			}
-		}
-
-		/// <summary>
-		/// Threshold of timber flux above which the forest road must be a secondary road
-		/// </summary>
-		public int SecondaryRoadThreshold
-		{
-			get
-			{
-				return secondaryRoadThreshold;
-			}
-			set
-			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else secondaryRoadThreshold = value;
-			}
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a secondary road.
-		/// </summary>
-		public double SecondaryRoadMultiplication
-		{
-			get
-			{
-				return secondaryRoadMultiplication;
-			}
-			set
-			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else secondaryRoadMultiplication = value;
-			}
-		}
-
-		/// <summary>
-		/// Percentage of constructed road that accodomate a flux for a tertiary road that will be able to become a temporary road.
-		/// </summary>
-		public int TemporaryRoadPercentage
-		{
-			get
-			{
-				return temporaryRoadPercentage;
-			}
-			set
-			{
-				if (value < 0)
-					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
-				else temporaryRoadPercentage = value;
-			}
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a tertiary road.
-		/// </summary>
-		public double TertiaryRoadMultiplication
-		{
-			get
-			{
-				return tertiaryRoadMultiplication;
-			}
-			set
-			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else tertiaryRoadMultiplication = value;
-			}
-		}
-
-		/// <summary>
-		/// Value used to multiply the base cost of the construction of a forest road to obtain the cost of construction for a temporary road.
-		/// </summary>
-		public double TemporaryRoadMultiplication
-		{
-			get
-			{
-				return temporaryRoadMultiplication;
-			}
-			set
-			{
-				if (value <= 0)
-					throw new InputValueException(value.ToString(), "Value must be > 0.");
-				else temporaryRoadMultiplication = value;
+				if (value == null)
+					throw new InputValueException(value.ToString(), "Value must not be null.");
+				else roadCatalogueExit = value;
 			}
 		}
 

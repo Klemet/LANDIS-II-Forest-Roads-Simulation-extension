@@ -107,6 +107,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			modelCore.UI.WriteLine("  Initialization of the Forest Roads Simulation Extension...");
 			Timestep = parameters.Timestep;
+			modelCore.UI.WriteLine("  Reading the rasters...");
+			// We read all of the maps.
+			MapManager.ReadAllMaps();
 
 			// Testing if a harvest extension is included in the scenario and thus initialized
 			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
@@ -154,19 +157,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
 			else if (this.harvestExtensionDetected)
 			{
-				// We get all of the sites for which a road must be constructed
+				// 1) We age all of the roads in the landscape. Those that are too old will be considered destroyed.
+				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				foreach (Site siteWithRoad in listOfSitesWithRoads)
+				{
+					SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad();
+				}
+
+				// 2) We update the status of all the roads concerning their connection to an exit point (sawmill or main road network); so that the pathfinding algorithms can now when to stop afterward.
+				ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
+				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				RoadNetwork.UpdateConnectionToExitPointStatus(listOfSitesWithRoads);
+
+				// 3) We get all of the sites for which a road must be constructed
 				modelCore.UI.WriteLine("  Getting sites recently harvested...");
 				List<Site> listOfHarvestedSites = MapManager.GetAllRecentlyHarvestedSites(ModelCore, Timestep);
 
-				// We shuffle the list according to the heuristic given by the user.
+				// 4) We shuffle the list according to the heuristic given by the user.
 				modelCore.UI.WriteLine("  Shuffling sites according to the heuristic...");
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
 
+				// 5) We reset the wood flux going through the roads for the current timestep.
+				RoadNetwork.RestTimestepWoodFlux();
+
+				// 6) We initialize some UI elements because this step takes time.
 				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
 				modelCore.UI.WriteLine("  Generating roads to harvested sites and fluxing the wood...");
-				// We reset the wood flux going through the roads for the current timestep.
-				RoadNetwork.RestTimestepWoodFlux();
-				// We initialize some UI elements because this step takes time.
 				var progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
 				var watch = System.Diagnostics.Stopwatch.StartNew();
 				int roadConstructedAtThisTimestep = 0;
@@ -195,19 +211,19 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 				modelCore.UI.WriteLine("   The construction and the fluxing of wood took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 
-				// We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user.
-				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+				// 7) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user.
+				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 
 				foreach (Site siteWithRoad in listOfSitesWithRoads)
 				{
 					SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux();
 				}
 
-				// On écrit la carte output du réseau de routes
+				// 8) We write the output maps
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore, "WoodFlux");
 
-				// We write the log
+				// 9) We write the log, and we're done for this timestep.
 				roadConstructionLog.Clear();
 				RoadLog roadLog = new RoadLog();
 				roadLog.Timestep = modelCore.CurrentTime;
