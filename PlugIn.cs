@@ -81,7 +81,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			modelCore.UI.WriteLine("   Parameters of the Forest Roads Simulation Extension are loaded");
 
 			// For debugging purposes
-			// InputParameterParser.DisplayParameters();
+			InputParameterParser.DisplayParameters();
 
 			// Proof that the input map of roads has been properly read
 			/*
@@ -157,17 +157,23 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If not, we do what the extension have to do at its timestep : for each recently harvested site, we'll try to build a road that lead to it if needed.
 			else if (this.harvestExtensionDetected)
 			{
-				// 1) We age all of the roads in the landscape. Those that are too old will be considered destroyed.
-				List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-				foreach (Site siteWithRoad in listOfSitesWithRoads)
+				// 1) We age all of the roads in the landscape, if aging is simulated. Those that are too old will be considered destroyed.
+				List<Site> listOfSitesWithRoads;
+				if (parameters.SimulationOfRoadAging)
 				{
-					SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad();
+
+					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+					foreach (Site siteWithRoad in listOfSitesWithRoads)
+					{
+						SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad();
+					}
+
+					// 2) We update the status of all the roads concerning their connection to an exit point (sawmill or main road network); so that the pathfinding algorithms can now when to stop afterward.
+					ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
+					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+					RoadNetwork.UpdateConnectionToExitPointStatus(listOfSitesWithRoads);
 				}
 
-				// 2) We update the status of all the roads concerning their connection to an exit point (sawmill or main road network); so that the pathfinding algorithms can now when to stop afterward.
-				ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
-				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-				RoadNetwork.UpdateConnectionToExitPointStatus(listOfSitesWithRoads);
 
 				// 3) We get all of the sites for which a road must be constructed
 				modelCore.UI.WriteLine("  Getting sites recently harvested...");
@@ -177,8 +183,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("  Shuffling sites according to the heuristic...");
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
 
-				// 5) We reset the wood flux going through the roads for the current timestep.
-				RoadNetwork.RestTimestepWoodFlux();
+				// 5) We reset the wood flux going through the roads for the current timestep, if wood flux is sumlated
+				if (parameters.SimulationOfWoodFlux)
+				{
+					RoadNetwork.RestTimestepWoodFlux();
+				}
 
 				// 6) We initialize some UI elements because this step takes time.
 				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
@@ -196,13 +205,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 						roadConstructedAtThisTimestep++;
 					}
 
-					// We add the woodflux from the harvested area to the closest road, and we then used a dijkstra search that only goes through roads
+					// If woodflux is simulated, We add the woodflux from the harvested area to the closest road, and we then used a dijkstra search that only goes through roads
 					// in order to reach an exit point for the wood. Every road used will see its flux value for the timestep augment by one.
 					// The quantity of woodflux is based on the number of cohorts harvested in the cell.
-					int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
-					Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
+					if (parameters.SimulationOfWoodFlux)
+					{
+						int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
+						Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
 
-					DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+						DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+					}
 
 					progressBar.IncrementWorkDone(1);
 				}
@@ -211,17 +223,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 				modelCore.UI.WriteLine("   The construction and the fluxing of wood took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 
-				// 7) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user.
-				listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-
-				foreach (Site siteWithRoad in listOfSitesWithRoads)
+				// 7) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user, if woodflux is simulated.
+				if (parameters.SimulationOfWoodFlux)
 				{
-					SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux();
+					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
+
+					foreach (Site siteWithRoad in listOfSitesWithRoads)
+					{
+						SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux();
+					}
+
 				}
 
 				// 8) We write the output maps
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
-				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore, "WoodFlux");
+				if (parameters.SimulationOfWoodFlux) { MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore, "WoodFlux"); }
 
 				// 9) We write the log, and we're done for this timestep.
 				roadConstructionLog.Clear();

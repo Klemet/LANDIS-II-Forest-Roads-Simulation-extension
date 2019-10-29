@@ -93,7 +93,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// A function to verify if the ranges ae complementory, or if they are spaces between them.
+		/// A function to verify if the ranges are complementory, or if they are spaces between them.
 		/// </summary>
 		public void VerifyRanges()
 		{
@@ -107,6 +107,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 			for (int i = 0; i < this.numberOfRanges - 1; i++)
 			{
 				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of wood flux " + i + " and " + (i + 1) + " in the road types. This must be fixed.");
+			}
+		}
+
+		/// <summary>
+		/// A function to verify if all the ages entered are superior to 0.
+		/// </summary>
+		public void VerifyAges()
+		{
+			for (int i = 0; i < this.numberOfRanges; i++)
+			{
+				if (this.maximumAgeBeforeDestruction[this.listOfRoadTypesID[i]] <= 0 ) throw new Exception("Forest Roads Simulation : the age before road destruction entered for road ID " + this.listOfRoadTypesID[i] + " is null or negative. Please, make it positive and superior to 0 if you want road aging to be simulated.");
 			}
 		}
 
@@ -157,7 +168,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				if (!this.isItExitCatalogue) { ModelCore.UI.WriteLine("   Lower : " + this.listOfLowerThresholds[i] + "; Upper : " + this.listOfUpperThresholds[i]
 					+ "; RoadTypeID : " + this.listOfRoadTypesID[i] + "; RoadTypeName : " + this.roadNames[this.listOfRoadTypesID[i]] 
-					+ "; Multiplicative cost value : " + this.multiplicativeCostValue[this.listOfRoadTypesID[i]]); }
+					+ "; Multiplicative cost value : " + this.multiplicativeCostValue[this.listOfRoadTypesID[i]]
+					+ "; Maximum age before destruction : " + this.maximumAgeBeforeDestruction[this.listOfRoadTypesID[i]]); }
 
 				else { ModelCore.UI.WriteLine("RoadTypeID: " + this.listOfRoadTypesID[i] + "; RoadTypeName : " + this.roadNames[this.listOfRoadTypesID[i]]); }
 			}

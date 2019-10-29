@@ -159,6 +159,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// ------------------------------------------------------------------------------
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
+		bool SimulationOfRoadAging
+		{
+			get; set;
+		}
+
+		bool SimulationOfWoodFlux
+		{
+			get; set;
+		}
+
 		RoadCatalogue RoadCatalogueNonExit
 		{
 			get; set;
@@ -200,6 +210,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private int fineWaterCost;
 		private string soilsRaster;
 
+		private bool simulationOfRoadAging;
+		private bool simulationOfWoodFlux;
 		private RoadCatalogue roadCatalogueNonExit;
 		private RoadCatalogue roadCatalogueExit;
 
@@ -527,6 +539,36 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		// ------------------------------------------------------------------------------
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
+
+		/// <summary>
+		/// Indicate if road aging will be simulated
+		/// </summary>
+		public bool SimulationOfRoadAging
+		{
+			get
+			{
+				return simulationOfRoadAging;
+			}
+			set
+			{
+				simulationOfRoadAging = value;
+			}
+		}
+
+		/// <summary>
+		/// Indicate if road aging will be simulated
+		/// </summary>
+		public bool SimulationOfWoodFlux
+		{
+			get
+			{
+				return simulationOfWoodFlux;
+			}
+			set
+			{
+				simulationOfWoodFlux = value;
+			}
+		}
 
 		/// <summary>
 		/// The object containing all of the informations on the road types.

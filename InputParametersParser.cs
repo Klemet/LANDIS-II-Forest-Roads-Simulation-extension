@@ -191,6 +191,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// ------------------------------------------------------------------------------
 			// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
+			// We read the parameters indicating if the aging and the woodflux will be simulated
+			InputVar<bool> SimulationOfRoadAging = new InputVar<bool>("SimulationOfRoadAging");
+			ReadVar(SimulationOfRoadAging);
+			parameters.SimulationOfRoadAging = SimulationOfRoadAging.Value;
+			InputVar<bool> SimulationOfWoodFlux = new InputVar<bool>("SimulationOfWoodFlux");
+			ReadVar(SimulationOfWoodFlux);
+			parameters.SimulationOfWoodFlux = SimulationOfWoodFlux.Value;
+
 			// We read the road catalogue for non-exit roads
 			RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
 
@@ -203,6 +211,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<double> multiplicativeCostValue = new InputVar<double>("Multiplicative cost to construct this road type");
 			InputVar<int> maximumAgeBeforeDestruction = new InputVar<int>("Maximum age of use after wich the road goes back to nature");
 			InputVar<string> RoadTypeName = new InputVar<string>("Name for the current road type");
+			// Variables used to adapt with the use of road aging and wood flux or not.
+			double dummyLowerThreshold;
+			double dummyUpperThreshold;
+			int dummyAgeBeforeDestruction;
 
 			const string ExitRoadsCatalogueName = "RoadTypesForExitingWood";
 
@@ -210,14 +222,41 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				StringReader currentLine = new StringReader(CurrentLine);
 
-				ReadValue(LowerThresholdRoadTypes, currentLine);
-				ReadValue(UpperThresholdRoadTypes, currentLine);
+				// We only read flux values if wood flux will be simulated
+				if (parameters.SimulationOfWoodFlux)
+				{
+					ReadValue(LowerThresholdRoadTypes, currentLine);
+					ReadValue(UpperThresholdRoadTypes, currentLine);
+				}
 				ReadValue(RoadTypeID, currentLine);
 				ReadValue(multiplicativeCostValue, currentLine);
-				ReadValue(maximumAgeBeforeDestruction, currentLine);
+				// We read the age only if aging is simulated
+				if (parameters.SimulationOfRoadAging)
+				{
+					ReadValue(maximumAgeBeforeDestruction, currentLine);
+				}
 				ReadValue(RoadTypeName, currentLine);
 
-				RoadCatalogueNonExit.AddRange(LowerThresholdRoadTypes.Value, UpperThresholdRoadTypes.Value, RoadTypeID.Value, multiplicativeCostValue.Value, RoadTypeName.Value, maximumAgeBeforeDestruction.Value);
+				// We fill the dummy values to adapt to the AddRange function
+				if (!parameters.SimulationOfWoodFlux)
+				{
+					dummyLowerThreshold = 0;
+					dummyUpperThreshold = 0;
+				}
+				else
+				{
+					dummyLowerThreshold = LowerThresholdRoadTypes.Value;
+					dummyUpperThreshold = UpperThresholdRoadTypes.Value;
+				}
+				if (!parameters.SimulationOfRoadAging)
+				{
+					dummyAgeBeforeDestruction = int.MaxValue;
+				}
+				else
+				{
+					dummyAgeBeforeDestruction = maximumAgeBeforeDestruction.Value;
+				}
+				RoadCatalogueNonExit.AddRange(dummyLowerThreshold, dummyUpperThreshold, RoadTypeID.Value, multiplicativeCostValue.Value, RoadTypeName.Value, dummyAgeBeforeDestruction);
 
 				CheckNoDataAfter("the " + LowerThresholdRoadTypes.Name + " column",
 								currentLine);
@@ -225,7 +264,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				GetNextLine();
 			}
 
-			RoadCatalogueNonExit.VerifyRanges();
+			if (parameters.SimulationOfWoodFlux) { RoadCatalogueNonExit.VerifyRanges(); }
+			if (parameters.SimulationOfRoadAging) { RoadCatalogueNonExit.VerifyAges(); }
 			parameters.RoadCatalogueNonExit = RoadCatalogueNonExit;
 
 			// We read the road catalogue for roads to exit the wood to
