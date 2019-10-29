@@ -272,13 +272,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// indicated as connected to a place where we can make wood go.
 			if (haveWeFoundARoadToConnectTo)
 			{
-				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
-				foreach (Site site in listOfSitesInLeastCostPath)
+				List<SiteForPathfinding> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
+				for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
 				{
 					// If there is no road on this site, we construct it. We give it the code of an undefiened road for now.
-					if (!SiteVars.RoadsInLandscape[site].IsARoad) SiteVars.RoadsInLandscape[site].typeNumber = -1;
+					if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].typeNumber = -1;
 					// Whatever it is, we indicate it as connected.
-					SiteVars.RoadsInLandscape[site].isConnectedToSawMill = true;
+					SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].isConnectedToSawMill = true;
+					// We also add the cost of transition to the costs of construction and repair for this timestep
+					if (i < listOfSitesInLeastCostPath.Count - 1) RoadNetwork.costOfConstructionAndRepairsAtTimestep += listOfSitesInLeastCostPath[i].CostOfTransition(listOfSitesInLeastCostPath[i + 1].site);
 				}
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
@@ -383,10 +385,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// indicated as connected to a place where we can make wood go.
 			if (haveWeFoundARoadToConnectTo)
 			{
-				List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
-				foreach (Site site in listOfSitesInLeastCostPath)
+				List<SiteForPathfinding> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
+				foreach (SiteForPathfinding site in listOfSitesInLeastCostPath)
 				{
-					SiteVars.RoadsInLandscape[site].timestepWoodFlux += woodFlux;
+					SiteVars.RoadsInLandscape[site.site].timestepWoodFlux += woodFlux;
 				}
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen.");

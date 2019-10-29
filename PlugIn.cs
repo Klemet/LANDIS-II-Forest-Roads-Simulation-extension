@@ -189,12 +189,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 					RoadNetwork.RestTimestepWoodFlux();
 				}
 
-				// 6) We initialize some UI elements because this step takes time.
+				// 6) We initialize some UI elements because this step takes time, and set the cost of construction/repairs at this timestep to 0.
 				modelCore.UI.WriteLine("  Number of recently harvested sites : " + listOfHarvestedSites.Count);
 				modelCore.UI.WriteLine("  Generating roads to harvested sites and fluxing the wood...");
 				var progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
 				var watch = System.Diagnostics.Stopwatch.StartNew();
 				int roadConstructedAtThisTimestep = 0;
+				RoadNetwork.costOfConstructionAndRepairsAtTimestep = 0;
 
 				foreach (Site harvestedSite in listOfHarvestedSites)
 				{
@@ -246,6 +247,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				roadLog.NumberOfHarvestedSitesToConnect = listOfHarvestedSites.Count;
 				roadLog.NumberOfRoadsConstructed = roadConstructedAtThisTimestep;
 				roadLog.TimeTaken = (int)watch.ElapsedMilliseconds / (1000 * 60);
+				roadLog.CostOfConstructionAndRepairs = RoadNetwork.costOfConstructionAndRepairsAtTimestep;
 				roadConstructionLog.AddObject(roadLog);
 				roadConstructionLog.WriteToFile();
 

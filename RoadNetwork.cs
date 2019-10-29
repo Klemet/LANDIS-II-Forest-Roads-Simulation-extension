@@ -13,6 +13,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class RoadNetwork
 	{
+		public static double costOfConstructionAndRepairsAtTimestep;
+
 		/// <summary>
 		/// Updates the status of being connected to a place where the harvested wood can flow to (sawmill, etc.) for each of the given roads.
 		/// </summary>

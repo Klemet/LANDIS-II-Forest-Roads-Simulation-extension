@@ -20,5 +20,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		[DataFieldAttribute(Unit = FieldUnits.minutes, Desc = "Time taken for the construction")]
 		public int TimeTaken { set; get; }
+
+		[DataFieldAttribute(Unit = FieldUnits.Count, Desc = "Cost of road construction or repair in monetary units")]
+		public double CostOfConstructionAndRepairs { set; get; }
 	}
 }

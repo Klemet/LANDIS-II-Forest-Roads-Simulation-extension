@@ -79,9 +79,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// /// <param name="startingSite">
 		/// The starting site of the search.
 		/// </param>
-		public List<Site> FindPathToStart(SiteForPathfinding startingSite)
+		public List<SiteForPathfinding> FindPathToStart(SiteForPathfinding startingSite)
 		{
-			List<Site> ListOfSitesInThePath = new List<Site>();
+			List<SiteForPathfinding> ListOfSitesInThePath = new List<SiteForPathfinding>();
 			SiteForPathfinding currentSite = this;
 			SiteForPathfinding nextPredecessor;
 			bool foundStartingSite = false;
@@ -93,7 +93,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			while (!foundStartingSite)
 			{
 
-				ListOfSitesInThePath.Add(nextPredecessor.site);
+				ListOfSitesInThePath.Add(nextPredecessor);
 				if (nextPredecessor.site.Location == startingSite.site.Location) foundStartingSite = true;
 				else
 				{
