@@ -140,6 +140,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
 				// We initialize the metadatas
 				MetadataHandler.InitializeMetadata();
+				// If we are going to simulate the wood flux, we initialize objects important for it.
+				if (parameters.SimulationOfWoodFlux)
+				{
+					RoadNetwork.fluxPathCatalogue = new List<FluxPath>();
+					RoadNetwork.fluxPathDictionary = new Dictionary<Site, FluxPath>();
+				}
 			}
 			modelCore.UI.WriteLine("   Initialization of the Forest Roads Simulation Extension is done");
 
@@ -183,10 +189,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("  Shuffling sites according to the heuristic...");
 				listOfHarvestedSites = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfHarvestedSites, parameters.HeuristicForNetworkConstruction);
 
-				// 5) We reset the wood flux going through the roads for the current timestep, if wood flux is sumlated
+				// 5) We reset the wood flux objects and data for the current timestep, if wood flux is sumlated
 				if (parameters.SimulationOfWoodFlux)
 				{
-					RoadNetwork.RestTimestepWoodFlux();
+					modelCore.UI.WriteLine("  Reseting wood flux data...");
+					RoadNetwork.RestTimestepWoodFluxData();
 				}
 
 				// 6) We initialize some UI elements because this step takes time, and set the cost of construction/repairs at this timestep to 0.

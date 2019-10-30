@@ -87,13 +87,42 @@ namespace Landis.Extension.ForestRoadsSimulation
 			bool foundStartingSite = false;
 			// Case of this node being the starting site (you never know)
 			// so as to avoid potential errors.
-			if (this.site.Location == startingSite.site.Location) { foundStartingSite = true; nextPredecessor = currentSite; }
+			if (this.site.Location == startingSite.site.Location) { foundStartingSite = true; nextPredecessor = currentSite; ListOfSitesInThePath.Add(currentSite); }
 			else nextPredecessor = this.predecessor;
 
 			while (!foundStartingSite)
 			{
 
 				ListOfSitesInThePath.Add(nextPredecessor);
+				if (nextPredecessor.site.Location == startingSite.site.Location) foundStartingSite = true;
+				else
+				{
+					currentSite = nextPredecessor;
+					nextPredecessor = currentSite.predecessor;
+				}
+			}
+
+			return (ListOfSitesInThePath);
+		}
+
+		/// <summary>
+		/// Same than FindPathToStart, but returns a list of sites.
+		/// </summary>
+		public List<Site> FindPathToStartAsSites(SiteForPathfinding startingSite)
+		{
+			List<Site> ListOfSitesInThePath = new List<Site>();
+			SiteForPathfinding currentSite = this;
+			SiteForPathfinding nextPredecessor;
+			bool foundStartingSite = false;
+			// Case of this node being the starting site (you never know)
+			// so as to avoid potential errors.
+			if (this.site.Location == startingSite.site.Location) { foundStartingSite = true; nextPredecessor = currentSite; ListOfSitesInThePath.Add(currentSite.site); }
+			else nextPredecessor = this.predecessor;
+
+			while (!foundStartingSite)
+			{
+
+				ListOfSitesInThePath.Add(nextPredecessor.site);
 				if (nextPredecessor.site.Location == startingSite.site.Location) foundStartingSite = true;
 				else
 				{

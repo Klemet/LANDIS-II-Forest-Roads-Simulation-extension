@@ -14,6 +14,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 	public class RoadNetwork
 	{
 		public static double costOfConstructionAndRepairsAtTimestep;
+		public static List<FluxPath> fluxPathCatalogue;
+		public static Dictionary<Site, FluxPath> fluxPathDictionary;
 
 		/// <summary>
 		/// Updates the status of being connected to a place where the harvested wood can flow to (sawmill, etc.) for each of the given roads.
@@ -108,7 +110,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// Function to reset the woodflux going through the roads for the current timestep.
 		/// </summary>
-		public static void RestTimestepWoodFlux()
+		public static void RestTimestepWoodFluxData()
 		{
 			List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(PlugIn.ModelCore);
 
@@ -116,6 +118,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				SiteVars.RoadsInLandscape[siteWithRoad].timestepWoodFlux = 0;
 			}
+
+			fluxPathCatalogue.Clear();
+			fluxPathDictionary.Clear();
+
 		}
 
 	}

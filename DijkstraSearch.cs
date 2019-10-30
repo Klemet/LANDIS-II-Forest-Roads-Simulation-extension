@@ -365,7 +365,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						}
 
 						// We check if the neighbour is a exit node for the wood. If that's the case, search is other.
-						if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; haveWeFoundARoadToConnectTo = true; goto End; }
+						if (RoadNetwork.fluxPathDictionary.ContainsKey(neighbourToOpen) || SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalAsPathfindingSite = neighbourToOpenAsPathfinding; haveWeFoundARoadToConnectTo = true; goto End; }
 					}
 
 				}
@@ -385,12 +385,35 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// indicated as connected to a place where we can make wood go.
 			if (haveWeFoundARoadToConnectTo)
 			{
-				List<SiteForPathfinding> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStart(startingSiteAsPathfinding);
-				foreach (SiteForPathfinding site in listOfSitesInLeastCostPath)
+				// If we found a fluxPath to connect to, we create a new one starting from the starting site, and stopping just before the arrival (which is our connection site to the fluxpath, and thus already belongs to a fluxpath)
+				if (RoadNetwork.fluxPathDictionary.ContainsKey(arrivalAsPathfindingSite.site))
 				{
-					SiteVars.RoadsInLandscape[site.site].timestepWoodFlux += woodFlux;
+					List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStartAsSites(startingSiteAsPathfinding);
+
+					// We have to reverse the list, because we want to go from the harvested zones to the connection point, and not the opposite.
+					listOfSitesInLeastCostPath.Reverse();
+
+					FluxPath newFluxPath = new FluxPath(listOfSitesInLeastCostPath, arrivalAsPathfindingSite.site);
+
+					// Now that this new path is created, we flux the wood.
+					newFluxPath.FluxPathFromSite(startingSite, woodFlux);
 				}
+				// Else, if we didn't found a fluxPath to connect to but an exit point for the wood, we create a new "isAnEnd" path.
+				else
+				{
+					List<Site> listOfSitesInLeastCostPath = arrivalAsPathfindingSite.FindPathToStartAsSites(startingSiteAsPathfinding);
+
+					// We have to reverse the list, because we want to go from the harvested zones to the exit point, and not the opposite.
+					listOfSitesInLeastCostPath.Reverse();
+
+					FluxPath newFluxPathIsAnEnd = new FluxPath(listOfSitesInLeastCostPath);
+
+					// Then, we flux the wood down this path.
+					newFluxPathIsAnEnd.FluxPathFromSite(startingSite, woodFlux);
+				}
+
 			}
+
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen.");
 		}
 
