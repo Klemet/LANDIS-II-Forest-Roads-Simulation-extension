@@ -1,7 +1,7 @@
 LandisData   Extension
 
 Name         "Forest Roads Simulation"
-Version      "0.5"
+Version      "0.9"
 Type         disturbance:roads
 Assembly     Landis.Extension.ForestRoadsSimulation
 Class        Landis.Extension.ForestRoadsSimulation.PlugIn

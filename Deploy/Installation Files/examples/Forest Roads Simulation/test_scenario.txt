@@ -1,5 +1,9 @@
 LandisData Scenario
 
+>> WARNING : This test scenario requires LANDIS-II-v7,
+>> and the following extensions : Age-only Succession,
+>> Base Wind, Base Fire, Base Harvest and Forest Roads Simulation.
+
 Duration 100
 
 Species ./input/species_ecoregions/species.txt

@@ -81,7 +81,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			modelCore.UI.WriteLine("   Parameters of the Forest Roads Simulation Extension are loaded");
 
 			// For debugging purposes
-			InputParameterParser.DisplayParameters();
+			// InputParameterParser.DisplayParameters();
 
 			// Proof that the input map of roads has been properly read
 			/*

@@ -1,11 +1,73 @@
-LandisData "Forest Roads Simulation"
+>> To be read properly, the parameter file must contain the parameters in this order.
 
+>>------------------------------------------------------------------------
+>> BASIC PARAMETERS
+
+LandisData "Forest Roads Simulation"
+    
 Timestep 15
 
-HeuristicForNetworkConstruction Closestfirst
+HeuristicForNetworkConstruction Farthestfirst
 
 SkiddingDistance 150
 
-InitialRoadNetworkMap ./input/disturbances/roads.tif
 OutputsOfRoadNetworkMaps ./output/disturbances/roads/roadNetwork.tif
+OutputsOfRoadLog ./output/disturbances/roads/
 
+>>------------------------------------------------------------------------
+>> INPUT RASTERS AND COST PARAMETERS
+>> Only the initial road network raster and the distance cost are
+>> essential. If you do not want to use one of the cost for the path-
+>> -finding, just indicate “none” as the parameter value for the raster
+>> location, and “0” for the value of the associated cost.
+
+RasterOfBuildableZones ./input/disturbances/soils.tif
+InitialRoadNetworkMap ./input/disturbances/roads.tif
+DistanceCost 10000.6
+
+CoarseElevationRaster ./input/disturbances/coarse_elevation.tif
+CoarseElevationCosts
+>> Lower elevation      Upper elevation      	Additional
+>>    threshold            threshold             value  
+	  0		       9                   0
+	  9		       16	           1000
+          16		       41                  3000
+	  41		       100		   10000
+
+FineElevationRaster ./input/disturbances/fine_elevation.tif
+FineElevationCosts
+>> Lower elevation      Upper elevation      Multiplication
+>>    threshold            threshold             value  
+	    0		             5                   1
+	   5		             8	               1.5
+       8		            1000               2
+
+CoarseWaterRaster ./input/disturbances/coarse_water.tif
+CoarseWaterCost 1000000
+
+FineWaterRaster ./input/disturbances/fine_water.tif
+FineWaterCost 10000
+
+>> SoilsRaster ./input/disturbances/soils.tif
+SoilsRaster none
+
+>>------------------------------------------------------------------------
+>> ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
+>> These parameters are all essential to the functioning of the
+>> extension.
+
+SimulationOfRoadAging Yes
+SimulationOfWoodFlux Yes
+
+RoadTypes
+>> Lower Wood Flux      Upper Wood Flux	       Road type     Multiplicative      Maximum age         Road Type
+>>    threshold            threshold               ID          Cost Value     before destruction        Name
+	  0		       50                   3              1                  30              Tertiary
+	  50		       200                  2              5                  50              Secondary
+	  200		       100000               1              10                 80               Primary
+
+RoadTypesForExitingWood
+>> Road type   Road Type
+>>    ID        Name
+      5         Sawmill
+      6         MainRoadNetworkPaved
