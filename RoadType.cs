@@ -71,7 +71,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// Makes the road age according to the timestep of the extension. If the age of the road is above the limit of age for her type before it gets destroyed, then the road gets destroyed (back to type 0)
 		/// </summary>
 		/// <returns></returns>
-		public void agingTheRoad()
+		public void agingTheRoad(Site site)
 		{
 			this.roadAge += PlugIn.Parameters.Timestep;
 
@@ -82,6 +82,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					this.typeNumber = 0;
 					this.isConnectedToSawMill = false;
+					// We indicate to the cost raster with roads that there is no more road in this site.
+					SiteVars.CostRasterWithRoads[site] = SiteVars.BaseCostRaster[site];
 				}
 			}
 		}

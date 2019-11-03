@@ -171,7 +171,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 					foreach (Site siteWithRoad in listOfSitesWithRoads)
 					{
-						SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad();
+						SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad(siteWithRoad);
 					}
 
 					// 2) We update the status of all the roads concerning their connection to an exit point (sawmill or main road network); so that the pathfinding algorithms can now when to stop afterward.

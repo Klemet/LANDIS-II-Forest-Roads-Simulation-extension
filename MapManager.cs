@@ -207,7 +207,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						UIntPixel pixel = outputRaster.BufferPixel;
 						foreach (Site site in ModelCore.Landscape.AllSites)
 						{
-							pixel.MapCode.Value = (int)SiteVars.CostRaster[site];
+							pixel.MapCode.Value = (int)SiteVars.BaseCostRaster[site];
 							outputRaster.WriteBufferPixel();
 						}
 					}
@@ -282,7 +282,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
 			{
 				// First of all; if the pixel is in a non-buildable zone, the cost is negative. No road will be created on this cell.
-				if (SiteVars.BuildableZones[site] == 0) { SiteVars.CostRaster[site] = -1; }
+				if (SiteVars.BuildableZones[site] == 0) { SiteVars.BaseCostRaster[site] = -1; SiteVars.CostRasterWithRoads[site] = -1; }
 
 				else
 				{
@@ -331,7 +331,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					}
 
 					// We associate this cost to the site
-					SiteVars.CostRaster[site] = (float)cost;
+					SiteVars.BaseCostRaster[site] = (float)cost;
+					SiteVars.CostRasterWithRoads[site] = (float)cost;
 				}
 			}
 

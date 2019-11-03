@@ -146,16 +146,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public double CostOfTransition(Site otherSite)
 		{
 			// The cost of transition is half the transition in this pixel, and half the transition in the other, as we're going from centroid to centroid.
-			double cost = (SiteVars.CostRaster[this.site] + SiteVars.CostRaster[otherSite])/2 ;
+			double cost = (SiteVars.CostRasterWithRoads[this.site] + SiteVars.CostRasterWithRoads[otherSite])/2 ;
 
 			// We multiply the cost according to the distance (diagonal or not)
 			if (otherSite.Location.Row != this.site.Location.Row && otherSite.Location.Column == this.site.Location.Column) cost = cost * Math.Sqrt(2.0);
-
-			// Finaly, we update this cost according to the fact that this site or the other is a road. There will be no cost if both sites have a road, and a
-			// half cost if one of them is.
-			double halfOfCost = cost / 2;
-			if (SiteVars.RoadsInLandscape[this.site].IsARoad) { cost = cost - halfOfCost; }
-			if (SiteVars.RoadsInLandscape[otherSite].IsARoad) { cost = cost - halfOfCost; }
 
 			return (cost);
 		}

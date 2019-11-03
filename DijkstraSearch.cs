@@ -1,4 +1,4 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -105,9 +105,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// We don't consider the neighbour if it is closed.
 					if (!neighbourToOpenAsPathfinding.isClosed)
 					{
-						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
-						// from the node to close + the cost between it and the neighbor.
-						double newDistanceToStart = siteToClose.distanceToStart + siteToClose.CostOfTransition(neighbourToOpenAsPathfinding.site);
+						// The distance of a cell is just "1", since we're going by roads.
+						double newDistanceToStart = siteToClose.distanceToStart + 1;
 
 						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
 						// this node to close will become its predecessor, and its distance to start will become this one.
@@ -222,7 +221,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					}
 
 					// We don't consider the neighbour if it is closed or if it's non-constructible.
-					if ((SiteVars.CostRaster[neighbourToOpen] >= 0) && (!neighbourToOpenAsPathfinding.isClosed))
+					if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!neighbourToOpenAsPathfinding.isClosed))
 					{
 						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
 						// from the node to close + the cost between it and the neighbor.
@@ -279,6 +278,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].typeNumber = -1;
 					// Whatever it is, we indicate it as connected.
 					SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i].site].isConnectedToSawMill = true;
+					// We update the cost raster that contains the roads.
+					SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i].site] = 0;
 					// We also add the cost of transition to the costs of construction and repair for this timestep
 					if (i < listOfSitesInLeastCostPath.Count - 1) RoadNetwork.costOfConstructionAndRepairsAtTimestep += listOfSitesInLeastCostPath[i].CostOfTransition(listOfSitesInLeastCostPath[i + 1].site);
 				}
