@@ -18,36 +18,54 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static Dictionary<Site, FluxPath> fluxPathDictionary;
 
 		/// <summary>
-		/// Updates the status of being connected to a place where the harvested wood can flow to (sawmill, etc.) for each of the given roads.
+		/// Initialy updates the status of being connected to a place where the harvested wood can flow to (sawmill, etc.) for each of the given roads. 
+		/// It is different from the other updates, because it has to look at all of the sites, and not just the ones that changed status recently.
 		/// </summary>
 		/// <param name="ListOfSitesWithRoads">A list of sites with roads on them</param>
 		/// <returns>A list of sites that couldn't connect.</returns>
-		public static List<Site> UpdateConnectionToExitPointStatus(List<Site> ListOfSitesWithRoads)
+		public static List<Site> UpdateConnectionToExitPointStatus()
 		{
-			List<Site> listOfSitesThatCantConnect = new List<Site>();
 			Dictionary<Site, bool> dictonnaryOfSitesAlreadyChecked = new Dictionary<Site, bool>();
 
-			foreach (Site site in ListOfSitesWithRoads)
+			// First, we get all of the roads that correspond to exit points.
+			List<Site> sitesWithExitPoints = MapManager.GetSitesWithExitPoints(PlugIn.ModelCore);
+			PlugIn.ModelCore.UI.WriteLine(sitesWithExitPoints.Count + " sites with exit points detected.");
+
+			var progressBar = PlugIn.ModelCore.UI.CreateProgressMeter(sitesWithExitPoints.Count);
+			List<Site> listOfConnectedSites;
+
+			foreach (Site siteWithExit in sitesWithExitPoints)
 			{
-				// If the site is a sawmill or a main road, we indicate it as connected.
-				if (SiteVars.RoadsInLandscape[site].IsAPlaceForTheWoodToGo) { dictonnaryOfSitesAlreadyChecked[site] = true; }
-				// If not, we first have to check if the site can reach such a place by existing roads only if it has not been already checked.
-				else if (!dictonnaryOfSitesAlreadyChecked.ContainsKey(site))
+				// If the site hasn't been already checked
+				if (!dictonnaryOfSitesAlreadyChecked.ContainsKey(siteWithExit))
 				{
-					// This function will update the connection dictionnary in order to reflect which sites are connected or not to an exit point.
-					DijkstraSearch.DijkstraSearchForPlaceToPutWood(PlugIn.ModelCore, site, dictonnaryOfSitesAlreadyChecked);
-					// ModelCore.UI.WriteLine("A dijkstra search has just been completed.");
+					dictonnaryOfSitesAlreadyChecked[siteWithExit] = true;
+					SiteVars.RoadsInLandscape[siteWithExit].isConnectedToSawMill = true;
+
+					// We get all of the sites connected to this exit point
+					listOfConnectedSites = MapManager.GetAllConnectedRoads(siteWithExit);
+
+					// We defined each of them as checked and we update the connection status of those connected sites
+					foreach (Site siteConnected in listOfConnectedSites)
+					{
+						dictonnaryOfSitesAlreadyChecked[siteConnected] = true;
+						SiteVars.RoadsInLandscape[siteConnected].isConnectedToSawMill = true;
+					}
 				}
+
+				progressBar.IncrementWorkDone(1);
 			}
 
-			// We update the status of the sites according to the dictionnary.
-			foreach (Site site in ListOfSitesWithRoads)
+			// To finish, we generate a list of sites that are not connected to an exit point.
+			List<Site> nonConnectedSites = new List<Site>();
+
+			foreach (Site siteWithRoad in MapManager.GetSitesWithRoads(PlugIn.ModelCore))
 			{
-				SiteVars.RoadsInLandscape[site].isConnectedToSawMill = dictonnaryOfSitesAlreadyChecked[site];
-				if (dictonnaryOfSitesAlreadyChecked[site] == false) { listOfSitesThatCantConnect.Add(site); }
+				if (!dictonnaryOfSitesAlreadyChecked.ContainsKey(siteWithRoad)) { nonConnectedSites.Add(siteWithRoad); SiteVars.RoadsInLandscape[siteWithRoad].isConnectedToSawMill = false; }
 			}
 
-			return (listOfSitesThatCantConnect);
+			return (nonConnectedSites);
+
 		}
 
 		/// <summary>
@@ -63,10 +81,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// We get all of the sites with a road on it
 			List<Site> listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
-			
+			PlugIn.ModelCore.UI.WriteLine(listOfSitesWithRoads.Count + " sites with a road on them have been detected.");
+
 			// We check wich ones are connected to an exit point
 			ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
-			List<Site> listOfSitesThatCantConnect = UpdateConnectionToExitPointStatus(listOfSitesWithRoads);
+			List<Site> listOfSitesThatCantConnect = UpdateConnectionToExitPointStatus();
 
 
 			// If there were sites that we couldn't not connect, we throw a warning the user
@@ -74,6 +93,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				ModelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : ROADS THAT CAN'T BE CONNECTED TO SAWMILLS OR MAIN NETWORKS HAVE BEEN DETECTED IN THE INPUT MAP");
 				ModelCore.UI.WriteLine("   The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.");
+				PlugIn.ModelCore.UI.WriteLine(listOfSitesThatCantConnect.Count + " sites are in need of a connection to an exit point.");
 
 				ModelCore.UI.WriteLine("   Shuffling list of not connected sites with roads on them...");
 
@@ -81,23 +101,27 @@ namespace Landis.Extension.ForestRoadsSimulation
 				listOfSitesThatCantConnect = MapManager.ShuffleAccordingToHeuristic(ModelCore, listOfSitesThatCantConnect, heuristic);
 
 				ModelCore.UI.WriteLine("   Building missing roads...");
+				var progressBar = PlugIn.ModelCore.UI.CreateProgressMeter(listOfSitesThatCantConnect.Count);
+
 
 				foreach (Site site in listOfSitesThatCantConnect)
 				{
 					// If the site has been updated and connected, no need to look at him.
 					if (!SiteVars.RoadsInLandscape[site].isConnectedToSawMill)
 					{
-						ModelCore.UI.WriteLine("   Getting the connected neighbours...");
+						// ModelCore.UI.WriteLine("   Getting the connected neighbours...");
 						// Now, we get all of the roads that are connected to this one (and, implicitly, in need of being connected too)
 						List<Site> sitesConnectedToTheLonelySite = MapManager.GetAllConnectedRoads(site);
 
-						ModelCore.UI.WriteLine("   Building the missing road...");
+						// ModelCore.UI.WriteLine("   Building the missing road...");
 						// We create a new road that will connect the given site to a road that is connected to a sawmill
 						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
 
 						// Now that it is connected, all of its connected neighbours will become automatically connected too.
 						foreach (Site connectedSite in sitesConnectedToTheLonelySite) SiteVars.RoadsInLandscape[connectedSite].isConnectedToSawMill = true;
 					}
+
+					progressBar.IncrementWorkDone(1);
 				}
 
 			}

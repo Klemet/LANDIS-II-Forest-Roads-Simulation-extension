@@ -353,10 +353,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static List<Site> GetNeighbouringSites(Site givenSite)
 		{
 			List<Site> listOfNeighbouringSites = new List<Site>();
+			Site neighbour;
 
 			foreach (RelativeLocation relativeLocation in MapManager.neighborhood)
 			{
-				Site neighbour = givenSite.GetNeighbor(relativeLocation);
+				neighbour = givenSite.GetNeighbor(relativeLocation);
 				// Checks if the site is rightly in the landscape. See https://github.com/LANDIS-II-Foundation/Library-Spatial/blob/master/src/api/Site.cs for more infos.
 				if (neighbour) listOfNeighbouringSites.Add(neighbour);
 			}
@@ -376,10 +377,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static List<Site> GetNeighbouringSitesWithRoads(Site givenSite)
 		{
 			List<Site> listOfNeighbouringSites = new List<Site>();
+			Site neighbour;
 
 			foreach (RelativeLocation relativeLocation in neighborhood)
 			{
-				Site neighbour = givenSite.GetNeighbor(relativeLocation);
+				neighbour = givenSite.GetNeighbor(relativeLocation);
 				 if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
 
@@ -490,6 +492,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// Get all of the sites that have an exit point (sawmill, main road network, etc.) on them.
+		/// </summary>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		public static List<Site> GetSitesWithExitPoints(ICore ModelCore)
+		{
+			List<Site> listOfSitesWithExitPoints = new List<Site>();
+
+			foreach (Site site in ModelCore.Landscape.AllSites)
+			{
+				if (SiteVars.RoadsInLandscape[site].IsAPlaceForTheWoodToGo)
+				{
+					listOfSitesWithExitPoints.Add(site);
+				}
+			}
+
+			return (listOfSitesWithExitPoints);
+		}
+
+
+		/// <summary>
 		/// Check if there is at least a site with a main public road or a sawmill so that the harvested wood has a place to flow to, and the road network places to connect to.
 		/// </summary>
 		/// <returns>
@@ -578,7 +602,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			while (openSearchList.Count != 0)
 			{
-				Site currentSite = openSearchList.ToList()[0];
+				Site currentSite = openSearchList.First();
 				openSearchList.Remove(currentSite);
 
 				foreach (Site neighbour in GetNeighbouringSitesWithRoads(currentSite))
