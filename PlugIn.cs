@@ -82,21 +82,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// For debugging purposes
 			// InputParameterParser.DisplayParameters();
-
-			// Proof that the input map of roads has been properly read
-			/*
-			int i = 0;
-			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
-			{
-				int sitePixelNumber = (int)(site.Location.Column + ((site.Location.Row - 1) * PlugIn.ModelCore.Landscape.Dimensions.Rows));
-				modelCore.UI.WriteLine("Site " + site.Location + " has for road type " + SiteVars.RoadsInLandscape[site].getRoadTypeName() + " (int type : " + SiteVars.RoadsInLandscape[site].typeNumber + ", should have type : " + MapManager.ReadAPixelOfTheMap(this.parameters.RoadNetworkMap, site) + " Site number " + sitePixelNumber +")");
-				i++;
-			}
-			modelCore.UI.WriteLine("Number of sites counted : " + i);
-			modelCore.UI.WriteLine("Number of sites in total : " + PlugIn.ModelCore.Landscape.SiteCount);
-			modelCore.UI.WriteLine("Number of inactive sites : " + PlugIn.ModelCore.Landscape.InactiveSiteCount);
-			modelCore.UI.WriteLine("Number of active sites : " + PlugIn.ModelCore.Landscape.ActiveSiteCount);
-			*/
 		}
 
 		//---------------------------------------------------------------------
@@ -208,6 +193,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				int roadConstructedAtThisTimestep = 0;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep = 0;
 
+				// 7) We construct the roads to each harvested site
 				foreach (Site harvestedSite in listOfHarvestedSites)
 				{
 					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
@@ -217,17 +203,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 						roadConstructedAtThisTimestep++;
 					}
 
-					// If woodflux is simulated, We add the woodflux from the harvested area to the closest road, and we then used a dijkstra search that only goes through roads
-					// in order to reach an exit point for the wood. Every road used will see its flux value for the timestep augment by one.
-					// The quantity of woodflux is based on the number of cohorts harvested in the cell.
-					if (parameters.SimulationOfWoodFlux)
-					{
-						int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
-						Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
-
-						DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
-					}
-
 					progressBar.IncrementWorkDone(1);
 				}
 
@@ -235,27 +210,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
 				modelCore.UI.WriteLine("   The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 
-				// If woodflux is simulated, We add the woodflux from the harvested area to the closest road, and we then used a dijkstra search that only goes through roads
-				// in order to reach an exit point for the wood. Every road used will see its flux value for the timestep augment by one.
-				// The quantity of woodflux is based on the number of cohorts harvested in the cell.
+				// 8) If woodflux is simulated, We add the woodflux from the harvested area to the closest road, and we then used a dijkstra 
+				// search that only goes through roads in order to reach an exit point for the wood. Every road used will see its flux value 
+				// for the timestep augment by one. The quantity of woodflux is based on the number of cohorts harvested in the cell.
 				if (parameters.SimulationOfWoodFlux)
 				{
 					modelCore.UI.WriteLine("  Fluxing the wood to exit points...");
 
 					progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
+					int sitesFluxedAtThisTimestep = 0;
+					watch.Restart();
+
 					foreach (Site harvestedSite in listOfHarvestedSites)
 					{
 						int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
 						Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
 
 						DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+						sitesFluxedAtThisTimestep++;
 						progressBar.IncrementWorkDone(1);
 					}
+
+					modelCore.UI.WriteLine("   At this timestep, the wood of " + sitesFluxedAtThisTimestep + " sites was fluxed.");
+					modelCore.UI.WriteLine("   The fluxing took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
 				}
 
-
-
-				// 7) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user, if woodflux is simulated.
+				// 9) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user, if woodflux is simulated.
 				if (parameters.SimulationOfWoodFlux)
 				{
 					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
@@ -267,11 +247,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				}
 
-				// 8) We write the output maps
+				// 10) We write the output maps
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 				if (parameters.SimulationOfWoodFlux) { MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore, "WoodFlux"); }
 
-				// 9) We write the log, and we're done for this timestep.
+				// 11) We write the log, and we're done for this timestep.
 				roadConstructionLog.Clear();
 				RoadLog roadLog = new RoadLog();
 				roadLog.Timestep = modelCore.CurrentTime;

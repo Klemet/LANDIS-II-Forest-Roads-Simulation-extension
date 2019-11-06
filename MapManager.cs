@@ -430,6 +430,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// Checks if a given site is in a landscape
+		/// </summary>
+		public static bool IsItInLandscape(Site site)
+		{
+			if (site.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows && site.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns)
+			{
+				if (site.Location.Column >= 0 && site.Location.Row >= 0)
+				{
+					return (true);
+				}
+			}
+
+			return (false);
+		}
+
+		/// <summary>
 		/// Checks in the skidding neighborhood of a site if there is an existing road connected to a sawmill.
 		/// </summary>
 		/// <returns>
@@ -449,8 +465,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
 			{
 				neighbor = site.GetNeighbor(relativeNeighbour);
+				// PlugIn.ModelCore.UI.WriteLine("Examining road on neighbour " + neighbor);
+
 				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
-				if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns-1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows-1)
+				if (neighbor && IsItInLandscape(neighbor))
 				{
 					if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill)
 					{
@@ -642,7 +660,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					neighbor = site.GetNeighbor(relativeNeighbour);
 					// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
-					if (neighbor.Location.Column < PlugIn.ModelCore.Landscape.Dimensions.Columns - 1 && neighbor.Location.Row < PlugIn.ModelCore.Landscape.Dimensions.Rows - 1)
+					if (neighbor && IsItInLandscape(neighbor))
 					{
 						if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill && MapManager.GetDistance(site, neighbor) < minimumDistance)
 						{
@@ -774,6 +792,55 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 			return (shuffledListOfSites);
+		}
+
+		/// <summary>
+		/// Calculate the cost of going from this site to another.
+		/// </summary>
+		/// <returns>
+		/// A double which is the cost of transition.
+		/// </returns>
+		/// /// <param name="otherSite">
+		/// The other site where we want to go to.
+		/// </param>
+		public static double CostOfTransition(Site givenSite, Site otherSite)
+		{
+			// The cost of transition is half the transition in this pixel, and half the transition in the other, as we're going from centroid to centroid.
+			double cost = (SiteVars.CostRasterWithRoads[givenSite] + SiteVars.CostRasterWithRoads[otherSite]) / 2;
+
+			// We multiply the cost according to the distance (diagonal or not)
+			if (otherSite.Location.Row != givenSite.Location.Row && otherSite.Location.Column == givenSite.Location.Column) cost = cost * Math.Sqrt(2.0);
+
+			return (cost);
+		}
+
+		/// <summary>
+		/// Same than FindPathToStart, but returns a list of sites.
+		/// </summary>
+		public static List<Site> FindPathToStart(Site startingSite, Site arrivalSite, Dictionary<Site, Site> predecessors)
+		{
+			List<Site> ListOfSitesInThePath = new List<Site>();
+			Site currentSite = arrivalSite;
+			Site nextPredecessor;
+			bool foundStartingSite = false;
+			// Case of this node being the starting site (you never know)
+			// so as to avoid potential errors.
+			if (arrivalSite.Location == startingSite.Location) { foundStartingSite = true; nextPredecessor = currentSite; ListOfSitesInThePath.Add(currentSite); }
+			else nextPredecessor = predecessors[arrivalSite];
+
+			while (!foundStartingSite)
+			{
+
+				ListOfSitesInThePath.Add(nextPredecessor);
+				if (nextPredecessor.Location == startingSite.Location) foundStartingSite = true;
+				else
+				{
+					currentSite = nextPredecessor;
+					nextPredecessor = predecessors[currentSite];
+				}
+			}
+
+			return (ListOfSitesInThePath);
 		}
 
 	}

@@ -29,6 +29,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else this.isConnectedToSawMill = false;
 		}
 
+		/// <summary>
+		/// Gets the name of a given road type.
+		/// </summary>
+		/// <returns></returns>
 		public string getRoadTypeName()
 		{
 			if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber))
@@ -58,6 +62,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
+		/// <summary>
+		/// Returns "true" if the road on the site corresponds to an exit point for the wood to go to.
+		/// </summary>
 		public bool IsAPlaceForTheWoodToGo
 		{
 			get
