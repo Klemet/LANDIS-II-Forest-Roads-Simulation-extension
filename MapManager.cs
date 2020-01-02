@@ -11,7 +11,7 @@ using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
 using System.Linq;
-
+using Landis.Landscapes;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -47,10 +47,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 
-			// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
-			// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
-			// SoilRegionsContainer is used to fill up the soils map.
-			public static void ReadMap(string path, string variableName)
+		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
+		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
+		// SoilRegionsContainer is used to fill up the soils map.
+		public static void ReadMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
 
@@ -74,7 +74,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					return;
 				}
 			}
-			
+
 			// We try to open the map; if it fails, we raise an exception
 			try
 			{
@@ -105,9 +105,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					// In case of a problem in the value of the pixel.
 					try { map.ReadBufferPixel(); }
-					catch { throw new Exception("Forest Roads Simulation : ERROR : There was a problem while reading the value of raster "
-												+ variableName + " at site at location : " + site.Location + 
-												". The value might be too big or too little. Please check again."); }
+					catch
+					{
+						throw new Exception("Forest Roads Simulation : ERROR : There was a problem while reading the value of raster "
+											+ variableName + " at site at location : " + site.Location +
+											". The value might be too big or too little. Please check again.");
+					}
 
 					int pixelValue = (int)pixel.MapCode.Value;
 
@@ -260,7 +263,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (Site neighbor in MapManager.GetNeighbouringSites(site))
 			{
 				// The distance between cells is unitary; we have to multiply it by the length of a pixel.
-				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row),2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2)) * PlugIn.ModelCore.CellLength;
+				double horizontalDistance = Math.Sqrt(Math.Pow((site.Location.Row - neighbor.Location.Row), 2) + Math.Pow((site.Location.Column - neighbor.Location.Column), 2)) * PlugIn.ModelCore.CellLength;
 
 				double elevationDifference = Math.Abs(SiteVars.CoarseElevation[site] - SiteVars.CoarseElevation[neighbor]);
 
@@ -382,7 +385,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			foreach (RelativeLocation relativeLocation in neighborhood)
 			{
 				neighbour = givenSite.GetNeighbor(relativeLocation);
-				 if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
+				if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
 
 			return (listOfNeighbouringSites);
@@ -581,7 +584,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// /// <param name="givenSite">
 		/// The site for which we want to have the distance to the nearest road.
 		/// </param>
-        /// /// <param name="connected">
+		/// /// <param name="connected">
 		/// If true, the function will look for the nearest road indicated as "connected" to a place where the wood can be transported.
 		/// </param>
 		public static double DistanceToNearestRoad(List<Site> sitesWithRoads, Site givenSite, bool connected = true)
@@ -626,7 +629,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				foreach (Site neighbour in GetNeighbouringSitesWithRoads(currentSite))
 				{
 					listOfConnectedNeighborsWithRoads.Add(neighbour);
-					if(!closedSearchList.Contains(neighbour)) openSearchList.Add(neighbour);
+					if (!closedSearchList.Contains(neighbour)) openSearchList.Add(neighbour);
 				}
 
 				closedSearchList.Add(currentSite);
@@ -692,18 +695,19 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static List<Site> GetAllRecentlyHarvestedSites(ICore ModelCore, int Timestep)
 		{
 			List<Site> listOfHarvestedSites = new List<Site>();
+			ISiteVar<int> timeSinceLastEventVar = ModelCore.GetSiteVar<int>("Harvest.TimeOfLastEvent");
 
 			foreach (Site site in ModelCore.Landscape.AllSites)
+			{
+				// Carefull : the time of last event is the timestep when the last harvest event happened; not the number of years SINCE the last event.
+				int timeOfLastEvent = timeSinceLastEventVar[site];
+
+				if (site.IsActive && (ModelCore.CurrentTime - timeOfLastEvent) < Timestep && timeOfLastEvent != -100)
 				{
-					// Carefull : the time of last event is the timestep when the last harvest event happened; not the number of years SINCE the last event.
-					int timeOfLastEvent = Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent[site];
-
-					if (site.IsActive && (ModelCore.CurrentTime - timeOfLastEvent) < Timestep && timeOfLastEvent != -100)
-					{
-						listOfHarvestedSites.Add(site);
-					}
-
+					listOfHarvestedSites.Add(site);
 				}
+
+			}
 
 			return (listOfHarvestedSites);
 		}

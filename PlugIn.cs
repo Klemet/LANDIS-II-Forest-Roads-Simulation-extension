@@ -97,7 +97,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			MapManager.ReadAllMaps();
 
 			// Testing if a harvest extension is included in the scenario and thus initialized
-			if (Landis.Library.HarvestManagement.SiteVars.TimeOfLastEvent != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
+			if (modelCore.GetSiteVar<int>("Harvest.TimeOfLastEvent") != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
+
 			else
 			{
 				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
@@ -220,10 +221,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 					progressBar = modelCore.UI.CreateProgressMeter(listOfHarvestedSites.Count);
 					int sitesFluxedAtThisTimestep = 0;
 					watch.Restart();
+					ISiteVar<int> numberOfCohortsDamaged = modelCore.GetSiteVar<int>("Harvest.CohortsDamaged");
 
 					foreach (Site harvestedSite in listOfHarvestedSites)
 					{
-						int siteFlux = Landis.Library.HarvestManagement.SiteVars.CohortsDamaged[harvestedSite];
+						int siteFlux = numberOfCohortsDamaged[harvestedSite];
 						Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
 
 						DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
