@@ -2,6 +2,8 @@
 
 CAUTION : This is a work in progress, and some functions might be currently missing or not optimized.
 
+![](screenshots/PythonAnimation_Road_network_output.gif)
+
 This extension is made for use with the LANDIS-II landscape model, available on http://www.landis-ii.org/ .
 It functions in pair with a harvest extension to simulate how the forest road network of the landscape dynamically changes with wood harvesting.
 
@@ -20,10 +22,15 @@ It functions in pair with a harvest extension to simulate how the forest road ne
 ## Screenshots
 
 ![Evolution of the forest road network throught the simulation](screenshots/EvolutionOfNetwork.png)
+
+Road network            |  Wood Flux
+:-------------------------------------------------------:|:----------------------------------------------------:
+![](screenshots/PythonAnimation_Road_network_output.gif) |![](screenshots/PythonAnimation_Wood_Flux_output.gif)
+
  
 ## Download
  
-A pre-release can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/releases/download/0.96/LANDIS-II-V7.Forest.Road.Simulation.Extension.0.96-setup.exe ).
+A pre-release can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Extension/releases/download/0.95/LANDIS-II-V7.Forest.Road.Simulation.Extension.0.95-setup.exe ).
 
 ## Use
 
@@ -45,3 +52,5 @@ Mail : clem.hardy@outlook.fr
 ## Acknowledgments
 
 This work would not be possible without the incredible project that is LANDIS-II, and without the care and passion that the LANDIS-II fondation had to make the project as participative and accessible as it is. I thank them all tremendously.
+
+
