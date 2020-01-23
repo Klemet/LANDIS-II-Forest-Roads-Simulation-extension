@@ -6,6 +6,7 @@ using System.IO;
 using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -122,6 +123,29 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// A function to verify that the road are indicated in the order of their multiplicative value.
+		/// </summary>
+		public void VerifyMultiplicativeValues()
+		{
+			List<double> listOfMultiplicativeValues = multiplicativeCostValue.Values.ToList();
+			for (int i = 0; i < (listOfMultiplicativeValues.Count() - 1); i++)
+			{
+				if (listOfMultiplicativeValues[i] >= listOfMultiplicativeValues[i+1]) throw new Exception("Forest Roads Simulation : the list of your road types doesn't seem to be ordered by their multiplicative value. Please, enter them with the lowest road types (lowest multiplicative value) first. The problem seems to be with the item " + (i + 1) + " of your list of roads.");
+			}
+		}
+
+		/// <summary>
+		/// A function to check that the user didn't entered the same road ID twice.
+		/// </summary>
+		public void CheckRedundantRoadID()
+		{
+			// Code for this Link function that finds duplicates in a list comes from https://stackoverflow.com/questions/3811464/how-to-get-duplicate-items-from-a-list-using-linq/3811482
+			List<int> duplicatesRoadIDs = this.listOfRoadTypesID.GroupBy(s => s).SelectMany(grp => grp.Skip(1)).ToList();
+			if (duplicatesRoadIDs.Count() != 0) throw new Exception("Forest Roads Simulation : You entered the same road ID multiple times. Please check the road IDs of your road types lists. One of these IDs is : " + duplicatesRoadIDs[0]);
+		}
+
+
+		/// <summary>
 		/// A function to get the multiplicative value associated with a certain value of fine elevation.
 		/// </summary>
 		public int GetCorrespondingID(double woodFlux)
@@ -130,6 +154,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				if (woodFlux < this.listOfUpperThresholds[i] && woodFlux >= this.listOfLowerThresholds[i]) return (this.listOfRoadTypesID[i]);
 			}
+			// Case of the woodflux being under the lowest threshold
+			if (woodFlux < this.listOfLowerThresholds.First()) return (this.listOfRoadTypesID.First());
+			// Case of the woodflux being above the highest threshold
+			if (woodFlux > this.listOfLowerThresholds.Last()) return (this.listOfRoadTypesID.Last());
 
 			throw new Exception("Forest Roads Simulation : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file.");
 		}
@@ -144,6 +172,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 				return (this.multiplicativeCostValue[roadTypeID]);
 			}
 			throw new Exception("Forest Roads Simulation : Couldn't find the multiplicative cost value associated to the road type ID : " + roadTypeID + ". Please check you parameter file.");
+		}
+
+		/// <summary>
+		/// A function to get the ID of the road with the lowest rank.
+		/// </summary>
+		public int GetIDofLowestRoadType()
+		{
+			// The lowest road type is automatically the one at the start of the road list.
+			return (listOfRoadTypesID[0]);
 		}
 
 		/// <summary>

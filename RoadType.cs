@@ -101,18 +101,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <summary>
 		/// Updates the type of the road on the pixel according to the flux of wood going on it and the parameters of the extension
 		/// </summary>
-		public void UpdateAccordingToWoodFlux()
+		public void UpdateAccordingToWoodFlux(Site site)
 		{
+			int oldTypeNumber = this.typeNumber;
 			// If the road ID of this road corresponds to an exit point for the road, we won't update it.
 			if (!PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
 			{
 				int roadIDCorrespondingToFlux = PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingID(this.timestepWoodFlux);
-				// We make the update only if the current road is not of a higher rank, wood-flux-wise, or if it is an undertimined type of road (code : -1)
-				if (this.typeNumber == -1 || PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadIDCorrespondingToFlux, this.typeNumber))
+				// We make the update only if the current road is not of a higher rank, wood-flux-wise
+				if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadIDCorrespondingToFlux, this.typeNumber))
 				{
 					this.typeNumber = roadIDCorrespondingToFlux;
 					// As this is a road update, the age of the road goes back to 0.
 					this.roadAge = 0;
+					// We add the cost of upgrade to the road costs at this timestep. The cost of the upgrade is the multplication of the cost raster value for this pixel by the difference between the multiplicative cost values
+					// of before the upgrade, and fater the upgrade.
+					RoadNetwork.costOfConstructionAndRepairsAtTimestep += SiteVars.BaseCostRaster[site] * 
+						(PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(this.typeNumber) - PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(oldTypeNumber));
+
 				}
 			}
 		}

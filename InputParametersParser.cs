@@ -199,8 +199,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(SimulationOfWoodFlux);
 			parameters.SimulationOfWoodFlux = SimulationOfWoodFlux.Value;
 
+			if (parameters.SimulationOfRoadAging && !parameters.SimulationOfWoodFlux)
+			{
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION EXTENSION WARNING : You chosed to simulate road aging, but not wood fluxes. However, when wood fluxes are not simulated, all the constructed roads will correspond to the lowest road type, as they will never be upgraded. Therefore, all of your roads will have a maximum age before destruction equal to the lowest road type that you entered.");
+			}
+
 			// We read the road catalogue for non-exit roads
-			RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
+				RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
 
 			const string RoadCatalogueName = "RoadTypes";
 			ReadName(RoadCatalogueName);
@@ -263,9 +268,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				GetNextLine();
 			}
-
+			// We check to see if the user haven't entered the same road ID twice.
+			RoadCatalogueNonExit.CheckRedundantRoadID();
+			// We check if the roads are ordered correctly by their multiplicative value.
+			RoadCatalogueNonExit.VerifyMultiplicativeValues();
+			// Then, we verify the ranges for the wood flux and the ages for the road aging
 			if (parameters.SimulationOfWoodFlux) { RoadCatalogueNonExit.VerifyRanges(); }
 			if (parameters.SimulationOfRoadAging) { RoadCatalogueNonExit.VerifyAges(); }
+
 			parameters.RoadCatalogueNonExit = RoadCatalogueNonExit;
 
 			// We read the road catalogue for roads to exit the wood to
@@ -291,7 +301,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				GetNextLine();
 			}
-
+			// We check to see if the user haven't entered the same road ID twice.
+			RoadCatalogueExit.CheckRedundantRoadID();
 			parameters.RoadCatalogueExit = RoadCatalogueExit;
 
 			// Now that everything is done, we return the parameter object.

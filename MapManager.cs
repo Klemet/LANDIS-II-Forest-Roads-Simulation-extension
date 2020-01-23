@@ -292,11 +292,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// First, we initialize the cost
 					double cost = 0;
 
-					// If there is a road on the site, then the cost of crossing this site is 0.
-					if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
-
 					// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
-					else if (PlugIn.Parameters.CoarseWaterRaster != "none" && SiteVars.CoarseWater[site] != 0)
+					if (PlugIn.Parameters.CoarseWaterRaster != "none" && SiteVars.CoarseWater[site] != 0)
 					{
 						cost = PlugIn.Parameters.CoarseWaterCost;
 					}
@@ -335,6 +332,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 					// We associate this cost to the site
 					SiteVars.BaseCostRaster[site] = (float)cost;
+
+					// If there is a road on the site, then the cost of crossing this site is 0.
+					if (SiteVars.RoadsInLandscape[site].IsARoad) cost = 0;
+
 					SiteVars.CostRasterWithRoads[site] = (float)cost;
 				}
 			}
@@ -813,7 +814,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			double cost = (SiteVars.CostRasterWithRoads[givenSite] + SiteVars.CostRasterWithRoads[otherSite]) / 2;
 
 			// We multiply the cost according to the distance (diagonal or not)
-			if (otherSite.Location.Row != givenSite.Location.Row && otherSite.Location.Column == givenSite.Location.Column) cost = cost * Math.Sqrt(2.0);
+			if (otherSite.Location.Row != givenSite.Location.Row && otherSite.Location.Column != givenSite.Location.Column) cost = cost * Math.Sqrt(2.0);
 
 			return (cost);
 		}

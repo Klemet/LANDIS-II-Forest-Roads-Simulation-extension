@@ -244,7 +244,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 					foreach (Site siteWithRoad in listOfSitesWithRoads)
 					{
-						SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux();
+						SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux(siteWithRoad);
 					}
 
 				}
