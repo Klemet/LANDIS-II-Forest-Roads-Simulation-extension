@@ -346,15 +346,32 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Gets the 8 neighbours surounding a site as a list of sites.
+		/// This function returns a boolean that indicates if the given site is reacheable. It is unreacheable if it is surrounded only by non-constructible sites.
 		/// </summary>
-		/// <returns>
-		/// A list of sites containing the neighbouring sites of the given site. 
-		/// </returns>
-		/// /// <param name="givenSite">
-		/// A site for which the neighbouring sites must be found.
-		/// </param>
-		public static List<Site> GetNeighbouringSites(Site givenSite)
+		public static bool IsSiteReacheable(Site givenSite)
+		{
+			List<Site> neighbouringSites = GetNeighbouringSites(givenSite);
+			bool isSiteReacheable = false;
+
+			foreach (Site neighbouringSite in neighbouringSites)
+			{
+				if (SiteVars.BaseCostRaster[neighbouringSite] >= 0) isSiteReacheable = true; break;
+			}
+
+			return (isSiteReacheable);
+		}
+
+
+			/// <summary>
+			/// Gets the 8 neighbours surounding a site as a list of sites.
+			/// </summary>
+			/// <returns>
+			/// A list of sites containing the neighbouring sites of the given site. 
+			/// </returns>
+			/// /// <param name="givenSite">
+			/// A site for which the neighbouring sites must be found.
+			/// </param>
+			public static List<Site> GetNeighbouringSites(Site givenSite)
 		{
 			List<Site> listOfNeighbouringSites = new List<Site>();
 			Site neighbour;
@@ -393,25 +410,25 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Creates a list of relative locations around a site that will be checked to see if their is a road at skidding distance
+		/// Creates a list of relative locations around a site that will be checked to see if their is a road at a given distance
 		/// from a given site.
 		/// </summary>
 		/// <returns>
 		/// A list of relative locations.
 		/// </returns>
-		/// <param name="skiddingDistance">
+		/// <param name="Distance">
 		/// The skidding distance given as a parameter to the plugin.
 		/// </param>
 		/// <param name="ModelCore">
 		/// The model's core framework.
 		/// </param>
-		public static List<RelativeLocation> CreateSkiddingNeighborhood(int skiddingDistance, ICore ModelCore)
+		public static List<RelativeLocation> CreateSearchNeighborhood(int Distance, ICore ModelCore)
 		{
 			List<RelativeLocation> relativeCircleNeighborhood = new List<RelativeLocation>();
 
 			float landscapeResolution = ModelCore.CellLength;
 
-			int squareSizeOfNeighborhood = (int)Math.Floor(skiddingDistance / landscapeResolution) + 1;
+			int squareSizeOfNeighborhood = (int)Math.Floor(Distance / landscapeResolution) + 1;
 
 			for (int col = -squareSizeOfNeighborhood; col < squareSizeOfNeighborhood + 1; col++)
 			{
@@ -421,7 +438,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					if (col != 0 || row != 0)
 					{
 						// We check the euclidian distance between centroids to know if a site is with the skidding distance of the reference site.
-						if (Math.Sqrt(Math.Pow((row * landscapeResolution), 2) + Math.Pow((col * landscapeResolution), 2)) <= skiddingDistance)
+						if (Math.Sqrt(Math.Pow((row * landscapeResolution), 2) + Math.Pow((col * landscapeResolution), 2)) <= Distance)
 						{
 							// If it is, it will be part of the skidding neighborhood.
 							relativeCircleNeighborhood.Add(new RelativeLocation(row, col));
@@ -450,23 +467,23 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Checks in the skidding neighborhood of a site if there is an existing road connected to a sawmill.
+		/// Checks in a search neighborhood of a site if there is an existing road connected to a sawmill.
 		/// </summary>
 		/// <returns>
 		/// True if there is an existing road nearby; False overwise.
 		/// </returns>
-		/// <param name="skiddingNeighborhood">
+		/// <param name="searchNeighborhood">
 		/// A list of relativeLocations that we will explore to check if there is a road on the corresponding sites.
 		/// </param>
 		/// <param name="site">
 		/// A site for which we want to check if there is a road nearby.
 		/// </param>
-		public static bool IsThereANearbyRoad(List<RelativeLocation> skiddingNeighborhood, Site site)
+		public static bool IsThereANearbyRoad(List<RelativeLocation> searchNeighborhood, Site site)
 		{
 			bool isThereANearbyRoad = false;
 			Site neighbor;
 
-			foreach (RelativeLocation relativeNeighbour in skiddingNeighborhood)
+			foreach (RelativeLocation relativeNeighbour in searchNeighborhood)
 			{
 				neighbor = site.GetNeighbor(relativeNeighbour);
 				// PlugIn.ModelCore.UI.WriteLine("Examining road on neighbour " + neighbor);
@@ -487,7 +504,42 @@ namespace Landis.Extension.ForestRoadsSimulation
 			return (isThereANearbyRoad);
 		}
 
+		/// <summary>
+		/// Checks in the search neighborhood of a site if there is an existing road connected to a sawmill, and return a list of them.
+		/// </summary>
+		/// <returns>
+		/// A list of sites with a road on them that is connected to a sawmill.
+		/// </returns>
+		/// <param name="searchNeighborhood">
+		/// A list of relativeLocations that we will explore to check if there is a road on the corresponding sites.
+		/// </param>
+		/// <param name="site">
+		/// A site for which we want to check if there is a road nearby.
+		/// </param>
+		public static List<Site> HowManyNearbyRoads(List<RelativeLocation> searchNeighborhood, Site site)
+		{
+			List<Site> listOfNearbySites = new List<Site>();
+			Site neighbor;
 
+			foreach (RelativeLocation relativeNeighbour in searchNeighborhood)
+			{
+				neighbor = site.GetNeighbor(relativeNeighbour);
+				// PlugIn.ModelCore.UI.WriteLine("Examining road on neighbour " + neighbor);
+
+				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
+				if (neighbor && IsItInLandscape(neighbor))
+				{
+					if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill)
+					{
+						// If the neighbour site has a road in it, we add it to the list.
+						listOfNearbySites.Add(neighbor);
+					}
+				}
+
+			}
+
+			return (listOfNearbySites);
+		}
 
 		/// <summary>
 		/// Get all of the sites that have a road (forest road, sawmill, etc.) on them.
@@ -605,6 +657,38 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 			return (minDistance);
+		}
+
+		/// <summary>
+		/// Get the farthest site in a list of site for a given site.
+		/// </summary>
+		/// <returns>
+		/// The farthest site from the given site.
+		/// </returns>
+		/// /// <param name="givenSite">
+		/// The site for which we want to have the farthest site.
+		/// </param>
+		/// /// <param name="listOfSites">
+		/// The list of site in which to search for the farthest site.
+		/// </param>
+		public static Site GetFarthestSite(Site givenSite, List<Site> listOfSites)
+		{
+			double maxDistance = 0;
+			// Stupid assignation to please the gods of C#
+			Site farthestSite = givenSite;
+
+			foreach (Site otherSite in listOfSites)
+			{
+				double distanceBetweenSites = GetDistance(givenSite, otherSite);
+
+				if (distanceBetweenSites > maxDistance)
+				{
+					maxDistance = distanceBetweenSites;
+					farthestSite = otherSite;
+				}
+			}
+
+			return (farthestSite);
 		}
 
 		/// <summary>

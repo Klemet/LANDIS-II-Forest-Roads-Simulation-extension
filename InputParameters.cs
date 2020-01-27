@@ -41,6 +41,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// Boolean describing if the looping behavior is activated
+		/// </summary>
+		bool LoopingBehavior
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// The distance (in meters) to which we will start creating loops in the network
+		/// </summary>
+		int LoopingDistance
+		{
+			get; set;
+		}
+
+		/// <summary>
 		/// Path to save the output maps of the forest road network
 		/// </summary>
 		string OutputsOfRoadNetworkMaps
@@ -194,6 +210,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private int timestep;
 		private string heuristicForNetworkConstruction;
 		private int skiddingDistance;
+		private bool loopingBehavior;
+		private int loopingDistance;
 		private string outputsOfRoadNetworkMaps;
 		private string outputsOfRoadLog;
 
@@ -255,7 +273,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// The heuristic given by the user to determine the ordrer in which the roads are built with the least-cost path algorithm.
+		/// The distance (in meters) onto which wood can be skidded, rather than transported on a road.
 		/// </summary>
 		public int SkiddingDistance
 		{
@@ -268,6 +286,38 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				skiddingDistance = value;
+			}
+		}
+
+		/// <summary>
+		/// Indicates if looping behavior is activated.
+		/// </summary>
+		public bool LoopingBehavior
+		{
+			get
+			{
+				return loopingBehavior;
+			}
+			set
+			{
+				loopingBehavior = value;
+			}
+		}
+
+		/// <summary>
+		/// The distance (in meters) to which we will start creating loops in the network
+		/// </summary>
+		public int LoopingDistance
+		{
+			get
+			{
+				return loopingDistance;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				loopingDistance = value;
 			}
 		}
 

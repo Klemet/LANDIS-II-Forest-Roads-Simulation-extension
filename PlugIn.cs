@@ -23,6 +23,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 		private bool harvestExtensionDetected = false;
 		private List<RelativeLocation> skiddingNeighborhood;
+		private List<RelativeLocation> loopingNeighborhood;
 		public static MetadataTable<RoadLog> roadConstructionLog;
 
 
@@ -122,8 +123,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 				modelCore.UI.WriteLine("   Initializing the road network...");
 				RoadNetwork.Initialize(ModelCore, parameters.HeuristicForNetworkConstruction);
 				// We initialize the relative locations that will have to be checked to see if their is a road in it at skidding distance from a site.
-				skiddingNeighborhood = MapManager.CreateSkiddingNeighborhood(parameters.SkiddingDistance, modelCore);
+				skiddingNeighborhood = MapManager.CreateSearchNeighborhood(parameters.SkiddingDistance, modelCore);
 				modelCore.UI.WriteLine("   Skidding neighborhood initialized. It contains " + skiddingNeighborhood.Count + " relative locations.");
+				// If the loop behavior is activated, we will create a search neighborhood to create loops
+				if (parameters.LoopingBehavior)
+				{
+					loopingNeighborhood = MapManager.CreateSearchNeighborhood(parameters.LoopingDistance, modelCore);
+					modelCore.UI.WriteLine("   Looping neighborhood initialized. It contains " + loopingNeighborhood.Count + " relative locations.");
+				}
 				// We initialize the metadatas
 				MetadataHandler.InitializeMetadata();
 				// If we are going to simulate the wood flux, we initialize objects important for it.
@@ -200,8 +207,71 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
 					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, harvestedSite))
 					{
-						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
-						roadConstructedAtThisTimestep++;
+						// If the looping behavior is activated, we will check if we should do a loop.
+						if (parameters.LoopingBehavior)
+						{
+							// We look in the looping neighborhood to see if there are roads inside of it
+							List<Site> listOfNearbySitesWithRoads = MapManager.HowManyNearbyRoads(loopingNeighborhood, harvestedSite);
+							// If there are less than two sites, we do a road normally.
+							if (listOfNearbySitesWithRoads.Count < 2)
+							{
+								DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
+								roadConstructedAtThisTimestep++;
+							}
+							// If there are more than two sites, we create the least cost path to the closest site cost-wise.
+							else
+							{
+								modelCore.UI.WriteLine("  Trying to make a loop...");
+								// We construct the least-cost path.
+								DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
+								roadConstructedAtThisTimestep++;
+								double costOfFirstPath = RoadNetwork.costOfLastPath;
+
+								// Does it leads to one of the pixels in the looping neighborhood ?
+								if(listOfNearbySitesWithRoads.Contains(RoadNetwork.lastArrivalSiteOfDijkstraSearch))
+								{
+									Site siteReached = RoadNetwork.lastArrivalSiteOfDijkstraSearch;
+
+									TryAgain:
+									// If so, let's get the pixel that is the farthest from this one, but still in the neighborhood.
+									Site farthestSite = MapManager.GetFarthestSite(siteReached, listOfNearbySitesWithRoads);
+									double distanceToFarthest = MapManager.GetDistance(siteReached, farthestSite);
+
+									// Is the farthest pixel/site at more than two pixels of distance ? If not, we'll stop making a road.
+									if ((farthestSite.Location != siteReached.Location) && distanceToFarthest > 2)
+									{
+										// If it is, and if it is reacheable we will try to make a road to it and see if it's not too costly.
+										bool isItReacheable = MapManager.IsSiteReacheable(farthestSite);
+										// Useless assignements to please the gods of C#.
+										double costOfTestPath = double.PositiveInfinity;
+										List<Site> listOfSitesInTestPath;
+										if (isItReacheable)
+										{
+											modelCore.UI.WriteLine("Connecting the site " + harvestedSite.Location + " to site + " + farthestSite.Location + ". ");
+											listOfSitesInTestPath = DijkstraSearch.DijkstraLoopingTestPath(ModelCore, harvestedSite, farthestSite);
+											costOfTestPath = RoadNetwork.costOfLastPath;
+										}
+										// If it is too costly, we won't construct the path. We will give up, and try again with another site.
+										if (!isItReacheable || (costOfTestPath > (2 * costOfFirstPath)))
+										{
+											listOfNearbySitesWithRoads.Remove(farthestSite);
+											goto TryAgain;
+										}
+										else
+										{
+											DijkstraSearch.ConstructLoopingTestPath(ModelCore, listOfSitesInTestPath);
+										}
+									}
+								}
+							}
+						}
+						// If no looping behavior, we just create the least-cost road to the site.
+						else
+						{
+							DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
+							roadConstructedAtThisTimestep++;
+						}
+
 					}
 
 					progressBar.IncrementWorkDone(1);

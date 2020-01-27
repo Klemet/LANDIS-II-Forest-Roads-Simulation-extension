@@ -94,6 +94,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			if (haveWeFoundARoadToConnectTo)
 			{
 				List<Site> listOfSitesInLeastCostPath = MapManager.FindPathToStart(startingSite, arrivalSite, predecessors);
+				double costOfPath = 0;
 				for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
 				{
 					// If there is no road on this site, we construct it. We give it the code of an undefiened road for now.
@@ -102,9 +103,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 					SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].isConnectedToSawMill = true;
 					// We update the cost raster that contains the roads.
 					SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i]] = 0;
-					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there area already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
-					if (i < listOfSitesInLeastCostPath.Count - 1) RoadNetwork.costOfConstructionAndRepairsAtTimestep += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType());
+					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+					if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType());
 				}
+
+				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
+				RoadNetwork.lastArrivalSiteOfDijkstraSearch = arrivalSite;
+				RoadNetwork.costOfLastPath = costOfPath;
+				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
@@ -234,6 +240,125 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 
-	} // End of DijkstraSearch class
+		/// <summary>
+		/// Try to make a least cost path to a given site. It does not construct the path, and just return the list of sites of the path, and the cost. To construct the path, use "ConstructPathLooping"
+		/// </summary>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		/// /// <param name="startingSite">
+		/// The starting site of the search.
+		/// </param>
+		/// /// <param name="arrivalSite">
+		/// The site to reach.
+		/// </param>
+		public static List<Site> DijkstraLoopingTestPath(ICore ModelCore, Site startingSite, Site arrivalSite)
+		{
+			// We initialize the frontier and everything else
+			Priority_Queue.SimplePriorityQueue<Site> frontier = new Priority_Queue.SimplePriorityQueue<Site>();
+			Dictionary<Site, Site> predecessors = new Dictionary<Site, Site>();
+			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
+			HashSet<Site> isClosed = new HashSet<Site>();
+			bool haveWeFoundARoadToConnectTo = false;
+
+			costSoFar[startingSite] = 0;
+			frontier.Enqueue(startingSite, 0);
+
+			Site siteToClose;
+			double newDistanceToStart;
+
+			// We loop until the list is empty
+			while (frontier.Count > 0)
+			{
+				siteToClose = frontier.Dequeue();
+
+				// We look at each of its neighbours, road on them or not.
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose))
+				{
+					// We don't consider the neighbour if it is closed or if it's non-constructible.
+					if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!isClosed.Contains(neighbourToOpen)))
+					{
+						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+						// from the node to close + the cost between it and the neighbor.
+						newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen])
+						{
+							costSoFar[neighbourToOpen] = newDistanceToStart;
+							predecessors[neighbourToOpen] = siteToClose;
+							// Case of the node not being opened
+							if (!frontier.Contains(neighbourToOpen))
+							{
+								frontier.Enqueue(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+							// Case of the node being already open (if it is already in the frontier, we have to update)
+							else
+							{
+								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+						}
+
+						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
+						// is connected to such a place. If so, we can stop the search.
+						if (arrivalSite.Location == neighbourToOpen.Location) { haveWeFoundARoadToConnectTo = true; goto End; }
+					}
+
+				}
+
+				isClosed.Add(siteToClose);
+			}
+
+			End:
+			if (haveWeFoundARoadToConnectTo)
+			{
+				List<Site> listOfSitesInLeastCostPath = MapManager.FindPathToStart(startingSite, arrivalSite, predecessors);
+				double costOfPath = 0;
+				for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
+				{
+					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+					if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType());
+				}
+
+				// Since it is a test, we only register info about the cost of the path.
+				RoadNetwork.costOfLastPath = costOfPath;
+
+				return (listOfSitesInLeastCostPath);
+			}
+			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to site + " + arrivalSite.Location + ". This isn't supposed to happen.");
+		}
+
+		/// <summary>
+		/// Construct a path that was determined in "DijkstraLoopingTestPath"
+		/// </summary>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		/// /// <param name="listOfSitesInPath">
+		/// The list of paths in the sites, normally taken from "DijkstraLoopingTestPath"
+		/// </param>
+		public static void ConstructLoopingTestPath(ICore ModelCore, List<Site> listOfSitesInPath)
+		{
+			double costOfPath = 0;
+			for (int i = 0; i < listOfSitesInPath.Count; i++)
+			{
+				// If there is no road on this site, we construct it. We give it the code of an undefiened road for now.
+				if (!SiteVars.RoadsInLandscape[listOfSitesInPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInPath[i]].typeNumber = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType();
+				// Whatever it is, we indicate it as connected.
+				SiteVars.RoadsInLandscape[listOfSitesInPath[i]].isConnectedToSawMill = true;
+				// We update the cost raster that contains the roads.
+				SiteVars.CostRasterWithRoads[listOfSitesInPath[i]] = 0;
+				// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+				if (i < listOfSitesInPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInPath[i], listOfSitesInPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType());
+			}
+
+			// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
+			RoadNetwork.costOfLastPath = costOfPath;
+			RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
+
+		}
+
+		} // End of DijkstraSearch class
 
 } // End of namespace

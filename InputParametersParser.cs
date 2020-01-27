@@ -62,8 +62,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(SkiddingDistance);
 			parameters.SkiddingDistance = SkiddingDistance.Value;
 
+			// We read the looping behavior
+			InputVar<bool> LoopingBehavior = new InputVar<bool>("LoopingBehavior");
+			ReadVar(LoopingBehavior);
+			parameters.LoopingBehavior = LoopingBehavior.Value;
+
+			// If the looping behavior is activated, we look at the looping distance
+			if (parameters.LoopingBehavior)
+			{
+				InputVar<int> LoopingDistance = new InputVar<int>("LoopingDistance");
+				ReadVar(LoopingDistance);
+				parameters.LoopingDistance = LoopingDistance.Value;
+			}
+
 			// On lit le chemin ou enregistrer les cartes d'output
-			InputVar<string> OutputsOfRoadNetworkMaps = new InputVar<string>("OutputsOfRoadNetworkMaps");
+				InputVar<string> OutputsOfRoadNetworkMaps = new InputVar<string>("OutputsOfRoadNetworkMaps");
 			ReadVar(OutputsOfRoadNetworkMaps);
 			parameters.OutputsOfRoadNetworkMaps = OutputsOfRoadNetworkMaps.Value;
 
