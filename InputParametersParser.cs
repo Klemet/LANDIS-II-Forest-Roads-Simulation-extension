@@ -73,6 +73,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 				InputVar<int> LoopingDistance = new InputVar<int>("LoopingDistance");
 				ReadVar(LoopingDistance);
 				parameters.LoopingDistance = LoopingDistance.Value;
+
+				InputVar<int> LoopingMaxPercentageOfRoads = new InputVar<int>("LoopingMaxPercentageOfRoads");
+				ReadVar(LoopingMaxPercentageOfRoads);
+				parameters.LoopingMaxPercentageOfRoads = LoopingMaxPercentageOfRoads.Value;
+
+				InputVar<double> LoopingMaxCost = new InputVar<double>("LoopingMaxCost");
+				ReadVar(LoopingMaxCost);
+				parameters.LoopingMaxCost = LoopingMaxCost.Value;
 			}
 
 			// On lit le chemin ou enregistrer les cartes d'output

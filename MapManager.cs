@@ -516,10 +516,44 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// <param name="site">
 		/// A site for which we want to check if there is a road nearby.
 		/// </param>
-		public static List<Site> HowManyNearbyRoads(List<RelativeLocation> searchNeighborhood, Site site)
+		public static List<Site> GetNearbySites(List<RelativeLocation> searchNeighborhood, Site site)
 		{
-			List<Site> listOfNearbySites = new List<Site>();
+			List<Site> listOfNearbySitesWithRoads = new List<Site>();
 			Site neighbor;
+
+			foreach (RelativeLocation relativeNeighbour in searchNeighborhood)
+			{
+				neighbor = site.GetNeighbor(relativeNeighbour);
+				// PlugIn.ModelCore.UI.WriteLine("Examining road on neighbour " + neighbor);
+
+				// First, we gotta check if the neighbour is indeed inside the landscape to avoid index errors.
+				if (neighbor && IsItInLandscape(neighbor))
+				{
+					listOfNearbySitesWithRoads.Add(neighbor);
+				}
+
+			}
+
+			return (listOfNearbySitesWithRoads);
+		}
+
+		/// <summary>
+		/// Checks in the search neighborhood of a site to see how many roads connected to a sawmill there are nearby.
+		/// </summary>
+		/// <returns>
+		/// A list of sites with a road on them that is connected to a sawmill.
+		/// </returns>
+		/// <param name="searchNeighborhood">
+		/// A list of relativeLocations that we will explore to check if there is a road on the corresponding sites.
+		/// </param>
+		/// <param name="site">
+		/// A site for which we want to check if there is a road nearby.
+		/// </param>
+		public static int HowManyRoadsNearby(List<RelativeLocation> searchNeighborhood, Site site)
+		{
+			List<Site> listOfNearbySitesWithRoads = new List<Site>();
+			Site neighbor;
+			int numberOfRoadsNearby = 0;
 
 			foreach (RelativeLocation relativeNeighbour in searchNeighborhood)
 			{
@@ -531,14 +565,52 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					if (SiteVars.RoadsInLandscape[neighbor].isConnectedToSawMill)
 					{
-						// If the neighbour site has a road in it, we add it to the list.
-						listOfNearbySites.Add(neighbor);
+						numberOfRoadsNearby++;
 					}
 				}
 
 			}
 
-			return (listOfNearbySites);
+			return (numberOfRoadsNearby);
+		}
+
+		/// <summary>
+		/// Returns a list of neighbouring roads by that are at a given neighbouring distance from a given site with a road on it : the search propagates until it reaches this distance in road length.
+		/// </summary>
+		/// <returns>
+		/// A list of sites with a road on them that are connected to the given site.
+		/// </returns>
+		/// <param name="distanceOfSearch">
+		/// A distance, in meters, at which we stop the search.
+		/// </param>
+		/// <param name="site">
+		/// A site for which we want to get the connected roads.
+		/// </param>
+		public static List<Site> GetRoadsNearbyByNeighbouringRank(double distanceOfSearch, Site site)
+		{
+			int neighborsDistanceToSearch = (int)(distanceOfSearch / PlugIn.ModelCore.CellLength);
+			List<Site> listOfSitesWithRoadsNearby = new List<Site>();
+			listOfSitesWithRoadsNearby.Add(site);
+			List<Site> frontier = new List<Site>();
+			frontier.AddRange(GetNeighbouringSitesWithRoads(site));
+			listOfSitesWithRoadsNearby.AddRange(frontier);
+			List<Site> newfrontier = new List<Site>();
+			int i = 0;
+
+			while (i <= neighborsDistanceToSearch && frontier.Count > 0)
+			{
+				foreach (Site neighbouringSite in frontier)
+				{
+					List<Site> connectedRoads = GetNeighbouringSitesWithRoads(neighbouringSite);
+					foreach (Site connectedRoad in connectedRoads) if (!listOfSitesWithRoadsNearby.Contains(connectedRoad)) newfrontier.Add(connectedRoad);
+				}
+				frontier = newfrontier.Distinct().ToList();
+				listOfSitesWithRoadsNearby.AddRange(frontier);
+				newfrontier.Clear();
+				i++;
+			}
+
+			return (listOfSitesWithRoadsNearby);
 		}
 
 		/// <summary>

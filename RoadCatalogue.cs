@@ -107,7 +107,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// Then, we check if there are holes between the ranges
 			for (int i = 0; i < this.numberOfRanges - 1; i++)
 			{
-				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of wood flux " + i + " and " + (i + 1) + " in the road types. This must be fixed.");
+				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of wood flux " + (i+1) + " and " + (i + 2) + " in the road types. This must be fixed.");
 			}
 		}
 

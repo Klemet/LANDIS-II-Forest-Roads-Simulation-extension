@@ -210,59 +210,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// If the looping behavior is activated, we will check if we should do a loop.
 						if (parameters.LoopingBehavior)
 						{
-							// We look in the looping neighborhood to see if there are roads inside of it
-							List<Site> listOfNearbySitesWithRoads = MapManager.HowManyNearbyRoads(loopingNeighborhood, harvestedSite);
-							// If there are less than two sites, we do a road normally.
-							if (listOfNearbySitesWithRoads.Count < 2)
+							// We only try to create two roads if there are enought roads pixels nearby, but not too many.
+							int roadsNearby = MapManager.HowManyRoadsNearby(loopingNeighborhood, harvestedSite);
+
+							if (roadsNearby > 2 && (roadsNearby / loopingNeighborhood.Count)*100 < parameters.LoopingMaxPercentageOfRoads)
 							{
-								DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
-								roadConstructedAtThisTimestep++;
+								int numberOfRoadsCreated = DijkstraSearch.DijkstraLeastCostPathWithLooping(ModelCore, harvestedSite, loopingNeighborhood, parameters.LoopingMaxCost);
+								roadConstructedAtThisTimestep += numberOfRoadsCreated;
 							}
-							// If there are more than two sites, we create the least cost path to the closest site cost-wise.
 							else
 							{
-								modelCore.UI.WriteLine("  Trying to make a loop...");
-								// We construct the least-cost path.
 								DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
 								roadConstructedAtThisTimestep++;
-								double costOfFirstPath = RoadNetwork.costOfLastPath;
-
-								// Does it leads to one of the pixels in the looping neighborhood ?
-								if(listOfNearbySitesWithRoads.Contains(RoadNetwork.lastArrivalSiteOfDijkstraSearch))
-								{
-									Site siteReached = RoadNetwork.lastArrivalSiteOfDijkstraSearch;
-
-									TryAgain:
-									// If so, let's get the pixel that is the farthest from this one, but still in the neighborhood.
-									Site farthestSite = MapManager.GetFarthestSite(siteReached, listOfNearbySitesWithRoads);
-									double distanceToFarthest = MapManager.GetDistance(siteReached, farthestSite);
-
-									// Is the farthest pixel/site at more than two pixels of distance ? If not, we'll stop making a road.
-									if ((farthestSite.Location != siteReached.Location) && distanceToFarthest > 2)
-									{
-										// If it is, and if it is reacheable we will try to make a road to it and see if it's not too costly.
-										bool isItReacheable = MapManager.IsSiteReacheable(farthestSite);
-										// Useless assignements to please the gods of C#.
-										double costOfTestPath = double.PositiveInfinity;
-										List<Site> listOfSitesInTestPath;
-										if (isItReacheable)
-										{
-											modelCore.UI.WriteLine("Connecting the site " + harvestedSite.Location + " to site + " + farthestSite.Location + ". ");
-											listOfSitesInTestPath = DijkstraSearch.DijkstraLoopingTestPath(ModelCore, harvestedSite, farthestSite);
-											costOfTestPath = RoadNetwork.costOfLastPath;
-										}
-										// If it is too costly, we won't construct the path. We will give up, and try again with another site.
-										if (!isItReacheable || (costOfTestPath > (2 * costOfFirstPath)))
-										{
-											listOfNearbySitesWithRoads.Remove(farthestSite);
-											goto TryAgain;
-										}
-										else
-										{
-											DijkstraSearch.ConstructLoopingTestPath(ModelCore, listOfSitesInTestPath);
-										}
-									}
-								}
 							}
 						}
 						// If no looping behavior, we just create the least-cost road to the site.

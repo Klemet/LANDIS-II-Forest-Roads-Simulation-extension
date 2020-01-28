@@ -57,6 +57,23 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// The percentage of roads in the looping distance around a site under which a loop will be created.
+		/// </summary>
+		int LoopingMaxPercentageOfRoads
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// A multiplicative value affecting the behavior of the looping algorithm.
+		/// </summary>
+		double LoopingMaxCost
+		{
+			get; set;
+		}
+
+
+		/// <summary>
 		/// Path to save the output maps of the forest road network
 		/// </summary>
 		string OutputsOfRoadNetworkMaps
@@ -212,6 +229,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private int skiddingDistance;
 		private bool loopingBehavior;
 		private int loopingDistance;
+		private int loopingMaxPercentageOfRoads;
+		private double loopingMaxCost;
 		private string outputsOfRoadNetworkMaps;
 		private string outputsOfRoadLog;
 
@@ -318,6 +337,40 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				loopingDistance = value;
+			}
+		}
+
+		/// <summary>
+		/// The percentage of roads in the looping distance around a site under which a loop will be created.
+		/// </summary>
+		public int LoopingMaxPercentageOfRoads
+		{
+			get
+			{
+				return loopingMaxPercentageOfRoads;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				loopingMaxPercentageOfRoads = value;
+			}
+		}
+
+		/// <summary>
+		///  A multiplicative value affecting the behavior of the looping algorithm.
+		/// </summary>
+		public double LoopingMaxCost
+		{
+			get
+			{
+				return loopingMaxCost;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				loopingMaxCost = value;
 			}
 		}
 
