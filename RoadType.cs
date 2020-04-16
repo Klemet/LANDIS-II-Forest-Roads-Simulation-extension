@@ -53,11 +53,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
+		/// <summary>
+		/// Checks if the road type for this site/pixel correspond to a road. This is the case if the road type is contained in one of the road catalogues; if not, it's not a road.
+		/// </summary>
 		public bool IsARoad
 		{
 			get
 			{
-				if (this.typeNumber != 0) return (true);
+				if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber) || PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber)) return (true);
 				else return (false);
 			}
 		}
@@ -104,10 +107,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public void UpdateAccordingToWoodFlux(Site site)
 		{
 			int oldTypeNumber = this.typeNumber;
-			// If the road ID of this road corresponds to an exit point for the road, we won't update it.
-			if (!PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
+			// If the road ID of this road corresponds to an exit point for the road, we won't update it; If it's not in the Road catalogue for non-exits, there's an issue.
+			if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber))
 			{
-				int roadIDCorrespondingToFlux = PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingID(this.timestepWoodFlux);
+				int roadIDCorrespondingToFlux = PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingIDForWoodFlux(this.timestepWoodFlux);
 				// We make the update only if the current road is not of a higher rank, wood-flux-wise
 				if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadIDCorrespondingToFlux, this.typeNumber))
 				{
@@ -116,10 +119,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 					this.roadAge = 0;
 					// We add the cost of upgrade to the road costs at this timestep. The cost of the upgrade is the multplication of the cost raster value for this pixel by the difference between the multiplicative cost values
 					// of before the upgrade, and fater the upgrade.
-					RoadNetwork.costOfConstructionAndRepairsAtTimestep += SiteVars.BaseCostRaster[site] * 
+					RoadNetwork.costOfConstructionAndRepairsAtTimestep += SiteVars.BaseCostRaster[site] *
 						(PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(this.typeNumber) - PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(oldTypeNumber));
 
 				}
+			}
+			// If it's in neither road catalogue, there's a problem.
+			else if (!PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber) && !PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
+			{
+				PlugIn.ModelCore.UI.WriteLine("Forest roads extension : Tried to update " + this.typeNumber + " , but it's not registered as a valid RoadID.");
 			}
 		}
 

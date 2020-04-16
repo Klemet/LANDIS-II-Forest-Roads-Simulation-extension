@@ -146,9 +146,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 
 		/// <summary>
-		/// A function to get the multiplicative value associated with a certain value of fine elevation.
+		/// A function to get the road ID associated with a certain woodflux
 		/// </summary>
-		public int GetCorrespondingID(double woodFlux)
+		public int GetCorrespondingIDForWoodFlux(double woodFlux)
 		{
 			for (int i = 0; i < this.numberOfRanges; i++)
 			{
@@ -157,7 +157,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// Case of the woodflux being under the lowest threshold
 			if (woodFlux < this.listOfLowerThresholds.First()) return (this.listOfRoadTypesID.First());
 			// Case of the woodflux being above the highest threshold
-			if (woodFlux > this.listOfLowerThresholds.Last()) return (this.listOfRoadTypesID.Last());
+			if (woodFlux > this.listOfUpperThresholds.Last()) return (this.listOfRoadTypesID.Last());
 
 			throw new Exception("Forest Roads Simulation : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file.");
 		}
@@ -188,6 +188,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </summary>
 		public bool IsRoadTypeOfHigherRank(int roadTypeID, int anotherRoadTypeID)
 		{
+			// we first have to check if the road type is associated to a threshold; it seems that sometimes, it's not the case.
+			// I imagine that it's the case only 
+			if (!this.meanThreshold.ContainsKey(roadTypeID) || !this.meanThreshold.ContainsKey(anotherRoadTypeID))
+			{
+				PlugIn.ModelCore.UI.WriteLine("Forest roads extension : Tried to see if road type ID " + roadTypeID + " is of higher rank than road type ID " + anotherRoadTypeID + ". One of the two doesn't seem to be registered, thought.");
+				return (false);
+			}
 			if (this.meanThreshold[roadTypeID] > this.meanThreshold[anotherRoadTypeID])
 			{
 				return (true);
