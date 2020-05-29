@@ -184,6 +184,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// A function to find the ID of a road that is suitable for repeated entry. The road type in question must last for the given amount of year, and its
+		/// multiplicative cost must be inferior to 2; else, it is more optimized to create a small road and let it get destroyed before the repeated entry.
+		/// If such a road does not exist, the function will return the lowest road type possible, in order to let it be upgrade by woodflux if needed later.
+		/// If the user haven't registered age values, then the function will return a road type superior to the lowest road type, but with multiplicative
+		/// cost inferior to 2, in the hypothesis that this will be better for a repeated entry.
+		/// </summary>
+		public int GetIDofPotentialRoadForRepeatedEntry(int YearsTheRoadShouldLast)
+		{
+			for (int i = 0; i < this.numberOfRanges; i++)
+			{
+				if (this.maximumAgeBeforeDestruction[listOfRoadTypesID[i]] >= YearsTheRoadShouldLast
+					&& this.multiplicativeCostValue[listOfRoadTypesID[i]] <= 2) return (this.listOfRoadTypesID[i]);
+			}
+			// If we haven't found a road type corresponding to those conditions, we return the ID of the lowest road type.
+			return (this.GetIDofLowestRoadType());
+		}
+
+		/// <summary>
 		/// Return a boolean telling if a given roadTypeID if of "higher rank" (accomodate more wood flux) than another.
 		/// </summary>
 		public bool IsRoadTypeOfHigherRank(int roadTypeID, int anotherRoadTypeID)
