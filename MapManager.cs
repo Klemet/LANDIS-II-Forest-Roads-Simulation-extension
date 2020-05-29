@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using Landis.Landscapes;
+using System.Reflection;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -853,6 +854,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			List<Site> listOfHarvestedSites = new List<Site>();
 			ISiteVar<int> timeSinceLastEventVar = ModelCore.GetSiteVar<int>("Harvest.TimeOfLastEvent");
+			ISiteVar<string> prescription = ModelCore.GetSiteVar<string>("Harvest.PrescriptionName");
+			ISiteVar<Landis.Library.HarvestManagement.Stand> standOfSite = Landis.Library.HarvestManagement.SiteVars.Stand;
 
 			foreach (Site site in ModelCore.Landscape.AllSites)
 			{
@@ -868,6 +871,58 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			return (listOfHarvestedSites);
 		}
+
+		/// <summary>
+		/// Get the time (in years) before the next harvest in this cell, if (and only if) the cell in question is harvested with a repeated harvest (or single repeat).
+		/// </summary>
+		/// <returns>
+		/// The time (in years) before the repeated harvest will harvest this cell again; if no repeated harvest is on the cell, it returns 0.
+		/// </returns>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		/// /// <param name="site">
+		/// The site for which to get the time before the next harvest.
+		/// </param>
+		public static int GetTimeBeforeNextHarvest(ICore ModelCore, Site site)
+		{
+			// We get the stand of the cell
+			ISiteVar<Landis.Library.HarvestManagement.Stand> standOfSite = Landis.Library.HarvestManagement.SiteVars.Stand;
+			Landis.Library.HarvestManagement.Stand standOfTheSite = standOfSite[site];
+
+			// We check if the stand where the cell is is harvested by a repeated prescription
+			// If it is not, we return 0.
+			if (!(standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.RepeatHarvest)) { return (0); }
+
+			// If it is a repeated prescription, we check if it is a single repeat
+			else if ((standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.SingleRepeatHarvest))
+			{
+				// We check until when the stand is reserved
+				int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
+
+				// The time to the next rotation is then returned
+				int difference = timestepOfReservation - ModelCore.CurrentTime;
+				if (difference < 0) { return (0); }
+				else { return (difference); };
+			}
+
+			// If it is a repeated prescription...
+			else
+			{
+				// First, we check if its reservation has ended
+				int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
+
+				if (timestepOfReservation == ModelCore.CurrentTime) { return (0); }
+				else
+				{
+					Landis.Library.HarvestManagement.RepeatHarvest repeatPrescription = (Landis.Library.HarvestManagement.RepeatHarvest)standOfSite[site].LastPrescription;
+					return (repeatPrescription.Interval);
+				}
+
+			}
+			
+		}
+
 
 		/// <summary>
 		/// Gets the coordinates of sites and put it into an array of coordinates. This function is used to feed the kdTree search functions.

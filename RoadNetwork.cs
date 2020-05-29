@@ -118,7 +118,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 						// ModelCore.UI.WriteLine("   Building the missing road...");
 						// We create a new road that will connect the given site to a road that is connected to a sawmill
-						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site);
+						DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, site, true);
 
 						// Now that it is connected, all of its connected neighbours will become automatically connected too.
 						foreach (Site connectedSite in sitesConnectedToTheLonelySite) SiteVars.RoadsInLandscape[connectedSite].isConnectedToSawMill = true;
