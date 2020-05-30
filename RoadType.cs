@@ -119,9 +119,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					this.roadAge = 0;
 					// We add the cost of upgrade to the road costs at this timestep. The cost of the upgrade is the multplication of the cost raster value for this pixel by the difference between the multiplicative cost values
 					// of before the upgrade, and fater the upgrade.
-					RoadNetwork.costOfConstructionAndRepairsAtTimestep += SiteVars.BaseCostRaster[site] *
-						(PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(this.typeNumber) - PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(oldTypeNumber));
-
+					RoadNetwork.costOfConstructionAndRepairsAtTimestep += ComputeUpdateCost(site, oldTypeNumber, this.typeNumber);
 				}
 			}
 			// If it's in neither road catalogue, there's a problem.
@@ -129,6 +127,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				PlugIn.ModelCore.UI.WriteLine("Forest roads extension : Tried to update " + this.typeNumber + " , but it's not registered as a valid RoadID.");
 			}
+		}
+
+		/// <summary>
+		/// Computes the cost of a road update.
+		/// </summary>
+		public double ComputeUpdateCost(Site site, int OldTypeNumber, int NewTypeNumber)
+		{
+			return (SiteVars.BaseCostRaster[site] *
+				   (PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(NewTypeNumber) -
+				   PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(OldTypeNumber)));
+
 		}
 
 	}

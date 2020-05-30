@@ -79,7 +79,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
-						if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { arrivalSite = neighbourToOpen; haveWeFoundARoadToConnectTo = true; goto End; }
+						if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalSite = neighbourToOpen; haveWeFoundARoadToConnectTo = true; goto End; }
 					}
 
 				}
@@ -107,14 +107,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 				for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
 				{
 					// If there is no road on this site, we construct it.
-					if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+					if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].IsARoad)
+					{
+						SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						// We compute the cost
+						if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+					}
+					// If there is a road, we check if we should upgrade it. If so, we change the type of the road.
+					else
+					{
+						if(PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber))
+						{
+							// If the road type we want to construct is higher, we upgrade the road type and compute the cost of transition as a cost of upgrade.
+							int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber;
+							costOfPath += SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].ComputeUpdateCost(listOfSitesInLeastCostPath[i], oldTypeNumber, IDOfRoadToConstruct);
+							SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						}
+					}
 					// Whatever it is, we indicate it as connected.
 					SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].isConnectedToSawMill = true;
 					// We update the cost raster that contains the roads.
 					SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i]] = 0;
-					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
-					if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
-				}
+}
 
 				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
 				RoadNetwork.lastArrivalSiteOfDijkstraSearch = arrivalSite;
@@ -320,9 +334,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
 						// If a first site is reached, we register it, we create the list of forbiden sites not to reach or usen as path, and we remove those sites from the frontiers.
-						if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { IsFirstSiteReached = true; firstSiteReached = neighbourToOpen; forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, firstSiteReached);  foreach (Site road in forbiddenSites) frontier.TryRemove(road); }
+						if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { IsFirstSiteReached = true; firstSiteReached = neighbourToOpen; forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, firstSiteReached);  foreach (Site road in forbiddenSites) frontier.TryRemove(road); }
 						// If a second site is reached, we register it, and we end the search.
-						if (IsFirstSiteReached) if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) if (firstSiteReached != neighbourToOpen) { IsSecondSiteReached = true; secondSiteReached = neighbourToOpen; goto End; }
+						if (IsFirstSiteReached) if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) if (firstSiteReached != neighbourToOpen) { IsSecondSiteReached = true; secondSiteReached = neighbourToOpen; goto End; }
 					}
 
 				}
@@ -340,13 +354,30 @@ namespace Landis.Extension.ForestRoadsSimulation
 				for (int i = 0; i < listOfSitesInFirstLeastCostPath.Count; i++)
 				{
 					// If there is no road on this site, we construct it.
-					if (!SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+					if (!SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].IsARoad)
+					{
+						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						// We compute the cost
+						if (i < listOfSitesInFirstLeastCostPath.Count - 1) costOfFirstPath += MapManager.CostOfTransition(listOfSitesInFirstLeastCostPath[i], listOfSitesInFirstLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+					}
+
+					// If there is a road, we check if we should upgrade it. If so, we change the type of the road.
+					else
+					{
+						if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber))
+						{
+							// If the road type we want to construct is higher, we upgrade the road type and compute the cost of transition as a cost of upgrade.
+							int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber;
+							costOfFirstPath += SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].ComputeUpdateCost(listOfSitesInFirstLeastCostPath[i], oldTypeNumber, IDOfRoadToConstruct);
+							SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						}
+					}
+
 					// Whatever it is, we indicate it as connected.
 					SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].isConnectedToSawMill = true;
 					// We update the cost raster that contains the roads.
 					SiteVars.CostRasterWithRoads[listOfSitesInFirstLeastCostPath[i]] = 0;
-					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
-					if (i < listOfSitesInFirstLeastCostPath.Count - 1) costOfFirstPath += MapManager.CostOfTransition(listOfSitesInFirstLeastCostPath[i], listOfSitesInFirstLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+
 				}
 
 				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
@@ -360,7 +391,19 @@ namespace Landis.Extension.ForestRoadsSimulation
 					double costOfSecondPath = 0;
 					for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
 					{
-						if (i < listOfSitesInSecondLeastCostPath.Count - 1) costOfSecondPath += MapManager.CostOfTransition(listOfSitesInSecondLeastCostPath[i], listOfSitesInSecondLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+						if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad)
+						{
+							if (i < listOfSitesInSecondLeastCostPath.Count - 1) costOfSecondPath += MapManager.CostOfTransition(listOfSitesInSecondLeastCostPath[i], listOfSitesInSecondLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+						}
+						else
+						{
+							if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber))
+							{
+								// If the road type we want to construct is higher, we upgrade the road type and compute the cost of transition as a cost of upgrade.
+								int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber;
+								costOfSecondPath += SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].ComputeUpdateCost(listOfSitesInSecondLeastCostPath[i], oldTypeNumber, IDOfRoadToConstruct);
+							}
+						}
 					}
 					// If this second least cost path is not too costly, then we'll build it too.
 					if ((costOfSecondPath / loopingMaxCost) < costOfFirstPath)
@@ -368,7 +411,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 						for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
 						{
 							// If there is no road on this site, we construct it.
-							if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+							if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad)
+							{
+								SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+							}
+							else
+							{
+								if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber))
+								{
+									// If the road type we want to construct is higher, we upgrade the road type
+									SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+								}
+							}
 							// Whatever it is, we indicate it as connected.
 							SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].isConnectedToSawMill = true;
 							// We update the cost raster that contains the roads.
