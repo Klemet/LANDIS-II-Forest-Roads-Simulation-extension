@@ -257,7 +257,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 						int siteFlux = numberOfCohortsDamaged[harvestedSite];
 						Site siteWithClosestRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
 
-						DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+						// Case of the siteWithClosestRoad being a fluxpath : we just flux this path.
+						if (RoadNetwork.fluxPathDictionary.ContainsKey(siteWithClosestRoad))
+						{
+							RoadNetwork.fluxPathDictionary[siteWithClosestRoad].FluxPathFromSite(siteWithClosestRoad, siteFlux);
+						}
+						// If not, we create a flux path.
+						else
+						{
+							DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
+						}
+						
 						sitesFluxedAtThisTimestep++;
 						progressBar.IncrementWorkDone(1);
 					}

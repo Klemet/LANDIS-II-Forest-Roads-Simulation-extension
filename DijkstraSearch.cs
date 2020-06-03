@@ -120,6 +120,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				RoadNetwork.lastArrivalSiteOfDijkstraSearch = arrivalSite;
 				RoadNetwork.costOfLastPath = costOfPath;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
+
+				// Finally, we upgrade the rest of the way towards an exit point if needed (if we constructed something else than the lowest type of roads)
+				if (IDOfRoadToConstruct != PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType())
+				{
+					DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, arrivalSite, IDOfRoadToConstruct);
+				}
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
@@ -127,6 +133,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		/// <summary>
 		/// Finds the least cost path from roads to roads to a exit point for the wood in the landscape, and add the given wood flux to every road visited.
+		/// Warning : The starting site must not be inside an existing fluxpath.
 		/// </summary>
 		/// /// <param name="ModelCore">
 		/// The model's core framework.
@@ -223,6 +230,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 					// We have to reverse the list, because we want to go from the harvested zones to the connection point, and not the opposite.
 					listOfSitesInLeastCostPath.Reverse();
+
+					// We don't put the arrival site in the fluxpath, because it is part of another fluxpath.
+					listOfSitesInLeastCostPath.Remove(arrivalSite);
 
 					FluxPath newFluxPath = new FluxPath(listOfSitesInLeastCostPath, arrivalSite);
 
@@ -354,6 +364,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				RoadNetwork.costOfLastPath = costOfFirstPath;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfFirstPath;
 
+				// Finally, we upgrade the rest of the way towards an exit point if needed (if we constructed something else than the lowest type of roads)
+				if (IDOfRoadToConstruct != PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType())
+				{
+					DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, firstSiteReached, IDOfRoadToConstruct);
+				}
+
 				if (IsSecondSiteReached)
 				{
 					List<Site> listOfSitesInSecondLeastCostPath = MapManager.FindPathToStart(startingSite, secondSiteReached, predecessors);
@@ -380,17 +396,131 @@ namespace Landis.Extension.ForestRoadsSimulation
 						RoadNetwork.costOfLastPath = costOfSecondPath;
 						RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfSecondPath;
 
+						// Finally, we upgrade the rest of the way towards an exit point if needed (if we constructed something else than the lowest type of roads)
+						if (IDOfRoadToConstruct != PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType())
+						{
+							DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, secondSiteReached, IDOfRoadToConstruct);
+						}
+
 						// If both roads have been constructed, we return that it's the case
 						return (2);
 					}
 
 				}
 
+
+
 				// If only one road has been constructed, we return that that's the case.
 				return (1);
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
+
+		/// <summary>
+		/// Finds the least cost path from a given road pixel (that has to be connected to an exit point) to the nearest exit point pixel using roads,
+		/// and tries to upgrade the road pixels of this path to the given road type ID.
+		/// </summary>
+		/// /// <param name="ModelCore">
+		/// The model's core framework.
+		/// </param>
+		/// /// <param name="startingSite">
+		/// The starting site of the search. Has to be a road pixel connected to an exit point.
+		/// </param>
+		/// /// <param name="roadTypeIdToUpgradeTo">
+		/// True if this is done for the initialisation of the module; false if not.
+		/// </param>
+		public static void DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ICore ModelCore, Site startingSite, int roadTypeIdToUpgradeTo)
+		{
+			// We initialize the frontier and everything else
+			Priority_Queue.SimplePriorityQueue<Site> frontier = new Priority_Queue.SimplePriorityQueue<Site>();
+			Dictionary<Site, Site> predecessors = new Dictionary<Site, Site>();
+			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
+			HashSet<Site> isClosed = new HashSet<Site>();
+			bool haveWeFoundAnExitPoint = false;
+
+			costSoFar[startingSite] = 0;
+			frontier.Enqueue(startingSite, 0);
+
+			Site siteToClose;
+			// Useless assignement to please the gods of C#
+			Site arrivalSite = startingSite;
+			double newDistanceToStart;
+
+			// We loop until the list is empty
+			while (frontier.Count > 0)
+			{
+				siteToClose = frontier.Dequeue();
+
+				// We look at each of its neighbours, road on them or not.
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSitesWithRoads(siteToClose))
+				{
+					// We don't consider the neighbour if it is closed or if it's non-constructible.
+					if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!isClosed.Contains(neighbourToOpen)))
+					{
+						// We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+						// from the node to close + 1 since we are only considering existing roads
+						newDistanceToStart = costSoFar[siteToClose] + 1;
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen])
+						{
+							costSoFar[neighbourToOpen] = newDistanceToStart;
+							predecessors[neighbourToOpen] = siteToClose;
+							// Case of the node not being opened
+							if (!frontier.Contains(neighbourToOpen))
+							{
+								frontier.Enqueue(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+							// Case of the node being already open (if it is already in the frontier, we have to update)
+							else
+							{
+								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+						}
+
+						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
+						// is connected to such a place. If so, we can stop the search.
+						if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalSite = neighbourToOpen; haveWeFoundAnExitPoint = true; goto End; }
+					}
+
+				}
+
+				isClosed.Add(siteToClose);
+			}
+
+		End:
+			// ModelCore.UI.WriteLine("Dijkstra search is over.");
+
+			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
+			// We can now retrieve the list of the sites that
+			// are the least cost path, and make sure that all of these site now have a road constructed on them, and that it is
+			// indicated as connected to a place where we can make wood go.
+			if (haveWeFoundAnExitPoint)
+			{
+				List<Site> listOfSitesInLeastCostPath = MapManager.FindPathToStart(startingSite, arrivalSite, predecessors);
+				// We will now try to update the roads in the path.
+				double costOfUpgrades = 0;
+				// We don't take the last site of the path, as it will be an exit point, and cannot be upgraded.
+				for (int i = 0; i < listOfSitesInLeastCostPath.Count -1; i++)
+				{
+					// We check if the type we want to upgrade it too is of higher rank than the road type on the pixel
+					if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadTypeIdToUpgradeTo, SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber))
+					{
+						// If so, we upgrade it !
+						int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber;
+						costOfUpgrades += SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].ComputeUpdateCost(listOfSitesInLeastCostPath[i], oldTypeNumber, roadTypeIdToUpgradeTo);
+						SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = roadTypeIdToUpgradeTo;
+					}
+				}
+
+				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
+				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfUpgrades;
+			}
+			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
+		}
+
+
 
 		/// <summary>
 		/// Construct a path that was determined in "DijkstraLoopingTestPath"
@@ -424,6 +554,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		}
 
-		} // End of DijkstraSearch class
+	} // End of DijkstraSearch class
 
 } // End of namespace
