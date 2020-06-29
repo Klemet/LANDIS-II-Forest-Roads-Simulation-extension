@@ -97,35 +97,54 @@ namespace Landis.Extension.ForestRoadsSimulation
 			if (haveWeFoundARoadToConnectTo)
 			{
 				List<Site> listOfSitesInLeastCostPath = MapManager.FindPathToStart(startingSite, arrivalSite, predecessors);
-				// Before we decide what type of road to construct, we need information on the stand in which the starting site is. In particular,
-				// we want to know if there is going to be a repeated entry in this stand soon.
-				// To know that, we need to know which is the last presciption applied to this stand; if it's a multipleRepeat, we need to know the period.
-				// If not, it's a single repeat; if so, we need to know the time for which the stand is set aside.
 				double costOfPath = 0;
-				int yearsBeforeReturn = MapManager.GetTimeBeforeNextHarvest(ModelCore, startingSite);
-				int IDOfRoadToConstruct = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofPotentialRoadForRepeatedEntry(yearsBeforeReturn);
-				for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
+				// If we are in the initiation phase, there is no need to check the strategy of the type of road we are going to construct.
+				if (initialisation)
 				{
-					// If there is no road on this site, we construct it.
-					if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
-					// Whatever it is, we indicate it as connected.
-					SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].isConnectedToSawMill = true;
-					// We update the cost raster that contains the roads.
-					SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i]] = 0;
-					// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
-					if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+					
+					for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
+					{
+						// If there is no road on this site, we construct it. It'll be the smallest type of road.
+						if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType();
+						// Whatever it is, we indicate it as connected.
+						SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].isConnectedToSawMill = true;
+						// We update the cost raster that contains the roads.
+						SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i]] = 0;
+						// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+						if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType());
+					}
+				}
+				// If we are building a road during the simulation, we are going to check wherever it's better to build a simple road or not.
+				else
+				{
+					// Before we decide what type of road to construct, we need information on the stand in which the starting site is. In particular,
+					// we want to know if there is going to be a repeated entry in this stand soon.
+					// To know that, we need to know which is the last presciption applied to this stand; if it's a multipleRepeat, we need to know the period.
+					// If not, it's a single repeat; if so, we need to know the time for which the stand is set aside.
+					int yearsBeforeReturn = MapManager.GetTimeBeforeNextHarvest(ModelCore, startingSite);
+					int IDOfRoadToConstruct = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofPotentialRoadForRepeatedEntry(yearsBeforeReturn);
+					for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
+					{
+						// If there is no road on this site, we construct it.
+						if (!SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].IsARoad) SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						// Whatever it is, we indicate it as connected.
+						SiteVars.RoadsInLandscape[listOfSitesInLeastCostPath[i]].isConnectedToSawMill = true;
+						// We update the cost raster that contains the roads.
+						SiteVars.CostRasterWithRoads[listOfSitesInLeastCostPath[i]] = 0;
+						// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+						if (i < listOfSitesInLeastCostPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInLeastCostPath[i], listOfSitesInLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+					}
+					// Finally, we upgrade the rest of the way towards an exit point if needed (if we constructed something else than the lowest type of roads)
+					if (IDOfRoadToConstruct != PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType())
+					{
+						DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, arrivalSite, IDOfRoadToConstruct);
+					}
 				}
 
 				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
 				RoadNetwork.lastArrivalSiteOfDijkstraSearch = arrivalSite;
 				RoadNetwork.costOfLastPath = costOfPath;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
-
-				// Finally, we upgrade the rest of the way towards an exit point if needed (if we constructed something else than the lowest type of roads)
-				if (IDOfRoadToConstruct != PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType())
-				{
-					DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, arrivalSite, IDOfRoadToConstruct);
-				}
 			}
 			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
 		}
