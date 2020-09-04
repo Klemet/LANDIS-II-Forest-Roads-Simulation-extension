@@ -1,4 +1,5 @@
-# A LANDIS-II extension to simulate forest roads in a landscape
+# The FRS (Forest Roads Simulation) extension for LANDIS-II
+**A LANDIS-II extension to simulate the dynamics of forest roads in a landscape**
 
 CAUTION : This is a work in progress, and some functions might be currently missing or not optimized.
 
