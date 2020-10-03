@@ -9,18 +9,18 @@ This extension is made for use with the LANDIS-II landscape model, available on 
 It functions in pair with a harvest extension to simulate how the forest road network of the landscape dynamically changes with wood harvesting.
 
 ## Features
-- Detection of an installed harvest extension (without it, the road network will not change) [**Completed**]
-- Reading of a raster containing the initial road network [**Completed**]
-- Completion of the initial road network to avoid isolated roads that lead to nowhere [**Completed**]
-- At each timestep, the extension gets all of the recently harvest sites, and construct a road to them unless they are close enough for to an existing road for skipping wood to them [**Completed**]
-- The building of new roads is made by an algorithm that finds the least-cost path according to elevation, lakes/rivers, vegetation, soils and distance [**Completed**]
-- Each road is assigned a type (primary, secondary, tertiary, winter roads...) according to the flux of wood that flows through them [**Completed**]
-- The cost of construction or upgrading of the roads is saved in a log [**Completed**]
-- Roads can have a lifetime, and have to be maintained with money to keep being used. [**Completed**]
-- An output raster is created at each timestep to see the evolution of the road network in the landscape [**Completed**]
-- Loops are created in the network according to simple rules, in order to increase the realism of the fragmentation of the landscape [**Completed**]
-- If a repeated prescription is used where the site harvested recently will be visitied again (e.g. shelterwood or uneven-aged management), the module will choose the cheapest option between constructing a long-lasting road or a cheaper road that will have to be re-constructed when accessing the site at the next harvest rotation. [**Completed**]
-- Roads can be abandonned or destroyed according to several criterias.[*Still to be done*]
+- [x] Detection of an installed harvest extension (without it, the road network will not change).
+- [x] Reading of a raster containing the initial road network.
+- [x] Completion of the initial road network to avoid isolated roads that lead to nowhere.
+- [x] At each timestep, the extension gets all of the recently harvest sites, and construct a road to them unless they are close enough for to an existing road for skipping wood to them.
+- [x] The building of new roads is made by an algorithm that finds the least-cost path according to elevation, lakes/rivers, vegetation, soils and distance.
+- [x] Each road is assigned a type (primary, secondary, tertiary, winter roads...) according to the flux of wood that flows through them.
+- [x] The cost of construction or upgrading of the roads is saved in a log.
+- [x] Roads can have a lifetime, and have to be maintained with money to keep being used. 
+- [x] An output raster is created at each timestep to see the evolution of the road network in the landscape.
+- [x] Loops are created in the network according to simple rules, in order to increase the realism of the fragmentation of the landscape.
+- [x] If a repeated prescription is used where the site harvested recently will be visitied again (e.g. shelterwood or uneven-aged management), the module will choose the cheapest option between constructing a long-lasting road or a cheaper road that will have to be re-constructed when accessing the site at the next harvest rotation.
+- [ ] Roads can be abandonned or destroyed according to several criterias. (*Still to come*)
 
 ## Screenshots
 
@@ -56,4 +56,5 @@ Mail : clem.hardy@outlook.fr
 
 This work would not be possible without the incredible project that is LANDIS-II, and without the care and passion that the LANDIS-II fondation had to make the project as participative and accessible as it is. I thank them all tremendously.
 
+I would also like to thank Github users [BlueRaja](https://github.com/BlueRaja) and [eregina92](https://github.com/eregina92/) for their respective packages, [High Speed Priority Queue for C#](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp) and [Supercluster.KDTree](https://github.com/eregina92/Supercluster.KDTree). Both packages were of tremendous use to improve the performance of the FRS module, and I highly recommand you to check out their work.
 
