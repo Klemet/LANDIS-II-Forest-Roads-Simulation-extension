@@ -1,4 +1,5 @@
-﻿//  Authors:    Robert M. Scheller, James B. Domingo
+﻿//  Original authors:    Robert M. Scheller, James B. Domingo
+// Re-used in this project by Clément Hardy
 
 using Landis.SpatialModeling;
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Author: Clément Hardy
+// With many elements copied from the corresponding class
+// in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

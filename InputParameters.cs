@@ -1,5 +1,5 @@
-﻿//  Author: Clément Hardy
-// With mant elements shamelessely copied from the corresponding class
+﻿// Author: Clément Hardy
+// With many elements copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
 using Landis.Utilities;
@@ -192,21 +192,33 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// ------------------------------------------------------------------------------
 		// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
+		/// <summary>
+		/// Parameter indicating if the scenecence of roads must be modeled in the simulation
+		/// </summary>
 		bool SimulationOfRoadAging
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Parameter indicating if the flux of woods must be modeled in the simulation
+		/// </summary>
 		bool SimulationOfWoodFlux
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Table of parameters for the roads that are not exit points, meaning the forest roads that can be created by the module
+		/// </summary>
 		RoadCatalogue RoadCatalogueNonExit
 		{
 			get; set;
 		}
 
+		/// <summary>
+		/// Table of parameters for the roads that are exit points
+		/// </summary>
 		RoadCatalogue RoadCatalogueExit
 		{
 			get; set;

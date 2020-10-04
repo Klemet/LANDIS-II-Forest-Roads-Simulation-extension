@@ -1,4 +1,4 @@
-﻿//  Author:  Clément Hardy
+﻿// Author: Clément Hardy
 
 using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
@@ -15,28 +15,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 	public class PlugIn
 		: ExtensionMain
 	{
-		// Propriétés de la classe "Plugin" : Son type (disturbance), son nom (Base fire), mais aussi plusieurs propriétés utilisées
-		// pour l'output des données et ses paramètres.
-		// La classe PlugIn a besoin de 4 fonctions : un constructeur, LoadParameters, Initialize et Run.
-		// Les propriétés en privées sont accédées en lectures via des propriétés qui masquent les privées (définies plus bas)
+		// Properties of the Plugin class : type (disturbance), name (Forest Roads Simulation), 
+		// and several other used for the output of data and the reading of its parameters.
+		// The PlugIn class needs 4 functions : a constructor, LoadParameters, Initialize et Run
 		public static readonly ExtensionType ExtType = new ExtensionType("disturbance:roads");
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 		private bool harvestExtensionDetected = false;
 		private List<RelativeLocation> skiddingNeighborhood;
 		private List<RelativeLocation> loopingNeighborhood;
 		public static MetadataTable<RoadLog> roadConstructionLog;
+		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation";
 
 
-		// Propriété pour contenir les paramètres
+		// Properties to contain the parameters
 		private static IInputParameters parameters;
 
-		// Propriété qui va contenir l'object "Coeur" de LANDIS-II afin de pouvoir y faire référence dans les fonctions.
+		// Properties to contain the "Core" object of LANDIS-II to reference it in other functions.
 		private static ICore modelCore;
 
 		//---------------------------------------------------------------------
 
-		// Constructeur de la classe. Hérite du constructeur de la classe ExtensionMain. Le constructeur
-		// est très simple, et remplis juste les propriétés contenant le type de l'extension et son nom. Rien d'autre.
+		// Constructor of the PlugIn class. Heritates from the construction of the "ExtensionMain" class.
+		// It just fills the properties containing the type of the extension and its name : nothing else.
 		public PlugIn()
 			: base(ExtensionName, ExtType)
 		{
@@ -44,7 +44,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		//---------------------------------------------------------------------
-		// Propriété pour contenir le coeur du modèle en lecture seule.
+		// Properties to get the Model Core in read-only
 		public static ICore ModelCore
 		{
 			get
@@ -65,18 +65,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		//---------------------------------------------------------------------
 
-		// Fonction qui sera appellée au début du fonctionnement de LANDIS-II pour initialiser les paramêtres
-		// de l'extension. Pour ce faire, elle demande un chemin vers le fichier de paramêtres en .txt, et une référence
-		// vers le coeur de LANDIS-II pour que l'extension puisse s'y lier.
+		// Function launched at the beginning of the LANDIS-II simulation to initialize the parameters of the extension.
+		// It requires a reference to the .txt file where the parameters are.
 		public override void LoadParameters(string dataFile, ICore mCore)
 		{
-			// On lie le coeur de LANDIS-II
 			modelCore = mCore;
 
-			// On initialise les variables de site, dont le type de route
+			// We initialize the site variables object
 			SiteVars.Initialize();
 
-			// On charge les paramêtres du fichier .txt
+			// We read the parameters in the .txt file
 			InputParameterParser parser = new InputParameterParser();
 			parameters = Landis.Data.Load<IInputParameters>(dataFile, parser);
 			modelCore.UI.WriteLine("   Parameters of the Forest Roads Simulation Extension are loaded");
@@ -87,8 +85,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		//---------------------------------------------------------------------
 
-		// Cette fonction va aussi être appellée par le coeur de LANDIS-II avant que le scénario ne se mette à tourner.
-		// Elle va préparer tout ce qu'il faut pour l'output des données.
+		// Function launched before the simulation starts properly. Used to initialize other things.
+		// In the case of this module, it's use to initialize the road network by checking different things.
 		public override void Initialize()
 		{
 			modelCore.UI.WriteLine("  Initialization of the Forest Roads Simulation Extension...");
@@ -102,7 +100,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			else
 			{
-				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION WARNING : NO HARVEST EXTENSION DETECTED");
 				modelCore.UI.WriteLine("   Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
 			}
 
@@ -110,7 +108,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			modelCore.UI.WriteLine("   Checking if the wood has somewhere to go...");
 			if (!MapManager.IsThereAPlaceForTheWoodToGo(ModelCore))
 			{
-				throw new Exception("   FOREST ROAD SIMULATION EXTENSION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
+				throw new Exception("   FOREST ROAD SIMULATION WARNING : There is no site to which the road can flow to (sawmill or main road network). " +
 									"   Please put at least one in the input raster containing the initial road network.");
 			}
 			// If some exist, we initialize the roadnetwork to indicate which road is connected to them, and to connect the roads that might be isolated.
@@ -147,12 +145,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		}
 
+		// Function called at every time step where the extension is activated. 
+		// Contains the effects of the extension on the landscape.
 		public override void Run()
 		{
 			// We give a warning back to the user if no harvest extension is detected
 			if (!this.harvestExtensionDetected)
 			{
-				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : NO HARVEST EXTENSION DETECTED");
+				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION WARNING : NO HARVEST EXTENSION DETECTED");
 				modelCore.UI.WriteLine("   Without a harvest extension, no roads will be created by this extension. Please include a harvest extension in your scenario, or this extension will be quite useless.");
 			}
 

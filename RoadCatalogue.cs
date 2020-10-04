@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -60,7 +62,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			if (LowerThreshold < 0 || UpperThreshold < 0 || RoadTypeID < 0 || multiplicativeCostValue < 0 || maximumAgeBeforeDestruction < 0)
 			{
-				throw new Exception("Forest Roads Simulation : You tried to input a negative value for a threshold, a roadtypeID, a multiplicative cost value, or a maximum age before destruction for a road type. Please check your parameter file.");
+				throw new Exception("FOREST ROADS SIMULATION ERROR : You tried to input a negative value for a threshold, a roadtypeID, a multiplicative cost value, or a maximum age before destruction for a road type. Please check your parameter file." + PlugIn.errorToGithub);
 			}
 			this.listOfLowerThresholds.Add(LowerThreshold);
 			this.listOfUpperThresholds.Add(UpperThreshold);
@@ -101,13 +103,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// First, we check if the lower thresholds are always smaller than the UpperThresholds
 			for (int i = 0; i < this.numberOfRanges; i++)
 			{
-				if (this.listOfUpperThresholds[i] <= this.listOfLowerThresholds[i]) throw new Exception("Forest Roads Simulation : one of the upper thresholds for the road types flux range is lower or equal to its associated lower threshold. This must be fixed.");
+				if (this.listOfUpperThresholds[i] <= this.listOfLowerThresholds[i]) throw new Exception("FOREST ROADS SIMULATION ERROR : one of the upper thresholds for the road types flux range is lower or equal to its associated lower threshold. This must be fixed." + PlugIn.errorToGithub);
 			}
 
 			// Then, we check if there are holes between the ranges
 			for (int i = 0; i < this.numberOfRanges - 1; i++)
 			{
-				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of wood flux " + (i+1) + " and " + (i + 2) + " in the road types. This must be fixed.");
+				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("FOREST ROADS SIMULATION ERROR : There is a hole between the range of wood flux " + (i+1) + " and " + (i + 2) + " in the road types. This must be fixed." + PlugIn.errorToGithub);
 			}
 		}
 
@@ -118,7 +120,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			for (int i = 0; i < this.numberOfRanges; i++)
 			{
-				if (this.maximumAgeBeforeDestruction[this.listOfRoadTypesID[i]] <= 0 ) throw new Exception("Forest Roads Simulation : the age before road destruction entered for road ID " + this.listOfRoadTypesID[i] + " is null or negative. Please, make it positive and superior to 0 if you want road aging to be simulated.");
+				if (this.maximumAgeBeforeDestruction[this.listOfRoadTypesID[i]] <= 0 ) throw new Exception("FOREST ROADS SIMULATION ERROR : the age before road destruction entered for road ID " + this.listOfRoadTypesID[i] + " is null or negative. Please, make it positive and superior to 0 if you want road aging to be simulated." + PlugIn.errorToGithub);
 			}
 		}
 
@@ -130,7 +132,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			List<double> listOfMultiplicativeValues = multiplicativeCostValue.Values.ToList();
 			for (int i = 0; i < (listOfMultiplicativeValues.Count() - 1); i++)
 			{
-				if (listOfMultiplicativeValues[i] >= listOfMultiplicativeValues[i+1]) throw new Exception("Forest Roads Simulation : the list of your road types doesn't seem to be ordered by their multiplicative value. Please, enter them with the lowest road types (lowest multiplicative value) first. The problem seems to be with the item " + (i + 1) + " of your list of roads.");
+				if (listOfMultiplicativeValues[i] >= listOfMultiplicativeValues[i+1]) throw new Exception("FOREST ROADS SIMULATION ERROR : the list of your road types doesn't seem to be ordered by their multiplicative value. Please, enter them with the lowest road types (lowest multiplicative value) first. The problem seems to be with the item " + (i + 1) + " of your list of roads." + PlugIn.errorToGithub);
 			}
 		}
 
@@ -141,7 +143,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// Code for this Link function that finds duplicates in a list comes from https://stackoverflow.com/questions/3811464/how-to-get-duplicate-items-from-a-list-using-linq/3811482
 			List<int> duplicatesRoadIDs = this.listOfRoadTypesID.GroupBy(s => s).SelectMany(grp => grp.Skip(1)).ToList();
-			if (duplicatesRoadIDs.Count() != 0) throw new Exception("Forest Roads Simulation : You entered the same road ID multiple times. Please check the road IDs of your road types lists. One of these IDs is : " + duplicatesRoadIDs[0]);
+			if (duplicatesRoadIDs.Count() != 0) throw new Exception("FOREST ROADS SIMULATION ERRORS: You entered the same road ID multiple times. Please check the road IDs of your road types lists. One of these IDs is : " + duplicatesRoadIDs[0] + "." + PlugIn.errorToGithub);
 		}
 
 
@@ -159,7 +161,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// Case of the woodflux being above the highest threshold
 			if (woodFlux > this.listOfUpperThresholds.Last()) return (this.listOfRoadTypesID.Last());
 
-			throw new Exception("Forest Roads Simulation : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file.");
+			throw new Exception("FOREST ROADS SIMULATION ERROR : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file." + PlugIn.errorToGithub);
 		}
 
 		/// <summary>
@@ -171,7 +173,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				return (this.multiplicativeCostValue[roadTypeID]);
 			}
-			throw new Exception("Forest Roads Simulation : Couldn't find the multiplicative cost value associated to the road type ID : " + roadTypeID + ". Please check you parameter file.");
+			throw new Exception("FOREST ROADS SIMULATION ERROR : Couldn't find the multiplicative cost value associated to the road type ID : " + roadTypeID + ". Please check you parameter file." + PlugIn.errorToGithub);
 		}
 
 		/// <summary>
@@ -210,7 +212,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// I imagine that it's the case only 
 			if (!this.meanThreshold.ContainsKey(roadTypeID) || !this.meanThreshold.ContainsKey(anotherRoadTypeID))
 			{
-				PlugIn.ModelCore.UI.WriteLine("Forest roads extension : Tried to see if road type ID " + roadTypeID + " is of higher rank than road type ID " + anotherRoadTypeID + ". One of the two doesn't seem to be registered, thought.");
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION ERROR : Tried to see if road type ID " + roadTypeID + " is of higher rank than road type ID " + anotherRoadTypeID + ". One of the two doesn't seem to be registered, thought." + PlugIn.errorToGithub);
 				return (false);
 			}
 			if (this.meanThreshold[roadTypeID] > this.meanThreshold[anotherRoadTypeID])

@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -29,22 +31,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// </param>
 		public static void DijkstraLeastCostPathToClosestConnectedRoad(ICore ModelCore, Site startingSite, bool initialisation = false)
 		{
-			// We initialize the frontier and everything else
+			// We initialize the frontier of the algorithm and everything else
 			Priority_Queue.SimplePriorityQueue<Site> frontier = new Priority_Queue.SimplePriorityQueue<Site>();
 			Dictionary<Site, Site> predecessors = new Dictionary<Site, Site>();
 			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
 			HashSet<Site> isClosed = new HashSet<Site>();
 			bool haveWeFoundARoadToConnectTo = false;
-
 			costSoFar[startingSite] = 0;
 			frontier.Enqueue(startingSite, 0);
-
 			Site siteToClose;
-			// Useless assignement to please the gods of C#
-			Site arrivalSite = startingSite;
 			double newDistanceToStart;
 
-			// We loop until the list is empty
+			// Useless assignement to please the gods of C#
+			Site arrivalSite = startingSite;
+
+			// We loop until the list is empty (all cells of the landscape have been considered), or until we find an arrival cell
 			while (frontier.Count > 0)
 			{
 				siteToClose = frontier.Dequeue();
@@ -146,7 +147,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				RoadNetwork.costOfLastPath = costOfPath;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
 			}
-			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
+			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
 		}
 
 
@@ -171,14 +172,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
 			HashSet<Site> isClosed = new HashSet<Site>();
 			bool haveWeFoundARoadToConnectTo = false;
-
 			costSoFar[startingSite] = 0;
 			frontier.Enqueue(startingSite, 0);
-
 			Site siteToClose;
+			double newDistanceToStart;
+
 			// Useless assignement to please the gods of C#
 			Site arrivalSite = startingSite;
-			double newDistanceToStart;
 
 			// First, we got to check the possibility that the starting site IS the arrival site. This is possible in very rare situations,
 			// as the given starting site can be an exit point...That is not surounded by roads. If that happens, the dijkstra will not be able to
@@ -234,7 +234,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 		End:
-			// ModelCore.UI.WriteLine("Dijkstra search is over.");
+			// ModelCore.UI.WriteLine("Dijkstra search for wood flux is over.");
 
 			// If we're out of the loop, that means that the search is over. If it was successfull before we ran out of neighbours to check, 
 			// We can now retrieve the list of the sites that
@@ -274,7 +274,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			}
 
-			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen.");
+			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen. Please check the output raster containg the road network for the current timestep (" + ModelCore.CurrentTime + " years) and see if a road is interrupted somewhere." + PlugIn.errorToGithub);
 		}
 
 
@@ -302,16 +302,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 			HashSet<Site> isClosed = new HashSet<Site>();
 			bool IsFirstSiteReached = false;
 			bool IsSecondSiteReached = false;
+			List<Site> forbiddenSites = new List<Site>();
+			costSoFar[startingSite] = 0;
+			frontier.Enqueue(startingSite, 0);
+			Site siteToClose;
+			double newDistanceToStart;
+
 			// Useless assignment to please the gods of C#
 			Site firstSiteReached = startingSite;
 			Site secondSiteReached = startingSite;
-			List<Site> forbiddenSites = new List<Site>();
-
-			costSoFar[startingSite] = 0;
-			frontier.Enqueue(startingSite, 0);
-
-			Site siteToClose;
-			double newDistanceToStart;
 
 			// We loop until the list is empty
 			while (frontier.Count > 0)
@@ -432,12 +431,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// If only one road has been constructed, we return that that's the case.
 				return (1);
 			}
-			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
+			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
 		}
 
 		/// <summary>
 		/// Finds the least cost path from a given road pixel (that has to be connected to an exit point) to the nearest exit point pixel using roads,
-		/// and tries to upgrade the road pixels of this path to the given road type ID.
+		/// and tries to upgrade the road pixels of this path to the given road type ID. This function is used if there will be another harvest in a given
+		/// harvested cell later, and if the module has decided to construct a sturdy road that will be there when the harvest will be done a second time.
+		/// If that's the case, this function will make sure that there will be a path from the harvested cell to an exit point that will last until then.
 		/// </summary>
 		/// /// <param name="ModelCore">
 		/// The model's core framework.
@@ -456,14 +457,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
 			HashSet<Site> isClosed = new HashSet<Site>();
 			bool haveWeFoundAnExitPoint = false;
-
 			costSoFar[startingSite] = 0;
 			frontier.Enqueue(startingSite, 0);
-
 			Site siteToClose;
+			double newDistanceToStart;
+
 			// Useless assignement to please the gods of C#
 			Site arrivalSite = startingSite;
-			double newDistanceToStart;
 
 			// We loop until the list is empty
 			while (frontier.Count > 0)
@@ -536,7 +536,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfUpgrades;
 			}
-			else throw new Exception("FOREST ROADS SIMULATION : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen.");
+			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen." + PlugIn.errorToGithub);
 		}
 
 

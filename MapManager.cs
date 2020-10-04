@@ -1,5 +1,5 @@
-//  Author: Clément Hardy
-// With mant elements shamelessely copied from the corresponding class
+// Author: Clément Hardy
+// With many elements copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
 using Landis.SpatialModeling;
@@ -47,10 +47,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 			MapManager.ReadMap(PlugIn.Parameters.SoilsRaster, "SoilsRaster");
 		}
 
-
-		// Cette fonction lit la carte qui se trouve à l'endroit donné par "Path".
-		// Elle va mettre cette carte dans un dictionnaire contenu dans la classe "SiteVars".
-		// SoilRegionsContainer is used to fill up the soils map.
+		/// <summary>
+		/// Reads the raster map located at the path given to the function. It puts the information of the map in a dictionnary inside the "SiteVars" class. 
+		/// </summary>
 		public static void ReadMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
@@ -108,9 +107,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 					try { map.ReadBufferPixel(); }
 					catch
 					{
-						throw new Exception("Forest Roads Simulation : ERROR : There was a problem while reading the value of raster "
+						throw new Exception("FOREST ROADS SIMULATION ERROR : There was a problem while reading the value of raster "
 											+ variableName + " at site at location : " + site.Location +
-											". The value might be too big or too little. Please check again.");
+											". The value might be too big or too little. Please check again." + PlugIn.errorToGithub);
 					}
 
 					int pixelValue = (int)pixel.MapCode.Value;
@@ -125,7 +124,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					else if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = pixelValue;
 					else if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = pixelValue;
 					else if (variableName == "SoilsRaster") SiteVars.Soils[site] = (double)pixelValue;
-					else throw new Exception("Forest roads simulation : ERROR; VARIABLE NAME NOT RECOGNIZED FOR RASTER READING.");
+					else throw new Exception("FOREST ROADS SIMULATION ERROR : Variable name not recognized for the reading of the raster map." + PlugIn.errorToGithub);
 
 					// PlugIn.ModelCore.UI.WriteLine("Just put value "+ pixelValue + " in raster " + variableName);
 				}
@@ -173,14 +172,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		// Cette fonction va écrire la carte à l'endroit donné par "Path" (qui contient le nom du fichier .tif auquel on va rajouter le timestep).
-		// Cette carte va contenir le réseau routier actuel au timestep donné
+		/// <summary>
+		/// This function writes a map at the given path that contains either the existing road network, or the cost raster, or the wood fluxes.
+		/// </summary>
 		public static void WriteMap(string path, ICore ModelCore, string mapType = "roads")
 		{
-			// On écrit la carte output du réseau de routes
+			// We register the right name for the maps
 			if (mapType == "roads") { path = (path.Remove(path.Length - 4)) + ("-" + ModelCore.CurrentTime + ".tif"); }
 			else if (mapType == "costRaster") { path = (path.Remove(path.Length - 4)) + ("-" + "Cost Raster" + ".tif"); }
 			else if (mapType == "WoodFlux") { path = (path.Remove(path.Length - 4)) + ("-" + "Wood Flux" + ModelCore.CurrentTime + ".tif"); }
+			// If this is a map for the road network, we write it in each pixel.
 			if (mapType == "roads")
 			{
 				try
@@ -202,6 +203,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				}
 
 			}
+			// If it is the costRaster we want to write, we write the cost of construction in each pixel.
 			else if (mapType == "costRaster")
 			{
 				try
@@ -222,6 +224,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				}
 
 			}
+			// If it is the woodFlux map we want to write, that's what we create.
 			else if (mapType == "WoodFlux")
 			{
 				try
@@ -302,7 +305,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// Else, we incorporate all of the other costs into the mix.
 					else
 					{
-						// we add the base cost of crossing the sites
+						// We add the base cost of crossing the sites
 						cost += PlugIn.Parameters.DistanceCost;
 
 						// We add the slope cost, which depends on the highest slope towards one of the neighbours of the site.
@@ -363,16 +366,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 
-			/// <summary>
-			/// Gets the 8 neighbours surounding a site as a list of sites.
-			/// </summary>
-			/// <returns>
-			/// A list of sites containing the neighbouring sites of the given site. 
-			/// </returns>
-			/// /// <param name="givenSite">
-			/// A site for which the neighbouring sites must be found.
-			/// </param>
-			public static List<Site> GetNeighbouringSites(Site givenSite)
+		/// <summary>
+		/// Gets the 8 neighbours surounding a site as a list of sites.
+		/// </summary>
+		/// <returns>
+		/// A list of sites containing the neighbouring sites of the given site. 
+		/// </returns>
+		/// /// <param name="givenSite">
+		/// A site for which the neighbouring sites must be found.
+		/// </param>
+		public static List<Site> GetNeighbouringSites(Site givenSite)
 		{
 			List<Site> listOfNeighbouringSites = new List<Site>();
 			Site neighbour;
@@ -573,45 +576,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 			return (numberOfRoadsNearby);
-		}
-
-		/// <summary>
-		/// Returns a list of neighbouring roads by that are at a given neighbouring distance from a given site with a road on it : the search propagates until it reaches this distance in road length.
-		/// </summary>
-		/// <returns>
-		/// A list of sites with a road on them that are connected to the given site.
-		/// </returns>
-		/// <param name="distanceOfSearch">
-		/// A distance, in meters, at which we stop the search.
-		/// </param>
-		/// <param name="site">
-		/// A site for which we want to get the connected roads.
-		/// </param>
-		public static List<Site> GetRoadsNearbyByNeighbouringRank(double distanceOfSearch, Site site)
-		{
-			int neighborsDistanceToSearch = (int)(distanceOfSearch / PlugIn.ModelCore.CellLength);
-			List<Site> listOfSitesWithRoadsNearby = new List<Site>();
-			listOfSitesWithRoadsNearby.Add(site);
-			List<Site> frontier = new List<Site>();
-			frontier.AddRange(GetNeighbouringSitesWithRoads(site));
-			listOfSitesWithRoadsNearby.AddRange(frontier);
-			List<Site> newfrontier = new List<Site>();
-			int i = 0;
-
-			while (i <= neighborsDistanceToSearch && frontier.Count > 0)
-			{
-				foreach (Site neighbouringSite in frontier)
-				{
-					List<Site> connectedRoads = GetNeighbouringSitesWithRoads(neighbouringSite);
-					foreach (Site connectedRoad in connectedRoads) if (!listOfSitesWithRoadsNearby.Contains(connectedRoad)) newfrontier.Add(connectedRoad);
-				}
-				frontier = newfrontier.Distinct().ToList();
-				listOfSitesWithRoadsNearby.AddRange(frontier);
-				newfrontier.Clear();
-				i++;
-			}
-
-			return (listOfSitesWithRoadsNearby);
 		}
 
 		/// <summary>

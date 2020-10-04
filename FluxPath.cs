@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Constructor for the end of the dijkstra search, when we have found a connection to an exit point
 		public FluxPath(List<Site> sitesInPath)
 		{
-			if (sitesInPath.Count == 0) { throw new Exception("Error : Tried to create a path with no sites in it."); }
+			if (sitesInPath.Count == 0) { throw new Exception("FOREST ROADS SIMULATION ERROR : Flux Path Error. Tried to create a path with no sites in it." + PlugIn.errorToGithub); }
 
 			this.sitesInPath = sitesInPath;
 			this.isAnEnd = true;
@@ -36,7 +38,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		// Constructor for the end of the dijkstra search, when we have found a connection to another path
 		public FluxPath(List<Site> sitesInPath, Site connectionToNext)
 		{
-			if (sitesInPath.Count == 0) { throw new Exception("Error : Tried to create a path with no sites in it."); }
+			if (sitesInPath.Count == 0) { throw new Exception("FOREST ROADS SIMULATION ERROR : Tried to create a path with no sites in it." + PlugIn.errorToGithub); }
 
 			// We create this path properly
 			this.sitesInPath = sitesInPath;
@@ -72,7 +74,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				else
 				{
 					connectionIndex = currentPath.sitesInPath.IndexOf(currentConnectionPoint);
-					if (connectionIndex == -1) { throw new Exception("Forest Road Network Simulation : During the computing of the flux of wood, site " + currentConnectionPoint + " was not found in the corresponding path that contained " + currentPath.sitesInPath.Count + " sites. This is not normal."); }
+					if (connectionIndex == -1) { throw new Exception("FOREST ROADS SIMULATION ERROR : During the computing of the flux of wood, site " + currentConnectionPoint + " was not found in the corresponding path that contained " + currentPath.sitesInPath.Count + " sites. This is not normal." + PlugIn.errorToGithub); }
 					sitesTofFlux = currentPath.sitesInPath.GetRange(connectionIndex, (currentPath.sitesInPath.Count - connectionIndex));
 
 					foreach (Site siteToFlux in sitesTofFlux)
@@ -95,7 +97,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else
 			{
 				connectionIndex = currentPath.sitesInPath.IndexOf(currentConnectionPoint);
-				if (connectionIndex == -1) { throw new Exception("Forest Road Network Simulation : During the computing of the flux of wood, site " + currentConnectionPoint + " was not found in the corresponding path that contained " + currentPath.sitesInPath.Count + " sites. This is not normal."); }
+				if (connectionIndex == -1) { throw new Exception("FOREST ROADS SIMULATION ERROR : During the computing of the flux of wood, site " + currentConnectionPoint + " was not found in the corresponding path that contained " + currentPath.sitesInPath.Count + " sites. This is not normal." + PlugIn.errorToGithub); }
 				sitesTofFlux = currentPath.sitesInPath.GetRange(connectionIndex, (currentPath.sitesInPath.Count - connectionIndex));
 
 				foreach (Site siteToFlux in sitesTofFlux)

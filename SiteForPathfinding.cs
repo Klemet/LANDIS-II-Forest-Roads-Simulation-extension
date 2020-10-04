@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;

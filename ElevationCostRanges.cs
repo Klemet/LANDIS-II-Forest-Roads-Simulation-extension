@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -51,13 +53,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// First, we check if the lower thresholds are always smaller than the UpperThresholds
 			for (int i = 0; i < this.numberOfRanges; i++)
 			{
-				if (this.listOfUpperThresholds[i] <= this.listOfLowerThresholds[i]) throw new Exception("Forest Roads Simulation : one of the upper thresholds for the elevation cost range is lower or equal to its associated lower threshold. This must be fixed.");
+				if (this.listOfUpperThresholds[i] <= this.listOfLowerThresholds[i]) throw new Exception("FOREST ROADS SIMULATION ERROR : one of the upper thresholds for the elevation cost range is lower or equal to its associated lower threshold. This must be fixed." + PlugIn.errorToGithub);
 			}
 
 			// Then, we check if there are holes between the ranges
 			for (int i = 0; i < this.numberOfRanges - 1; i++)
 			{
-				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("Forest Roads Simulation : There is a hole between the range of elevation " + i + " and " + (i+1) + ". This must be fixed.");
+				if ((this.listOfUpperThresholds[i] - this.listOfLowerThresholds[i + 1]) != 0) throw new Exception("FOREST ROADS SIMULATION ERROR : There is a hole between the range of elevation " + i + " and " + (i+1) + ". This must be fixed." + PlugIn.errorToGithub);
 			}
 		}
 
@@ -71,7 +73,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (Elevation < this.listOfUpperThresholds[i] && Elevation >= this.listOfLowerThresholds[i]) return (this.listOfCorrespondingValues[i]);
 			}
 			
-			throw new Exception("Forest Roads Simulation : Couldn't find the value associated to the elevation value : " + Elevation + ". Please check you parameter file.");
+			throw new Exception("FOREST ROADS SIMULATION ERROR : Couldn't find the value associated to the elevation value : " + Elevation + ". Please check you parameter file." + PlugIn.errorToGithub);
 		}
 
 		/// <summary>

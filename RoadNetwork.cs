@@ -1,4 +1,6 @@
-﻿using Landis.Library.AgeOnlyCohorts;
+﻿// Author: Clément Hardy
+
+using Landis.Library.AgeOnlyCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -11,6 +13,10 @@ using System.Linq;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
+	/// <summary>
+	/// Class used to contain several properties that record the state of the roads in the landscape,
+	/// and to initialize it properly.
+	/// </summary>
 	public class RoadNetwork
 	{
 		public static double costOfConstructionAndRepairsAtTimestep;
@@ -18,7 +24,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static Site lastArrivalSiteOfDijkstraSearch;
 		public static List<FluxPath> fluxPathCatalogue;
 		public static Dictionary<Site, FluxPath> fluxPathDictionary;
-
 
 		/// <summary>
 		/// Initialy updates the status of being connected to a place where the harvested wood can flow to (sawmill, etc.) for each of the given roads. 
@@ -94,7 +99,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If there were sites that we couldn't not connect, we throw a warning the user
 			if (listOfSitesThatCantConnect.Count != 0)
 			{
-				ModelCore.UI.WriteLine("   FOREST ROAD SIMULATION EXTENSION WARNING : ROADS THAT CAN'T BE CONNECTED TO SAWMILLS OR MAIN NETWORKS HAVE BEEN DETECTED IN THE INPUT MAP");
+				ModelCore.UI.WriteLine("   FOREST ROADS SIMULATION WARNING : Roads that can't be connected to exit points (e.g. sawmills or main road network) have been detected in the input map.");
 				ModelCore.UI.WriteLine("   The extension will now try to create roads to link those roads that are not connected to places where the harvest wood can flow.");
 				PlugIn.ModelCore.UI.WriteLine(listOfSitesThatCantConnect.Count + " sites are in need of a connection to an exit point.");
 

@@ -1,6 +1,4 @@
-﻿//  Author: Clément Hardy
-// With mant elements shamelessely copied from the corresponding class
-// in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
+﻿// Author: Clément Hardy
 
 using Landis.SpatialModeling;
 // using Landis.SpatialModeling.CoreServices;
@@ -11,7 +9,7 @@ using System.Collections.Generic;
 namespace Landis.Extension.ForestRoadsSimulation
 {
 	/// <summary>
-	/// The parameters for an road type.
+	/// The properties of a road type.
 	/// </summary>
 	public class RoadType
 	{

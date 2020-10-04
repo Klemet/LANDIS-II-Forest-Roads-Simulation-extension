@@ -1,5 +1,5 @@
-﻿//  Author: Clément Hardy
-// With mant elements shamelessely copied from the corresponding class
+﻿// Author: Clément Hardy
+// With many elements copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
 using Landis.SpatialModeling;

@@ -1,5 +1,5 @@
-﻿//  Author: Clément Hardy
-// With mant elements shamelessely copied from the corresponding class
+﻿// Author: Clément Hardy
+// With many elements copied from the corresponding class
 // in the "Base Fire" extension by Robert M. Scheller and James B. Domingo
 
 using Landis.Utilities;
@@ -11,7 +11,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 	/// <summary>
 	/// A parser that reads the plug-in's parameters from text input.
 	/// </summary>
-	// La classe hérite du text parser de LANDIS-II, qui contient de propriétés qui lui permettent de savoir ou il se trouve dans le fichier.
+	// The class heritates from the text parser of LANDIS-II, which contains properties that allows it to know where it is in the file
 	public class InputParameterParser
 		: TextParser<IInputParameters>
 	{
@@ -26,7 +26,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 		public InputParameterParser()
 		{
-			// FIXME: Hack to ensure that Percentage is registered with InputValues
+			// FIXME from Scheller and Domingo: Hack to ensure that Percentage is registered with InputValues
 			Landis.Utilities.Percentage p = new Landis.Utilities.Percentage();
 		}
 
@@ -37,27 +37,27 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// ------------------------------------------------------------------------------
 			// BASIC PARAMETERS
 
-			// Pour commencer, on regarde le paramêtre "LandisData" qui se trouve au début du fichier .txt
-			// de paramêtre. Si il ne correspond pas au nom de l'extension, on lève une exception.
+			// To start, we look at the "LandisData" parameter. If it's not the name of the extension, 
+			// we raise an exception.
 			InputVar<string> landisData = new InputVar<string>("LandisData");
 			ReadVar(landisData);
 			if (landisData.Value.Actual != PlugIn.ExtensionName)
 				throw new InputValueException(landisData.Value.String, "The value is not \"{0}\"", PlugIn.ExtensionName);
 
-			// On creer l'object qu'on va renvoyer, qui va continir nos paramêtres
+			// We create the object that will contain our parameters
 			InputParameters parameters = new InputParameters();
 
-			// On lit le timestep
+			// We read the timestep
 			InputVar<int> timestep = new InputVar<int>("Timestep");
 			ReadVar(timestep);
 			parameters.Timestep = timestep.Value;
 
-			// On lit l'heuristique pour la création du réseau de routes
+			// We read the heuristic for road construction
 			InputVar<string> HeuristicForNetworkConstruction = new InputVar<string>("HeuristicForNetworkConstruction");
 			ReadVar(HeuristicForNetworkConstruction);
 			parameters.HeuristicForNetworkConstruction = HeuristicForNetworkConstruction.Value;
 
-			// On lit la distance de débardage
+			// We read the skidding distance
 			InputVar<int> SkiddingDistance = new InputVar<int>("SkiddingDistance");
 			ReadVar(SkiddingDistance);
 			parameters.SkiddingDistance = SkiddingDistance.Value;
@@ -83,8 +83,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 				parameters.LoopingMaxCost = LoopingMaxCost.Value;
 			}
 
-			// On lit le chemin ou enregistrer les cartes d'output
-				InputVar<string> OutputsOfRoadNetworkMaps = new InputVar<string>("OutputsOfRoadNetworkMaps");
+			// We read the path for the output of the maps
+			InputVar<string> OutputsOfRoadNetworkMaps = new InputVar<string>("OutputsOfRoadNetworkMaps");
 			ReadVar(OutputsOfRoadNetworkMaps);
 			parameters.OutputsOfRoadNetworkMaps = OutputsOfRoadNetworkMaps.Value;
 
@@ -101,7 +101,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(ZonesForRoadCreation);
 			parameters.ZonesForRoadCreation = ZonesForRoadCreation.Value;
 
-			// On lit le raster initial des routes
+			// We read the initial road raster
 			InputVar<string> InitialRoadNetworkMap = new InputVar<string>("InitialRoadNetworkMap");
 			ReadVar(InitialRoadNetworkMap);
 			parameters.InitialRoadNetworkMap = InitialRoadNetworkMap.Value;
@@ -116,7 +116,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(CoarseElevationRaster);
 			parameters.CoarseElevationRaster = CoarseElevationRaster.Value;
 
-			// We read the coarse elevation cost
+			// We read the coarse elevation cost, which is a table
 			ElevationCostRanges CoarseElevationCostsTable = new ElevationCostRanges();
 
 			const string CoarseElevationCosts = "CoarseElevationCosts";
@@ -126,6 +126,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			InputVar<int> UpperThresholdCoarse = new InputVar<int>("Upper Threshold for current range of elevation");
 			InputVar<double> AdditionalValueCoarse = new InputVar<double>("Additional value for this range of elevation");
 
+			// We give the model the name of the parameter that will be after the table, to know where the table stops
 			const string FineElevationRasterName = "FineElevationRaster";
 
 			while (!AtEndOfInput && CurrentName != FineElevationRasterName)
@@ -144,6 +145,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				GetNextLine();
 			}
 
+			// We use a custom function to see that the ranges are good.
 			CoarseElevationCostsTable.VerifyRanges();
 			parameters.CoarseElevationCosts = CoarseElevationCostsTable;
 
@@ -152,7 +154,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(FineElevationRaster);
 			parameters.FineElevationRaster = FineElevationRaster.Value;
 
-			// We read the fine elevation costs
+			// We read the fine elevation costs. As it is a table of the same format as the coarse elevation cost, the procedure is the same.
 			ElevationCostRanges FineElevationCostsTable = new ElevationCostRanges();
 
 			const string FineElevationCosts = "FineElevationCosts";
@@ -222,7 +224,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			if (parameters.SimulationOfRoadAging && !parameters.SimulationOfWoodFlux)
 			{
-				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION EXTENSION WARNING : You chosed to simulate road aging, but not wood fluxes. However, when wood fluxes are not simulated, all the constructed roads will correspond to the lowest road type, as they will never be upgraded. Therefore, all of your roads will have a maximum age before destruction equal to the lowest road type that you entered.");
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION WARNING : You chosed to simulate road aging, but not wood fluxes. However, when wood fluxes are not simulated, all the constructed roads will correspond to the lowest road type, as they will never be upgraded. Therefore, all of your roads will have a maximum age before destruction equal to the lowest road type that you entered.");
 			}
 
 			// We read the road catalogue for non-exit roads
