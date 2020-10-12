@@ -47,7 +47,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 			else
 			{
-				throw new Exception("Forest Roads Simulation : A road type name couldn't be found. This is an internal problem, or a parameter file issue.");
+				throw new Exception("FOREST ROADS SIMULATION ERROR : A road type name couldn't be found. This is an internal problem, or a parameter file issue. The unknown road type ID was: " + this.typeNumber);
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If it's in neither road catalogue, there's a problem.
 			else if (!PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber) && !PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
 			{
-				PlugIn.ModelCore.UI.WriteLine("Forest roads extension : Tried to update " + this.typeNumber + " , but it's not registered as a valid RoadID.");
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION ERROR : Tried to update " + this.typeNumber + " , but it's not registered as a valid RoadID.");
 			}
 		}
 
