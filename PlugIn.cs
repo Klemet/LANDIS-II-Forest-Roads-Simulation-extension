@@ -24,7 +24,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private List<RelativeLocation> skiddingNeighborhood;
 		private List<RelativeLocation> loopingNeighborhood;
 		public static MetadataTable<RoadLog> roadConstructionLog;
-		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation";
+		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module";
 
 
 		// Properties to contain the parameters
