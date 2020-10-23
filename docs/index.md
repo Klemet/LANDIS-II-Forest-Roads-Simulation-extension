@@ -28,7 +28,7 @@ It functions in pair with a harvest extension to simulate how the forest road ne
 
 | Road network                                             | Wood Flux                                             |
 |:--------------------------------------------------------:|:-----------------------------------------------------:|
-| ![](../screenshots/PythonAnimation_Road_network_output.gif) | ![](../screenshots/PythonAnimation_Wood_Flux_output.gif) |
+| ![](../screenshots/PythonAnimation_Road_network_output.gif) | ![](../../screenshots/PythonAnimation_Wood_Flux_output.gif) |
 
 ## Download
 
