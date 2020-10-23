@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png" alt="FRS module logo"/>
-</p>
-
 # What is the FRS module ?
 
 The FRS (Forest Roads Simulation) module is an extension for the a [LANDIS-II](http://www.landis-ii.org/) model.
@@ -14,14 +10,10 @@ Here is a animation representing the evolution of a forest road network simulate
 
 ![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/screenshots/PythonAnimation_Road_network_output.gif)
 
-The module can also simulate the fluxes of wood going through the landscape, and its influence on the types of roads that are in the landscape, as can be seen when comparing those two animations:
-
-
-| Road network                                             | Wood Flux                                             |
-|:--------------------------------------------------------:|:-----------------------------------------------------:|
-| ![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/screenshots/PythonAnimation_Road_network_output.gif) | ![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/screenshots/PythonAnimation_Wood_Flux_output.gif) |
-
 # What can it do ? (Features)
+
+
+![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/screenshots/EvolutionOfNetwork.png)
 
 - [x] Build forest roads from recently harvested cells to exit points for the wood
 - [x] Compute the path of new forest roads to minimize the costs of construction according to factors such as elevation, water and soils.
@@ -29,18 +21,18 @@ The module can also simulate the fluxes of wood going through the landscape, and
 - [x] **[Optional]** Age the roads and destroy them with time
 - [x] **[Optional]** Simulate the wood flux going through the roads, and upgrade their size to accomodate to this flux
 - [x] **[Optional]** Take into account repeated cuts to optimize the choice of road types
-- [x] **[Optional]** **[Still to come]** Deactivation and reactivation of forest roads for conservation purposes
-- [x] **[Optional]** **[Still to come]** Estimation of CO2 emissions coming from the usage of the roads
+- [ ] **[Optional]** **[Still to come]** Deactivation and reactivation of forest roads for conservation purposes
+- [ ] **[Optional]** **[Still to come]** Estimation of CO2 emissions coming from the usage of the roads
 
 # What do I need to use it ? (Requirements)
 
 To use the FRS module, you need:
 
-- The LANDIS-II model, v7.0 installed on your computer
-- One of the succession extensions of LANDIS-II installed on your computer
-- One of the harvest extensions ([Base Harvest](http://www.landis-ii.org/extensions/base-harvest) or [Biomass Harvest](http://www.landis-ii.org/extensions/biomass-harvest) installed on your computer
-- The FRS module installed on your computer (see [Download](#Where-do-I-download-it-?-(Download)) section)
-- The parameter files for your scenario.
+- The [LANDIS-II model v7.0](http://www.landis-ii.org/install) installed on your computer.
+- One of the succession extensions of LANDIS-II installed on your computer.
+- One of the harvest extensions ([Base Harvest](http://www.landis-ii.org/extensions/base-harvest) or [Biomass Harvest](http://www.landis-ii.org/extensions/biomass-harvest) installed on your computer.
+- The FRS module installed on your computer (see Download section below).
+- The parameter files for your scenario (see Parameterization section below).
 
 # Where do I download it ? (Download)
 
@@ -58,15 +50,16 @@ To know how to generate the parameter files for the succession extension and the
 
 Yes, and yes ! Just [download the example files](https://downgit.github.io/#/home?url=https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/tree/master/Examples), and you'll be set !
 
-To launch the example scenario, you'll need the [Age-Only succession](http://www.landis-ii.org/extensions/age-only-succession) extension and the [Base Harvest](http://www.landis-ii.org/extensions/base-harvest) extension installed on your computer, in addition to the FRS module. Just launch the 'test_scenario.bat' file, and the example scenario should run.
+To launch the example scenario, you'll need the [Age-Only succession](http://www.landis-ii.org/extensions/age-only-succession) extension and the [Base Harvest](http://www.landis-ii.org/extensions/base-harvest) extension installed on your computer, in addition to the FRS module. Just launch the `test_scenario.bat` file, and the example scenario should run.
 
 # Author
 
-Clément Hardy
+[Clément Hardy](http://www.cef-cfr.ca/index.php?n=Membres.ClementHardy)
 
 PhD Student at the Université du Québec à Montréal
 
 Mail : clem.hardy@outlook.fr
+Github : [https://github.com/Klemet](https://github.com/Klemet)
 
 # Acknowledgments
 
