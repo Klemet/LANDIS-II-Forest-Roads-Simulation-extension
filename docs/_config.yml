@@ -1,4 +1,4 @@
 theme: jekyll-theme-time-machine
-title: The Forest Roads Simulation (FRS) module for LANDIS-II
+title: Forest Roads Simulation module
 description: An extension for the spatially explicit forest landscape model LANDIS-II that allows for the dynamic simulation of the construction of forest roads due to forest management.
 show_downloads: true
