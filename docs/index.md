@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png" />
+</p>
+
 # What is the FRS module ?
 
 The FRS (Forest Roads Simulation) module is an extension for the a [LANDIS-II](http://www.landis-ii.org/) model.
