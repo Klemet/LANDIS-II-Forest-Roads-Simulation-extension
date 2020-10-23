@@ -14,18 +14,27 @@
 // Button of the banner in green
   
   .button {
-  border: 1px solid #006600;
-  background: linear-gradient(rgb(255, 231, 136), rgb(255, 206, 56));
-  border-radius: 2px;
-  background-color: #e6ffe6;
-  color:#333;
+  border: 1px solid #006600 !important;
+  background: linear-gradient(rgb(255, 231, 136), rgb(255, 206, 56)) !important;
+  background-color: #e6ffe6 !important;
+  color:#333 !important;
 
   &:hover {
-    background: linear-gradient(rgb(255, 231, 136), rgb(255, 231, 136));
-    background-color: #ffffff;
+    background: linear-gradient(rgb(255, 231, 136), rgb(255, 231, 136)) !important;
+    background-color: #ffffff !important;
           }
     
           }
+  // -----------------------------
+  
+  // -----------------------------
+  // Logo other than octocat
+  
+    #logo {
+    background: url(https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png) !important;
+  }
+  
+  // -----------------------------
   
   // End of banner section
         }
@@ -39,7 +48,7 @@ header {
 
   h1 {
     font: 40px/48px 'Quantico', Helvetica, Arial, sans-serif !important;
-    text-shadow: 0px 2px 0px #000000;
+    text-shadow: 0px 2px 0px #000000 !important;
       }
   }
 // -----------------------------
