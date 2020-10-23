@@ -1,4 +1,6 @@
-![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png" alt="FRS module logo"/>
+</p>
 
 # What is the FRS module ?
 
@@ -58,7 +60,7 @@ Yes, and yes ! Just [download the example files](https://downgit.github.io/#/hom
 
 To launch the example scenario, you'll need the [Age-Only succession](http://www.landis-ii.org/extensions/age-only-succession) extension and the [Base Harvest](http://www.landis-ii.org/extensions/base-harvest) extension installed on your computer, in addition to the FRS module. Just launch the 'test_scenario.bat' file, and the example scenario should run.
 
-## Author
+# Author
 
 Clément Hardy
 
@@ -66,7 +68,7 @@ PhD Student at the Université du Québec à Montréal
 
 Mail : clem.hardy@outlook.fr
 
-## Acknowledgments
+# Acknowledgments
 
 This work would not be possible without the incredible project that is LANDIS-II, and without the care and passion that the LANDIS-II fondation had to make the project as participative and accessible as it is. I thank them all tremendously.
 
