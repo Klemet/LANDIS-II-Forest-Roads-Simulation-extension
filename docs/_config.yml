@@ -1,4 +1,5 @@
 theme: jekyll-theme-minimal
 title: Forest Roads Simulation module
 description: An extension for the spatially explicit forest landscape model LANDIS-II that allows for the dynamic simulation of the construction of forest roads due to forest management.
-show_downloads: true
+show_downloads: false
+logo: https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png
