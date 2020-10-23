@@ -4,6 +4,15 @@
 @import "{{ site.theme }}";
 
 // -----------------------------
+// Pale green background
+
+body {
+  background: #e6ffcc !important;
+}
+// -----------------------------
+
+
+// -----------------------------
 // Banner in green
 
 #banner {
@@ -31,7 +40,7 @@
   // Logo other than octocat
   
     #logo {
-    background: url(https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png) !important;
+    background: url(./Logo-Module-FRS.svg) !important;
   }
   
   // -----------------------------
