@@ -41,17 +41,81 @@ SiteSelection PartialStandSpread 		1            10
 >> COHORT REMOVAL METHOD:
 CohortsRemoved ClearCut
 
+Prescription Shelterwood
+
+>> STAND RANKING:
+StandRanking MaxCohortAge
+>> STAND QUALIFICATION FOR CUTTING:
+MinimumAge 20
+>> SITE SELECTION:
+>> 		      				       Minimum Size Maximum Size
+>> 			  				       ---------- 	 ----------
+SiteSelection PartialStandSpread 		1            10
+CohortsRemoved SpeciesList
+>> Species 	   Cohorts removed
+>> ------- 	   ---------------
+   abiebals 	  1/2
+   acerrubr 	  1/2
+   acersacc 	  1/2
+   betualle 	  1/2
+   betupapy 	  1/2
+   piceglau 	  1/2
+   pinubank 	  1/2
+   pinuresi 	  1/2
+   pinustro 	  1/2
+   poputrem 	  1/2
+   querelli 	  1/2
+   quermacr 	  1/2
+   querrubr 	  1/2
+   tiliamer 	  1/2
+   tsugcana 	  1/2
+SingleRepeat	20
+CohortsRemoved ClearCut
+
+Prescription CPI-CP
+
+>> STAND RANKING:
+StandRanking MaxCohortAge
+>> STAND QUALIFICATION FOR CUTTING:
+MinimumAge 20
+>> SITE SELECTION:
+>> 		      				       Minimum Size Maximum Size
+>> 			  				       ---------- 	 ----------
+SiteSelection PartialStandSpread 		1            10
+>> COHORT REMOVAL METHOD:
+CohortsRemoved SpeciesList
+>> Species 	   Cohorts removed
+>> ------- 	   ---------------
+   abiebals 	  1/3
+   acerrubr 	  1/3
+   acersacc 	  1/3
+   betualle 	  1/3
+   betupapy 	  1/3
+   piceglau 	  1/3
+   pinubank 	  1/3
+   pinuresi 	  1/3
+   pinustro 	  1/3
+   poputrem 	  1/3
+   querelli 	  1/3
+   quermacr 	  1/3
+   querrubr 	  1/3
+   tiliamer 	  1/3
+   tsugcana 	  1/3
+MultipleRepeat 30
+
+
 >>-----------------------------------------------------------------
 >> HARVEST IMPLEMENTATION TABLE
 >> The following table defines which management areas (defined in the
 >> ManagementArea file) are treated by which prescription(s).
->> The zone 1 is south, the zone 2 is north.
 
 HarvestImplementations
 
 >> Mgmt Area Prescription   Harvest Area   Begin Time   End Time
 >> --------- ------------   ------------   ----------   --------
-       1     CPRS                10%
+       1     CPRS                2.5%
+       1     Shelterwood         0.5%
+       1     CPI-CP              0.5%
 
 >>------------------------------------------------------------------------
 >> OUTPUT FILES

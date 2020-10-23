@@ -1,9 +1,0 @@
-LandisData "Output Max Species Age"
-
-Timestep 10
-
-MapNames output/max-age/{species}-{timestep}.tif
-
-Species all
-        
-        

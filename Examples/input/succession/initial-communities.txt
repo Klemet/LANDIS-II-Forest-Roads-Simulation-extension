@@ -8,7 +8,7 @@ pinuresi 110 140
 querelli 40 120 240
 
 >> young jackpine oak
-MapCode 0
+MapCode 100
 pinubank 30 50
 querelli 10 40 70
 
