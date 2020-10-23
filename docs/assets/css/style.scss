@@ -9,20 +9,6 @@
 #banner {
   background: #33cc33 !important;
   border: 1px solid #009933 !important;
-        }
-// -----------------------------
-
-// -----------------------------
-// Different font for title with different shadow
-// and different background color for header
-header {
-  background: #333333 !important;
-
-  h1 {
-    font: 40px/48px 'Quantico', Helvetica, Arial, sans-serif !important;
-    text-shadow: 0px 2px 0px #000000;
-      }
-// -----------------------------
   
 // -----------------------------
 // Button of the banner in green
@@ -41,5 +27,20 @@ header {
     
           }
   
-// End of header section
+  // End of banner section
+        }
+// -----------------------------
+
+// -----------------------------
+// Different font for title with different shadow
+// and different background color for header
+header {
+  background: #333333 !important;
+
+  h1 {
+    font: 40px/48px 'Quantico', Helvetica, Arial, sans-serif !important;
+    text-shadow: 0px 2px 0px #000000;
+      }
   }
+// -----------------------------
+
