@@ -24,12 +24,12 @@ body {
   
   .button {
   border: 1px solid #006600 !important;
-  background: linear-gradient(rgb(255, 231, 136), rgb(255, 206, 56)) !important;
+  background: linear-gradient(rgb(212, 233, 140), rgb(170, 205, 89)) !important;
   background-color: #e6ffe6 !important;
   color:#333 !important;
 
   &:hover {
-    background: linear-gradient(rgb(255, 231, 136), rgb(255, 231, 136)) !important;
+    background: linear-gradient(rgb(212, 233, 140), rgb(212, 233, 140)) !important;
     background-color: #ffffff !important;
           }
     
@@ -40,7 +40,7 @@ body {
   // Logo other than octocat
   
     #logo {
-    background: url(./Logo-Module-FRS.svg) !important;
+    background: url(../../Logo-Module-FRS.svg) !important;
   }
   
   // -----------------------------
