@@ -1,4 +1,4 @@
-theme: jekyll-theme-leap-day
+theme: jekyll-theme-minimal
 title: The Forest Roads Simulation module
 description: An extension for the LANDIS-II model
 show_downloads: false
