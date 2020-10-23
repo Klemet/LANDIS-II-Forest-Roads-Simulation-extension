@@ -63,6 +63,7 @@ To launch the example scenario, you'll need the [Age-Only succession](http://www
 PhD Student at the Université du Québec à Montréal
 
 Mail : clem.hardy@outlook.fr
+
 Github : [https://github.com/Klemet](https://github.com/Klemet)
 
 # Acknowledgments
