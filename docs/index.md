@@ -10,7 +10,7 @@ It allows any user to dynamically simulate the evolution of the forest road netw
 
 # What does it look like ? (Screenshots)
 
-Here is **an animation representing the evolution of a forest road network simulated by the FRS module**:
+Here is an animation representing the evolution of a forest road network simulated by the FRS module:
 
 ![](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/screenshots/PythonAnimation_Road_network_output.gif)
 
@@ -70,6 +70,7 @@ If you come across any issue or suspected bug when using the FRS module, please 
 PhD Student at the Université du Québec à Montréal
 
 Mail : clem.hardy@outlook.fr
+
 Github : [https://github.com/Klemet](https://github.com/Klemet)
 
 # Acknowledgments
