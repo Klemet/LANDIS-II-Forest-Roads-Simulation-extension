@@ -28,6 +28,14 @@ Here is an animation representing the evolution of a forest road network simulat
 - [ ] **[Optional]** **[Still to come]** Deactivation and reactivation of forest roads for conservation purposes
 - [ ] **[Optional]** **[Still to come]** Estimation of CO2 emissions coming from the usage of the roads
 
+# Is it fast ? (Performance)
+
+The FRS module is pretty fast, from my own point of view. Indeed, creating thousands of roads in a landscape made of millions of cells took **less than a minute** for each time step with our module, when using an average CPU for the time (Intel i7 CPU with 4 cores working at 2.60GHz). Using the woodflux algorithm is also really quick, often flushing the wood half the time that was needed to create the roads for the time step.
+
+This is due to the fact that I made sure to optimize the algorithms of the module so that they would take as little time to run as possible. To that end, I used two open-source C# Nuget packages (see Acknowledgments) that greatly improved the running time of the module.
+
+Additional data from other users is needed to be sure; but currently, I would say that **you can expect to see no real difference between running your simulations with the FRS module or without**, in terms of performance and time of simulation. 
+
 # What do I need to use it ? (Requirements)
 
 To use the FRS module, you need:
