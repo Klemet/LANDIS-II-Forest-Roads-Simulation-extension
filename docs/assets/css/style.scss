@@ -142,7 +142,16 @@ footer {
     margin-top: 5px;
   }
 
-  #banner { display: block !important;}
+  #banner { 
+    position: absolute !important;
+    top: 5px !important;
+    display: block !important;
+  }
+  section{
+    position: absolute !important;
+    top: 5px !important;
+    display: block !important;
+  }
   header ul {
     display:block !important;
   }
