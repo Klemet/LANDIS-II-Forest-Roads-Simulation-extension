@@ -117,3 +117,28 @@ footer {
   color: #EAE8F4 !important;
 }
 // -----------------------------
+
+// -----------------------------
+// Wrap of titles on mobile
+@media print, screen and (max-width: 480px) {
+  body {
+  }
+
+  header{
+  white-space: normal !important;
+
+    h1 {
+      white-space: normal !important;
+      overflow: visible !important;
+    }
+  }
+  section {
+    margin-top: 5px;
+  }
+
+  #banner { display: block !important;}
+  header ul {
+    display:block !important;
+  }
+}
+// -----------------------------
