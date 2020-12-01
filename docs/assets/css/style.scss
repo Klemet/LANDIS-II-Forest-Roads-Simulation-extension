@@ -120,45 +120,6 @@ footer {
 // -----------------------------
 
 // -----------------------------
-// Wrap of titles on mobile
-@media print, screen and (max-width: 480px) {
-  body {
-        h1 {
-      white-space: normal !important;
-      overflow: visible !important;
-    }
-  }
-
-  header{
-    position: fixed !important;
-  white-space: normal !important;
-
-    h1 {
-      white-space: normal !important;
-      overflow: visible !important;
-    }
-  }
-  section {
-    margin-top: 5px;
-  }
-
-  #banner { 
-    position: absolute !important;
-    top: 5px !important;
-    display: block !important;
-  }
-  section{
-    position: absolute !important;
-    top: 5px !important;
-    display: block !important;
-  }
-  header ul {
-    display:block !important;
-  }
-}
-// -----------------------------
-
-// -----------------------------
 // Wrap of titles on smaller formats
 @media print, screen and (max-width: 720px) {
   body {
@@ -183,6 +144,45 @@ footer {
   }
 
   #banner { display: block !important;}
+  header ul {
+    display:block !important;
+  }
+}
+// -----------------------------
+
+
+// -----------------------------
+// Wrap of titles on mobile
+@media print, screen and (max-width: 480px) {
+  body {
+        h1 {
+      white-space: normal !important;
+      overflow: visible !important;
+    }
+  }
+
+  header{
+    position: fixed !important;
+  white-space: normal !important;
+
+    h1 {
+      white-space: normal !important;
+      overflow: visible !important;
+    }
+  }
+  section {
+    margin-top: 5px;
+  }
+
+  #banner { 
+    position: fixed !important;
+    top: 130px !important;
+    display: block !important;
+  }
+  section{
+    top: 190px !important;
+    display: block !important;
+  }
   header ul {
     display:block !important;
   }
