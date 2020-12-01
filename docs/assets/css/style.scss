@@ -7,7 +7,11 @@
 // Pale green background
 
 body {
-  background: #e6ffcc !important;
+  background-image: url("../../BackGround_Site_FRS_Module.jpg") !important;
+  background: #e6ffcc !important; // If the image is unavailable
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
 }
 // -----------------------------
 
