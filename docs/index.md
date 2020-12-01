@@ -87,4 +87,4 @@ This work would not be possible without the incredible project that is LANDIS-II
 
 I would also like to thank Github users [BlueRaja](https://github.com/BlueRaja) and [eregina92](https://github.com/eregina92/) for their respective packages, [High Speed Priority Queue for C#](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp) and [Supercluster.KDTree](https://github.com/eregina92/Supercluster.KDTree). Both packages were of tremendous use to improve the performance of the FRS module, and I highly recommend you to check out their work.
 
-I also thank users Art Shop and Jacqueline Fernandez from [the Noun Project](https://thenounproject.com/) for their ressources that helped me to create the logo for the module.
+I also thank users Art Shop and Jacqueline Fernandez from [the Noun Project](https://thenounproject.com/) for their ressources that helped me to create the logo for the module. The background picture for this website is from [Tom Parsons on Unsplash](https://unsplash.com/photos/F5qVefeCrp8).
