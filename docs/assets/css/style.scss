@@ -130,6 +130,7 @@ footer {
   }
 
   header{
+    position: fixed !important;
   white-space: normal !important;
 
     h1 {
@@ -141,7 +142,38 @@ footer {
     margin-top: 5px;
   }
 
-  #banner { display: none !important;}
+  #banner { display: block !important;}
+  header ul {
+    display:block !important;
+  }
+}
+// -----------------------------
+
+// -----------------------------
+// Wrap of titles on smaller formats
+@media print, screen and (max-width: 720px) {
+  body {
+        h1 {
+      white-space: normal !important;
+      overflow: visible !important;
+    }
+  }
+
+  header{
+  white-space: normal !important;
+
+    h1 {
+      white-space: normal !important;
+      overflow: visible !important;
+    }
+    
+    p { display: block !important;}
+  }
+  section {
+    margin-top: 5px;
+  }
+
+  #banner { display: block !important;}
   header ul {
     display:block !important;
   }
