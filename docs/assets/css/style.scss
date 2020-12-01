@@ -4,11 +4,11 @@
 @import "{{ site.theme }}";
 
 // -----------------------------
-// Pale green background
+// Background
 
 body {
-  background-image: url("../../BackGround_Site_FRS_Module.jpg") !important;
-  background: #e6ffcc !important; // If the image is unavailable
+  background-image: url(../../BackGround_Site_FRS_Module.jpg) !important;
+  // background: #e6ffcc !important; // If the image is unavailable
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: cover; /* Resize the background image to cover the entire container */
@@ -64,5 +64,51 @@ header {
     text-shadow: 0px 2px 0px #000000 !important;
       }
   }
+// -----------------------------
+
+// -----------------------------
+// Color of the list of section
+
+nav {
+
+  ul {
+
+    li {
+
+      &.tag-h1 {
+        font-size: 1.2em;
+        color: #EAE8F4 !important;
+
+        a {
+          font-weight: bold;
+          color: #EAE8F4 !important;
+        }
+
+        + .tag-h2 {
+            color: #EAE8F4 !important;
+        }
+      }
+
+      &.tag-h2 {
+
+        + .tag-h1 {
+          margin-top:10px;
+          color: #EAE8F4 !important;
+        }
+      }
+    }
+
+    a {
+      color: #EAE8F4 !important;
+
+      &:hover { color: #ffffff !important; }
+    }
+
+    // .active {
+    //   border-right:solid 4px #39C;
+    //   padding-right:13px;
+    // }
+  }
+}
 // -----------------------------
 
