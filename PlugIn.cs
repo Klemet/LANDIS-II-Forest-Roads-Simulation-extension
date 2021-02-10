@@ -22,7 +22,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		public static readonly string ExtensionName = "Forest Roads Simulation";
 		private bool harvestExtensionDetected = false;
 		private List<RelativeLocation> skiddingNeighborhood;
-		private List<RelativeLocation> loopingNeighborhood;
+		private List<RelativeLocation> minLoopingNeighborhood;
+		private List<RelativeLocation> maxLoopingNeighborhood;
 		public static MetadataTable<RoadLog> roadConstructionLog;
 		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module";
 
@@ -126,8 +127,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// If the loop behavior is activated, we will create a search neighborhood to create loops
 				if (parameters.LoopingBehavior)
 				{
-					loopingNeighborhood = MapManager.CreateSearchNeighborhood(parameters.LoopingDistance, modelCore);
-					modelCore.UI.WriteLine("   Looping neighborhood initialized. It contains " + loopingNeighborhood.Count + " relative locations.");
+					minLoopingNeighborhood = MapManager.CreateSearchNeighborhood(parameters.LoopingMinDistance, modelCore);
+					maxLoopingNeighborhood = MapManager.CreateSearchNeighborhood(parameters.LoopingMaxDistance, modelCore);
+					modelCore.UI.WriteLine("   Smaller looping neighborhood initialized. It contains " + minLoopingNeighborhood.Count + " relative locations.");
+					modelCore.UI.WriteLine("   Bigger looping neighborhood initialized. It contains " + maxLoopingNeighborhood.Count + " relative locations.");
 				}
 				// We initialize the metadatas
 				MetadataHandler.InitializeMetadata();
@@ -204,21 +207,40 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// 7) We construct the roads to each harvested site
 				foreach (Site harvestedSite in listOfHarvestedSites)
 				{
-					// We construct the road only if the cell is at more thanthe given skidding distance by the user from an existing road.
+					// We construct the road only if the cell is at more than the given skidding distance by the user from an existing road.
 					if (!MapManager.IsThereANearbyRoad(skiddingNeighborhood, harvestedSite))
 					{
 						// If the looping behavior is activated, we will check if we should do a loop.
 						if (parameters.LoopingBehavior)
 						{
-							// We only try to create two roads if there are enought roads pixels nearby, but not too many.
-							int roadsNearby = MapManager.HowManyRoadsNearby(loopingNeighborhood, harvestedSite);
+							// To create a normal road if one of the conditions fail
+							bool conditionsForLoop = true;
 
-							if (roadsNearby > 2 && (roadsNearby / loopingNeighborhood.Count)*100 < parameters.LoopingMaxPercentageOfRoads)
-							{
-								int numberOfRoadsCreated = DijkstraSearch.DijkstraLeastCostPathWithLooping(ModelCore, harvestedSite, loopingNeighborhood, parameters.LoopingMaxCost);
-								roadConstructedAtThisTimestep += numberOfRoadsCreated;
-							}
+							// We don't create a loop if there are roads that are too close
+							int roadsInSmallNeighborhood = MapManager.HowManyRoadsNearby(minLoopingNeighborhood, harvestedSite);
+							if (roadsInSmallNeighborhood > 0) { conditionsForLoop = false; }
 							else
+							{
+								// We don't create a loop if there are no roads close enough, at least 2 to make a loop
+								int roadsInLargeNeighborhood = MapManager.HowManyRoadsNearby(maxLoopingNeighborhood, harvestedSite);
+								if (roadsInLargeNeighborhood < 2) { conditionsForLoop = false; }
+								else
+								{
+									// We don't create a loop if there are too many roads nearby
+									double percentageOfRoadsAround = (double)((double)roadsInLargeNeighborhood * 100.0) / (double)maxLoopingNeighborhood.Count;
+									if (percentageOfRoadsAround > parameters.LoopingMaxPercentageOfRoads) { conditionsForLoop = false; }
+									else
+									{
+										// Now, we let the dijkstra function for the loop try to create a loop.
+										// However, if the loop is too costly to build or if the probability isn't right, the loop will not be constructed (see inside this function)
+										int numberOfRoadsCreated = DijkstraSearch.DijkstraLeastCostPathWithLooping(ModelCore, harvestedSite, minLoopingNeighborhood, parameters.LoopingMaxCost);
+										roadConstructedAtThisTimestep += numberOfRoadsCreated;
+									}
+								}
+							}
+
+							// If one of the conditions to make the loop has failed, we create a normal road.
+							if (!conditionsForLoop)
 							{
 								DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
 								roadConstructedAtThisTimestep++;

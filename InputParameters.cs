@@ -49,9 +49,17 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// The distance (in meters) to which we will start creating loops in the network
+		/// The distance (in meters) under which we will not create a loop if there is a road
 		/// </summary>
-		int LoopingDistance
+		int LoopingMinDistance
+		{
+			get; set;
+		}
+
+		/// <summary>
+		/// The distance (in meters) under which we will consider creating a loop if there are at least 2 road pixels
+		/// </summary>
+		int LoopingMaxDistance
 		{
 			get; set;
 		}
@@ -72,6 +80,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
+		/// <summary>
+		/// The probability to construct a loop if all other conditions are validated in the loop algorithm.
+		/// </summary>
+		int LoopingProbability
+		{
+			get; set;
+		}
 
 		/// <summary>
 		/// Path to save the output maps of the forest road network
@@ -240,9 +255,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private string heuristicForNetworkConstruction;
 		private int skiddingDistance;
 		private bool loopingBehavior;
-		private int loopingDistance;
+		private int loopingMinDistance;
+		private int loopingMaxDistance;
 		private int loopingMaxPercentageOfRoads;
 		private double loopingMaxCost;
+		private int loopingProbability;
 		private string outputsOfRoadNetworkMaps;
 		private string outputsOfRoadLog;
 
@@ -336,19 +353,36 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// The distance (in meters) to which we will start creating loops in the network
+		/// The distance (in meters) under which we will not create a loop if there is a road
 		/// </summary>
-		public int LoopingDistance
+		public int LoopingMinDistance
 		{
 			get
 			{
-				return loopingDistance;
+				return loopingMinDistance;
 			}
 			set
 			{
 				if (value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
-				loopingDistance = value;
+				loopingMinDistance = value;
+			}
+		}
+
+		/// <summary>
+		/// The distance (in meters) under which we will consider creating a loop if there are at least 2 road pixels
+		/// </summary>
+		public int LoopingMaxDistance
+		{
+			get
+			{
+				return loopingMaxDistance;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				loopingMaxDistance = value;
 			}
 		}
 
@@ -383,6 +417,23 @@ namespace Landis.Extension.ForestRoadsSimulation
 				if (value < 0)
 					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
 				loopingMaxCost = value;
+			}
+		}
+
+		/// <summary>
+		/// The probability to construct a loop if all other conditions are validated in the loop algorithm.
+		/// </summary>
+		public int LoopingProbability
+		{
+			get
+			{
+				return loopingProbability;
+			}
+			set
+			{
+				if (value < 0)
+					throw new InputValueException(value.ToString(), "Value must be = or > 0.");
+				loopingProbability = value;
 			}
 		}
 

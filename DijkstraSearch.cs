@@ -347,7 +347,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
-						// If a first site is reached, we register it, we create the list of forbiden sites not to reach or usen as path, and we remove those sites from the frontiers.
+						// If a first site is reached, we register it, we create the list of forbiden sites not to reach or usen as path, and we remove those sites from the frontier.
 						if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { IsFirstSiteReached = true; firstSiteReached = neighbourToOpen; forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, firstSiteReached);  foreach (Site road in forbiddenSites) frontier.TryRemove(road); }
 						// If a second site is reached, we register it, and we end the search.
 						if (IsFirstSiteReached) if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) if (firstSiteReached != neighbourToOpen) { IsSecondSiteReached = true; secondSiteReached = neighbourToOpen; goto End; }
@@ -359,6 +359,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 
 			End:
+			
+			// We start by computing the cost of the first road, and constructing it
 			if (IsFirstSiteReached)
 			{
 				List<Site> listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
@@ -388,6 +390,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, firstSiteReached, IDOfRoadToConstruct);
 				}
 
+				// Now, if a second site was reached, we check how much it cost. Of it's not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it.
 				if (IsSecondSiteReached)
 				{
 					List<Site> listOfSitesInSecondLeastCostPath = MapManager.FindPathToStart(startingSite, secondSiteReached, predecessors);
@@ -396,8 +399,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 					{
 						if (i < listOfSitesInSecondLeastCostPath.Count - 1) costOfSecondPath += MapManager.CostOfTransition(listOfSitesInSecondLeastCostPath[i], listOfSitesInSecondLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
 					}
-					// If this second least cost path is not too costly, then we'll build it too.
-					if ((costOfSecondPath / loopingMaxCost) < costOfFirstPath)
+					// If this second least cost path is not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it., then we'll build it too.
+					// The random number will be between 1 and 100, and it must be inferior to 100 - the probability parameter. This way, the higher the probability parameter, 
+					// the higher the chance that the random number will be above the threshold.
+					Random rnd = new Random();
+					if ((costOfSecondPath / loopingMaxCost) < costOfFirstPath && rnd.Next(1, 101) > (100 - PlugIn.Parameters.LoopingProbability))
 					{
 						for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
 						{

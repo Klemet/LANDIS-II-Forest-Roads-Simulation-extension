@@ -70,9 +70,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// If the looping behavior is activated, we look at the looping distance
 			if (parameters.LoopingBehavior)
 			{
-				InputVar<int> LoopingDistance = new InputVar<int>("LoopingDistance");
-				ReadVar(LoopingDistance);
-				parameters.LoopingDistance = LoopingDistance.Value;
+				InputVar<int> LoopingMinDistance = new InputVar<int>("LoopingMinDistance");
+				ReadVar(LoopingMinDistance);
+				parameters.LoopingMinDistance = LoopingMinDistance.Value;
+
+				InputVar<int> LoopingMaxDistance = new InputVar<int>("LoopingMaxDistance");
+				ReadVar(LoopingMaxDistance);
+				parameters.LoopingMaxDistance = LoopingMaxDistance.Value;
 
 				InputVar<int> LoopingMaxPercentageOfRoads = new InputVar<int>("LoopingMaxPercentageOfRoads");
 				ReadVar(LoopingMaxPercentageOfRoads);
@@ -81,6 +85,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 				InputVar<double> LoopingMaxCost = new InputVar<double>("LoopingMaxCost");
 				ReadVar(LoopingMaxCost);
 				parameters.LoopingMaxCost = LoopingMaxCost.Value;
+
+				InputVar<int> LoopingProbability = new InputVar<int>("LoopingProbability");
+				ReadVar(LoopingProbability);
+				parameters.LoopingProbability = LoopingProbability.Value;
 			}
 
 			// We read the path for the output of the maps
