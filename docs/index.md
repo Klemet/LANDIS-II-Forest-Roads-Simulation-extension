@@ -1,5 +1,7 @@
 <p align="center">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Klemet/LANDIS-II-Forest-Roads-Simulation-module?style=social"> <img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master"> <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/Klemet/LANDIS-II-Forest-Roads-Simulation-module"> 
+    <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Klemet/LANDIS-II-Forest-Roads-Simulation-module?style=social"> <img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master"> <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/Klemet/LANDIS-II-Forest-Roads-Simulation-module"> 
+</p>
+<p align="center">
   <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/docs/Logo%20Module%20FRS.png" />
 </p>
 
