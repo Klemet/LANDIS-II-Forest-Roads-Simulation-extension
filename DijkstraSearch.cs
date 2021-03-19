@@ -14,7 +14,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	class DijkstraSearch
 	{
-
 		/// <summary>
 		/// Finds the least cost path from a given site to a site with a road already connected to somewhere where the wood can flow.
 		/// Different from DijkstraSearchForPlaceToPutWood in the sense that we do not only look for sites with paths, but all sites (even with no paths),
@@ -77,14 +76,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
 							}
 						}
-
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
 						if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) { arrivalSite = neighbourToOpen; haveWeFoundARoadToConnectTo = true; goto End; }
 					}
-
 				}
-
 				isClosed.Add(siteToClose);
 			}
 
@@ -102,7 +98,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// If we are in the initiation phase, there is no need to check the strategy of the type of road we are going to construct.
 				if (initialisation)
 				{
-					
 					for (int i = 0; i < listOfSitesInLeastCostPath.Count; i++)
 					{
 						// If there is no road on this site, we construct it. It'll be the smallest type of road.
@@ -141,7 +136,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 						DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, arrivalSite, IDOfRoadToConstruct);
 					}
 				}
-
 				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
 				RoadNetwork.lastArrivalSiteOfDijkstraSearch = arrivalSite;
 				RoadNetwork.costOfLastPath = costOfPath;
@@ -149,7 +143,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
 		}
-
 
 		/// <summary>
 		/// Finds the least cost path from roads to roads to a exit point for the wood in the landscape, and add the given wood flux to every road visited.
@@ -225,9 +218,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// We check if the neighbour is a exit node for the wood. If that's the case, search is other.
 						if (RoadNetwork.fluxPathDictionary.ContainsKey(neighbourToOpen) || SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalSite = neighbourToOpen; haveWeFoundARoadToConnectTo = true; goto End; }
 					}
-
 				}
-
 				// Now that we have checked all of its neighbours, we can close the current node.
 				isClosed.Add(siteToClose);
 
@@ -271,12 +262,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// Then, we flux the wood down this path.
 					newFluxPathIsAnEnd.FluxPathFromSite(startingSite, woodFlux);
 				}
-
 			}
-
 			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to flux the wood from site " + startingSite.Location + " to any exit point. This isn't supposed to happen. Please check the output raster containg the road network for the current timestep (" + ModelCore.CurrentTime + " years) and see if a road is interrupted somewhere." + PlugIn.errorToGithub);
 		}
-
 
 		/// <summary>
 		/// Try to make two least cost path to two sites; the second path is only constructed if the site reached is far enough, and if the cost of the path isn't too high.
@@ -352,9 +340,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// If a second site is reached, we register it, and we end the search.
 						if (IsFirstSiteReached) if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill) if (firstSiteReached != neighbourToOpen) { IsSecondSiteReached = true; secondSiteReached = neighbourToOpen; goto End; }
 					}
-
 				}
-
 				isClosed.Add(siteToClose);
 			}
 
@@ -425,15 +411,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 						{
 							DijkstraLeastCostPathUpgradeRoadForRepeatedEntry(ModelCore, secondSiteReached, IDOfRoadToConstruct);
 						}
-
 						// If both roads have been constructed, we return that it's the case
 						return (2);
 					}
-
 				}
-
-
-
 				// If only one road has been constructed, we return that that's the case.
 				return (1);
 			}
@@ -503,14 +484,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
 							}
 						}
-
 						// We check if the neighbour is a node we want to find, meaning a node with a place where the wood can flow; or, a road that 
 						// is connected to such a place. If so, we can stop the search.
 						if (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo) { arrivalSite = neighbourToOpen; haveWeFoundAnExitPoint = true; goto End; }
 					}
-
 				}
-
 				isClosed.Add(siteToClose);
 			}
 
@@ -545,8 +523,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen." + PlugIn.errorToGithub);
 		}
 
-
-
 		/// <summary>
 		/// Construct a path that was determined in "DijkstraLoopingTestPath"
 		/// </summary>
@@ -572,13 +548,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
 				if (i < listOfSitesInPath.Count - 1) costOfPath += MapManager.CostOfTransition(listOfSitesInPath[i], listOfSitesInPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
 			}
-
 			// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
 			RoadNetwork.costOfLastPath = costOfPath;
 			RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfPath;
-
 		}
-
 	} // End of DijkstraSearch class
-
 } // End of namespace

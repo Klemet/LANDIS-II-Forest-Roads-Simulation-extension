@@ -48,32 +48,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
-		/// Reads the raster map located at the path given to the function. It puts the information of the map in a dictionnary inside the "SiteVars" class. 
+		/// If no raster have been provided for a certain map, this function we fill the variables with the default value.
 		/// </summary>
-		public static void ReadMap(string path, string variableName)
+		public static void FillMapWithDefaultValue(string path, string variableName)
+		{
+			foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
+			{
+				if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = 0;
+				if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = 0;
+				if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
+				if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
+				if (variableName == "SoilsRaster") SiteVars.Soils[site] = 0;
+
+				// PlugIn.ModelCore.UI.WriteLine("Just put value 0 in raster " + variableName);
+			}
+		}
+
+		/// <summary>
+		/// Function to check if the raster map can be opened, and if it has the same dimensions as the main LANDIS-II landscape.
+		/// </summary>
+		public static IInputRaster<UIntPixel> TryToOpenMap(string path, string variableName)
 		{
 			IInputRaster<UIntPixel> map;
-
-			// If the parameter "none" has been given, and if we are talking about an optional raster,
-			// then all of the values for the site will be filled with the default value.
-			if (variableName != "ZonesForRoadCreation" && variableName != "InitialRoadNetworkMap")
-			{
-				if (path == "none" || path == "None" || path == "" || path == null)
-				{
-					foreach (Site site in PlugIn.ModelCore.Landscape.AllSites)
-					{
-						if (variableName == "CoarseElevationRaster") SiteVars.CoarseElevation[site] = 0;
-						if (variableName == "FineElevationRaster") SiteVars.FineElevation[site] = 0;
-						if (variableName == "CoarseWaterRaster") SiteVars.CoarseWater[site] = 0;
-						if (variableName == "FineWaterRaster") SiteVars.FineWater[site] = 0;
-						if (variableName == "SoilsRaster") SiteVars.Soils[site] = 0;
-
-						// PlugIn.ModelCore.UI.WriteLine("Just put value 0 in raster " + variableName);
-					}
-					// If that's the case, no need to go further in the function. we stop here.
-					return;
-				}
-			}
 
 			// We try to open the map; if it fails, we raise an exception
 			try
@@ -92,6 +88,28 @@ namespace Landis.Extension.ForestRoadsSimulation
 				string mesg = string.Format("Error: The input map {0} does not have the same dimension (row, column) as the ecoregions map", path);
 				throw new System.ApplicationException(mesg);
 			}
+			// If we were able to open the map, we return it.
+			return (map);
+		}
+
+		/// <summary>
+		/// Reads the raster map located at the path given to the function. It puts the information of the map in a dictionnary inside the "SiteVars" class. 
+		/// </summary>
+		public static void ReadMap(string path, string variableName)
+		{
+			// If the parameter "none" has been given, and if we are talking about an optional raster,
+			// then all of the values for the site will be filled with the default value.
+			if (variableName != "ZonesForRoadCreation" && variableName != "InitialRoadNetworkMap")
+			{
+				if (path == "none" || path == "None" || path == "" || path == null)
+				{
+					FillMapWithDefaultValue(path, variableName);
+					// If that's the case, no need to go further in the function. we stop here.
+					return;
+				}
+			}
+
+			IInputRaster<UIntPixel> map = TryToOpenMap(path, variableName);
 
 			// We read the map by looking at each pixel one by one, and putting the value of this pixel
 			// in the correct site.
@@ -131,7 +149,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		// Function used for debugging purposes. Directly read into the input map given by the user. Obsolete.
+		/// <summary>
+		/// Function used for debugging purposes. Directly read into the input map given by the user. Obsolete.
+		/// </summary>
 		public static int ReadAPixelOfTheMap(string path, Site site)
 		{
 			IInputRaster<UIntPixel> map;
@@ -191,7 +211,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 						BytePixel pixel = outputRaster.BufferPixel;
 						foreach (Site site in ModelCore.Landscape.AllSites)
 						{
-
 							pixel.MapCode.Value = (byte)SiteVars.RoadsInLandscape[site].typeNumber;
 							outputRaster.WriteBufferPixel();
 						}
@@ -201,7 +220,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
 				}
-
 			}
 			// If it is the costRaster we want to write, we write the cost of construction in each pixel.
 			else if (mapType == "costRaster")
@@ -222,7 +240,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
 				}
-
 			}
 			// If it is the woodFlux map we want to write, that's what we create.
 			else if (mapType == "WoodFlux")
@@ -244,7 +261,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 								pixel.MapCode.Value = 0;
 								outputRaster.WriteBufferPixel();
 							}
-
 						}
 					}
 				}
@@ -252,9 +268,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					PlugIn.ModelCore.UI.WriteLine("Couldn't create map " + path + ". Please check that it is accessible, and not in read-only mode.");
 				}
-
 			}
-
 		}
 
 		/// <summary>
@@ -275,7 +289,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				if (slope > highestSlope) { highestSlope = slope; }
 			}
-
 			return (highestSlope);
 		}
 
@@ -290,7 +303,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				// First of all; if the pixel is in a non-buildable zone, the cost is negative. No road will be created on this cell.
 				if (SiteVars.BuildableZones[site] == 0) { SiteVars.BaseCostRaster[site] = -1; SiteVars.CostRasterWithRoads[site] = -1; }
-
 				else
 				{
 					// First, we initialize the cost
@@ -333,7 +345,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 							cost = cost * PlugIn.Parameters.FineElevationCosts.GetCorrespondingValue(SiteVars.FineElevation[site]);
 						}
 					}
-
 					// We associate this cost to the site
 					SiteVars.BaseCostRaster[site] = (float)cost;
 
@@ -343,7 +354,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					SiteVars.CostRasterWithRoads[site] = (float)cost;
 				}
 			}
-
 			// Once all of the sites are treated, we export the cost raster so that it can be seen by the user.
 			// For now, we will put it in the same folder as the ouput raster for the model
 			MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps, PlugIn.ModelCore, "costRaster");
@@ -361,10 +371,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				if (SiteVars.BaseCostRaster[neighbouringSite] >= 0) isSiteReacheable = true; break;
 			}
-
 			return (isSiteReacheable);
 		}
-
 
 		/// <summary>
 		/// Gets the 8 neighbours surounding a site as a list of sites.
@@ -386,7 +394,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// Checks if the site is rightly in the landscape. See https://github.com/LANDIS-II-Foundation/Library-Spatial/blob/master/src/api/Site.cs for more infos.
 				if (neighbour) listOfNeighbouringSites.Add(neighbour);
 			}
-
 			return (listOfNeighbouringSites);
 		}
 
@@ -409,7 +416,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				neighbour = givenSite.GetNeighbor(relativeLocation);
 				if (neighbour && SiteVars.RoadsInLandscape[neighbour].IsARoad) listOfNeighbouringSites.Add(neighbour);
 			}
-
 			return (listOfNeighbouringSites);
 		}
 
@@ -450,7 +456,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					}
 				}
 			}
-
 			return (relativeCircleNeighborhood);
 		}
 
@@ -466,7 +471,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					return (true);
 				}
 			}
-
 			return (false);
 		}
 
@@ -502,9 +506,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						break;
 					}
 				}
-
 			}
-
 			return (isThereANearbyRoad);
 		}
 
@@ -535,9 +537,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					listOfNearbySitesWithRoads.Add(neighbor);
 				}
-
 			}
-
 			return (listOfNearbySitesWithRoads);
 		}
 
@@ -572,9 +572,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						numberOfRoadsNearby++;
 					}
 				}
-
 			}
-
 			return (numberOfRoadsNearby);
 		}
 
@@ -598,7 +596,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					listOfSitesWithRoads.Add(site);
 				}
 			}
-
 			return (listOfSitesWithRoads);
 		}
 
@@ -619,10 +616,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					listOfSitesWithExitPoints.Add(site);
 				}
 			}
-
 			return (listOfSitesWithExitPoints);
 		}
-
 
 		/// <summary>
 		/// Check if there is at least a site with a main public road or a sawmill so that the harvested wood has a place to flow to, and the road network places to connect to.
@@ -645,7 +640,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					break;
 				}
 			}
-
 			return (placeDetected);
 		}
 
@@ -692,7 +686,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					minDistance = distanceBetweenSites;
 				}
 			}
-
 			return (minDistance);
 		}
 
@@ -724,7 +717,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					farthestSite = otherSite;
 				}
 			}
-
 			return (farthestSite);
 		}
 
@@ -753,10 +745,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					listOfConnectedNeighborsWithRoads.Add(neighbour);
 					if (!closedSearchList.Contains(neighbour)) openSearchList.Add(neighbour);
 				}
-
 				closedSearchList.Add(currentSite);
 			}
-
 			return (listOfConnectedNeighborsWithRoads.ToList());
 		}
 
@@ -793,14 +783,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 							minimumDistance = MapManager.GetDistance(site, neighbor);
 						}
 					}
-
 				}
-
 				return (siteToReturn);
 			}
-
 		}
-
 
 		/// <summary>
 		/// Get all of the sites that have been harvested recently by the harvest extension, and to which we need to create a road to.
@@ -830,9 +816,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				{
 					listOfHarvestedSites.Add(site);
 				}
-
 			}
-
 			return (listOfHarvestedSites);
 		}
 
@@ -867,7 +851,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// The time to the next rotation is then returned
 				int difference = timestepOfReservation - ModelCore.CurrentTime;
 				if (difference < 0) { return (0); }
-				else { return (difference); };
+				else { return (difference); }
 			}
 
 			// If it is a repeated prescription...
@@ -882,11 +866,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					Landis.Library.HarvestManagement.RepeatHarvest repeatPrescription = (Landis.Library.HarvestManagement.RepeatHarvest)standOfSite[site].LastPrescription;
 					return (repeatPrescription.Interval);
 				}
-
 			}
-			
 		}
-
 
 		/// <summary>
 		/// Gets the coordinates of sites and put it into an array of coordinates. This function is used to feed the kdTree search functions.
@@ -968,9 +949,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						searchTree.NearestNeighbors(new double[] { (double)site.Location.Row, (double)site.Location.Column }, 1)[0].Item1)).ToList();
 				}
 				else throw new Exception("Heuristic non recognized");
-
 			}
-
 			return (shuffledListOfSites);
 		}
 
@@ -1014,7 +993,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			while (!foundStartingSite)
 			{
-
 				ListOfSitesInThePath.Add(nextPredecessor);
 				if (nextPredecessor.Location == startingSite.Location) foundStartingSite = true;
 				else
@@ -1026,7 +1004,5 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			return (ListOfSitesInThePath);
 		}
-
 	}
 }
-

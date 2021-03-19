@@ -9,7 +9,6 @@ using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
 
-
 namespace Landis.Extension.ForestRoadsSimulation
 {
 	public class PlugIn
@@ -26,7 +25,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private List<RelativeLocation> maxLoopingNeighborhood;
 		public static MetadataTable<RoadLog> roadConstructionLog;
 		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module";
-
 
 		// Properties to contain the parameters
 		private static IInputParameters parameters;
@@ -98,7 +96,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			// Testing if a harvest extension is included in the scenario and thus initialized
 			if (modelCore.GetSiteVar<int>("Harvest.TimeOfLastEvent") != null) { this.harvestExtensionDetected = true; modelCore.UI.WriteLine("Harvest extension correctly detected."); }
-
 			else
 			{
 				modelCore.UI.WriteLine("   FOREST ROAD SIMULATION WARNING : NO HARVEST EXTENSION DETECTED");
@@ -140,7 +137,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					RoadNetwork.fluxPathCatalogue = new List<FluxPath>();
 					RoadNetwork.fluxPathDictionary = new Dictionary<Site, FluxPath>();
 				}
-
 				// We output the map at timestep 0. Can be usefull.
 				MapManager.WriteMap(parameters.OutputsOfRoadNetworkMaps, modelCore);
 			}
@@ -166,14 +162,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 				List<Site> listOfSitesWithRoads;
 				if (parameters.SimulationOfRoadAging)
 				{
-
 					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
 
 					foreach (Site siteWithRoad in listOfSitesWithRoads)
 					{
 						SiteVars.RoadsInLandscape[siteWithRoad].agingTheRoad(siteWithRoad);
 					}
-
 					// 2) We update the status of all the roads concerning their connection to an exit point (sawmill or main road network); so that the pathfinding algorithms can now when to stop afterward.
 					ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
 					listOfSitesWithRoads = MapManager.GetSitesWithRoads(ModelCore);
@@ -238,7 +232,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 									}
 								}
 							}
-
 							// If one of the conditions to make the loop has failed, we create a normal road.
 							if (!conditionsForLoop)
 							{
@@ -252,15 +245,12 @@ namespace Landis.Extension.ForestRoadsSimulation
 							DijkstraSearch.DijkstraLeastCostPathToClosestConnectedRoad(ModelCore, harvestedSite);
 							roadConstructedAtThisTimestep++;
 						}
-
 					}
-
 					progressBar.IncrementWorkDone(1);
 				}
-
 				watch.Stop();
 				modelCore.UI.WriteLine("   At this timestep, " + roadConstructedAtThisTimestep + " roads were built");
-				modelCore.UI.WriteLine("   The construction took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
+				modelCore.UI.WriteLine("   The construction took " + (watch.ElapsedMilliseconds / 1000) + " seconds.\n");
 
 				// 8) If woodflux is simulated, We add the woodflux from the harvested area to the closest road, and we then used a dijkstra 
 				// search that only goes through roads in order to reach an exit point for the wood. Every road used will see its flux value 
@@ -289,13 +279,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 						{
 							DijkstraSearch.DijkstraWoodFlux(PlugIn.ModelCore, siteWithClosestRoad, siteFlux);
 						}
-						
 						sitesFluxedAtThisTimestep++;
 						progressBar.IncrementWorkDone(1);
 					}
-
 					modelCore.UI.WriteLine("   At this timestep, the wood of " + sitesFluxedAtThisTimestep + " sites was fluxed.");
-					modelCore.UI.WriteLine("   The fluxing took " + watch.ElapsedMilliseconds / 1000 + " seconds.\n");
+					modelCore.UI.WriteLine("   The fluxing took " + (watch.ElapsedMilliseconds / 1000) + " seconds.\n");
 				}
 
 				// 9) We finish by upgrading the types of the roads if they have to be according to the woodflux for the timestep, and the parameters given by the user, if woodflux is simulated.
@@ -307,7 +295,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 					{
 						SiteVars.RoadsInLandscape[siteWithRoad].UpdateAccordingToWoodFlux(siteWithRoad);
 					}
-
 				}
 
 				// 10) We write the output maps
@@ -324,11 +311,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				roadLog.CostOfConstructionAndRepairs = RoadNetwork.costOfConstructionAndRepairsAtTimestep;
 				roadConstructionLog.AddObject(roadLog);
 				roadConstructionLog.WriteToFile();
-
 			} // End of if harvest extension detected
-
 		} // End of run function
-
 	} // End of PlugIn class
-
 } // End of namespace

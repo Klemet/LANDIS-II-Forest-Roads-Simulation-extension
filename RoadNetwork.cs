@@ -10,7 +10,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 
-
 namespace Landis.Extension.ForestRoadsSimulation
 {
 	/// <summary>
@@ -60,7 +59,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 						SiteVars.RoadsInLandscape[siteConnected].isConnectedToSawMill = true;
 					}
 				}
-
 				progressBar.IncrementWorkDone(1);
 			}
 
@@ -71,9 +69,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			{
 				if (!dictonnaryOfSitesAlreadyChecked.ContainsKey(siteWithRoad)) { nonConnectedSites.Add(siteWithRoad); SiteVars.RoadsInLandscape[siteWithRoad].isConnectedToSawMill = false; }
 			}
-
 			return (nonConnectedSites);
-
 		}
 
 		/// <summary>
@@ -94,7 +90,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			// We check wich ones are connected to an exit point
 			ModelCore.UI.WriteLine("   Looking to see if the roads can go to a exit point (sawmill, main road network)...");
 			List<Site> listOfSitesThatCantConnect = UpdateConnectionToExitPointStatus();
-
 
 			// If there were sites that we couldn't not connect, we throw a warning the user
 			if (listOfSitesThatCantConnect.Count != 0)
@@ -128,15 +123,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// Now that it is connected, all of its connected neighbours will become automatically connected too.
 						foreach (Site connectedSite in sitesConnectedToTheLonelySite) SiteVars.RoadsInLandscape[connectedSite].isConnectedToSawMill = true;
 					}
-
 					progressBar.IncrementWorkDone(1);
 				}
-
 			}
-
 			// All the sites are now connected. Initialization of the road network is thus complete.
 			ModelCore.UI.WriteLine("   Initialization of the road network is now complete.");
-
 		}
 
 		/// <summary>
@@ -153,8 +144,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			fluxPathCatalogue.Clear();
 			fluxPathDictionary.Clear();
-
 		}
-
 	}
 }

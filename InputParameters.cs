@@ -104,7 +104,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
-
 		// ------------------------------------------------------------------------------
 		// INPUT RASTERS AND COST PARAMETERS
 
@@ -238,13 +237,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			get; set;
 		}
-
 	}
-}
 
-
-namespace Landis.Extension.ForestRoadsSimulation
-{
 	/// <summary>
 	/// Parameters for the plug-in.
 	/// </summary>
@@ -476,7 +470,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 				else throw new InputValueException(value.ToString(), "A correct path to a folder must be given");
 			}
 		}
-
 
 		// ------------------------------------------------------------------------------
 		// INPUT RASTERS AND COST PARAMETERS
@@ -772,7 +765,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		public InputParameters()
 		{
-			
 		}
 	}
 }

@@ -218,7 +218,6 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(SoilsRaster);
 			parameters.SoilsRaster = SoilsRaster.Value;
 
-
 			// ------------------------------------------------------------------------------
 			// ROAD TYPE THRESHOLDS AND MULTIPLICATION VALUES
 
@@ -383,6 +382,5 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ModelCore.UI.WriteLine("   Road types for exiting wood off the landscape : ");
 			PlugIn.Parameters.RoadCatalogueExit.DisplayRangesInConsole(ModelCore);
 		}
-
 	}
 }
