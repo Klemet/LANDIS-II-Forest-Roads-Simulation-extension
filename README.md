@@ -60,7 +60,7 @@ To use the FRS module, you need:
 
 # Where do I download it ? (Download)
 
-Version 1.0 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/releases/download/1.0/LANDIS-II-V7.Forest.Road.Simulation.module.1.0-setup.exe). To install it on your computer, just launch the installer.
+Version 1.1 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/releases/download/1.1/LANDIS-II-V7.Forest.Road.Simulation.module.1.1-setup.exe). To install it on your computer, just launch the installer.
 
 
 # Where do I get the parameter files ? (Parameterization)
@@ -69,7 +69,7 @@ LANDIS-II requires a global parameter file for your scenario, and then different
 
 To know how to generate the parameter files for the succession extension and the harvest extension that you will use, please refer to their user manual.
 
-**To generate the parameter files needed for the FRS module, please read the [user guide of the module](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/master/LANDIS-II%20Forest%20Roads%20Simulation%20v1.0%20User%20Guide.pdf).** It will help you throught the process in detail !
+**To generate the parameter files needed for the FRS module, please read the [user guide of the module](https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/1.1/LANDIS-II%20Forest%20Roads%20Simulation%20v1.1%20User%20Guide.pdf).** It will help you through the process in detail !
 
 
 # Can I test it ? Can I have an example of parameter files ?

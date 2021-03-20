@@ -63,7 +63,7 @@ Source: {#BuildDir}\Supercluster.KDTree.dll; DestDir: {#ExtDir}; Flags: uninsnev
 
 
 ; Complete example for testing the extension
-Source: ".\Installation Files\Examples\Forest Roads Simulation\*"; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: ignoreversion
+Source: "..\Examples\*"; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: ignoreversion
 
 ; LANDIS-II identifies the extension with the info in this .txt file
 ; NB. New releases must modify the name of this file and the info in it
