@@ -12,9 +12,11 @@ HeuristicForNetworkConstruction Farthestfirst
 SkiddingDistance 150
 
 LoopingBehavior Yes
-LoopingDistance 750
-LoopingMaxPercentageOfRoads 5
-LoopingMaxCost 5
+LoopingMinDistance 500
+LoopingMaxDistance 1200
+LoopingMaxPercentageOfRoads 10
+LoopingMaxCost 10
+LoopingProbability 16
 
 OutputsOfRoadNetworkMaps ./output/disturbances/roads/roadNetwork.tif
 OutputsOfRoadLog ./output/disturbances/roads/
