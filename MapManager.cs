@@ -836,37 +836,46 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			// We get the stand of the cell
 			ISiteVar<Landis.Library.HarvestManagement.Stand> standOfSite = Landis.Library.HarvestManagement.SiteVars.Stand;
-			Landis.Library.HarvestManagement.Stand standOfTheSite = standOfSite[site];
-
-			// We check if the stand where the cell is is harvested by a repeated prescription
-			// If it is not, we return 0.
-			if (!(standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.RepeatHarvest)) { return (0); }
-
-			// If it is a repeated prescription, we check if it is a single repeat
-			else if ((standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.SingleRepeatHarvest))
+			if (standOfSite != null)
 			{
-				// We check until when the stand is reserved
-				int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
+				Landis.Library.HarvestManagement.Stand standOfTheSite = standOfSite[site];
 
-				// The time to the next rotation is then returned
-				int difference = timestepOfReservation - ModelCore.CurrentTime;
-				if (difference < 0) { return (0); }
-				else { return (difference); }
-			}
+				// We check if the stand where the cell is is harvested by a repeated prescription
+				// If it is not, we return 0.
+				PlugIn.ModelCore.UI.WriteLine("Testing if prescription is repeat harvest.");
+				if (!(standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.RepeatHarvest)) { return (0); }
 
-			// If it is a repeated prescription...
-			else
-			{
-				// First, we check if its reservation has ended
-				int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
+				// If it is a repeated prescription, we check if it is a single repeat
+				else if ((standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.SingleRepeatHarvest))
+				{
+					// We check until when the stand is reserved
+					int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
 
-				if (timestepOfReservation == ModelCore.CurrentTime) { return (0); }
+					// The time to the next rotation is then returned
+					int difference = timestepOfReservation - ModelCore.CurrentTime;
+					if (difference < 0) { return (0); }
+					else { return (difference); }
+				}
+
+				// If it is a repeated prescription, but not a single repeat...
 				else
 				{
-					Landis.Library.HarvestManagement.RepeatHarvest repeatPrescription = (Landis.Library.HarvestManagement.RepeatHarvest)standOfSite[site].LastPrescription;
-					return (repeatPrescription.Interval);
+					// First, we check if its reservation has ended
+					int timestepOfReservation = (int)standOfTheSite.GetType().GetField("setAsideUntil", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(standOfTheSite);
+
+					if (timestepOfReservation == ModelCore.CurrentTime) { return (0); }
+					else
+					{
+						Landis.Library.HarvestManagement.RepeatHarvest repeatPrescription = (Landis.Library.HarvestManagement.RepeatHarvest)standOfSite[site].LastPrescription;
+						return (repeatPrescription.Interval);
+					}
 				}
 			}
+			else
+			{
+				return (0);
+			}
+
 		}
 
 		/// <summary>
