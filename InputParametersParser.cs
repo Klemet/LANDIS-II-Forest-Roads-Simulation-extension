@@ -119,7 +119,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(DistanceCost);
 			parameters.DistanceCost = DistanceCost.Value;
 
-			// We read the coarse elevation raster if he is given
+			// We read the coarse elevation raster, which is the only essential one
 			InputVar<string> CoarseElevationRaster = new InputVar<string>("CoarseElevationRaster");
 			ReadVar(CoarseElevationRaster);
 			parameters.CoarseElevationRaster = CoarseElevationRaster.Value;
@@ -162,56 +162,66 @@ namespace Landis.Extension.ForestRoadsSimulation
 			ReadVar(FineElevationRaster);
 			parameters.FineElevationRaster = FineElevationRaster.Value;
 
-			// We read the fine elevation costs. As it is a table of the same format as the coarse elevation cost, the procedure is the same.
-			ElevationCostRanges FineElevationCostsTable = new ElevationCostRanges();
-
-			const string FineElevationCosts = "FineElevationCosts";
-			ReadName(FineElevationCosts);
-
-			InputVar<int> LowerThresholdFine = new InputVar<int>("Lower Threshold for current range of elevation");
-			InputVar<int> UpperThresholdFine = new InputVar<int>("Upper Threshold for current range of elevation");
-			InputVar<double> MultiplicationValueFine = new InputVar<double>("Multiplication value for this range of elevation");
-
-			const string CoarseWaterRasterName = "CoarseWaterRaster";
-
-			while (!AtEndOfInput && CurrentName != CoarseWaterRasterName)
+			// We read the fine elevation costs if the fine elevation raster was given. 
+			// As it is a table of the same format as the coarse elevation cost, the procedure is the same.
+			if (parameters.FineElevationRaster.ToUpper() != "NONE")
 			{
-				StringReader currentLine = new StringReader(CurrentLine);
+				ElevationCostRanges FineElevationCostsTable = new ElevationCostRanges();
 
-				ReadValue(LowerThresholdFine, currentLine);
-				ReadValue(UpperThresholdFine, currentLine);
-				ReadValue(MultiplicationValueFine, currentLine);
+				const string FineElevationCosts = "FineElevationCosts";
+				ReadName(FineElevationCosts);
 
-				FineElevationCostsTable.AddRange(LowerThresholdFine.Value, UpperThresholdFine.Value, MultiplicationValueFine.Value);
+				InputVar<int> LowerThresholdFine = new InputVar<int>("Lower Threshold for current range of elevation");
+				InputVar<int> UpperThresholdFine = new InputVar<int>("Upper Threshold for current range of elevation");
+				InputVar<double> MultiplicationValueFine = new InputVar<double>("Multiplication value for this range of elevation");
 
-				CheckNoDataAfter("the " + LowerThresholdFine.Name + " column",
-								currentLine);
+				const string CoarseWaterRasterName = "CoarseWaterRaster";
 
-				GetNextLine();
+				while (!AtEndOfInput && CurrentName != CoarseWaterRasterName)
+				{
+					StringReader currentLine = new StringReader(CurrentLine);
+
+					ReadValue(LowerThresholdFine, currentLine);
+					ReadValue(UpperThresholdFine, currentLine);
+					ReadValue(MultiplicationValueFine, currentLine);
+
+					FineElevationCostsTable.AddRange(LowerThresholdFine.Value, UpperThresholdFine.Value, MultiplicationValueFine.Value);
+
+					CheckNoDataAfter("the " + LowerThresholdFine.Name + " column",
+									currentLine);
+
+					GetNextLine();
+				}
+
+				FineElevationCostsTable.VerifyRanges();
+				parameters.FineElevationCosts = FineElevationCostsTable;
 			}
-
-			FineElevationCostsTable.VerifyRanges();
-			parameters.FineElevationCosts = FineElevationCostsTable;
 
 			// We read the coarse water raster if he is given
 			InputVar<string> CoarseWaterRaster = new InputVar<string>("CoarseWaterRaster");
 			ReadVar(CoarseWaterRaster);
 			parameters.CoarseWaterRaster = CoarseWaterRaster.Value;
 
-			// We read the coarse water cost
-			InputVar<int> CoarseWaterCost = new InputVar<int>("CoarseWaterCost");
-			ReadVar(CoarseWaterCost);
-			parameters.CoarseWaterCost = CoarseWaterCost.Value;
+			// We read the coarse water cost if the coarse water raster was given
+			if (parameters.CoarseWaterRaster.ToUpper() != "NONE")
+			{
+				InputVar<int> CoarseWaterCost = new InputVar<int>("CoarseWaterCost");
+				ReadVar(CoarseWaterCost);
+				parameters.CoarseWaterCost = CoarseWaterCost.Value;
+			}
 
 			// We read the fine water raster if he is given
 			InputVar<string> FineWaterRaster = new InputVar<string>("FineWaterRaster");
 			ReadVar(FineWaterRaster);
 			parameters.FineWaterRaster = FineWaterRaster.Value;
 
-			// We read the fine water cost
-			InputVar<int> FineWaterCost = new InputVar<int>("FineWaterCost");
-			ReadVar(FineWaterCost);
-			parameters.FineWaterCost = FineWaterCost.Value;
+			// We read the fine water cost if the fine water raster was given
+			if (parameters.FineWaterRaster.ToUpper() != "NONE")
+			{
+				InputVar<int> FineWaterCost = new InputVar<int>("FineWaterCost");
+				ReadVar(FineWaterCost);
+				parameters.FineWaterCost = FineWaterCost.Value;
+			}
 
 			// We read the soil raster if he is given
 			InputVar<string> SoilsRaster = new InputVar<string>("SoilsRaster");
