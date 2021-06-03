@@ -309,7 +309,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 					double cost = 0;
 
 					// Else, if there is a body of water on this site, the cost is the cost of building a bridge.
-					if (PlugIn.Parameters.CoarseWaterRaster != "none" && SiteVars.CoarseWater[site] != 0)
+					if (PlugIn.Parameters.CoarseWaterRaster.ToUpper() != "NONE" && SiteVars.CoarseWater[site] != 0)
 					{
 						cost = PlugIn.Parameters.CoarseWaterCost;
 					}
@@ -321,26 +321,26 @@ namespace Landis.Extension.ForestRoadsSimulation
 						cost += PlugIn.Parameters.DistanceCost;
 
 						// We add the slope cost, which depends on the highest slope towards one of the neighbours of the site.
-						if (PlugIn.Parameters.CoarseElevationRaster != "none")
+						if (PlugIn.Parameters.CoarseElevationRaster.ToUpper() != "NONE")
 						{
 							cost += PlugIn.Parameters.CoarseElevationCosts.GetCorrespondingValue(MapManager.GetHighestSlopeAmongstNeighbors(site));
 						}
 
 						// We add the fine water cost, that will depend on the number of stream crossed, if there was an input of the fine water raster. The number of stream crossed is expressed as a probability, depending on the length
 						// of streams in the site, and the length of a cell/site.
-						if (PlugIn.Parameters.FineWaterRaster != "none")
+						if (PlugIn.Parameters.FineWaterRaster.ToUpper() != "NONE")
 						{
 							cost += (SiteVars.FineWater[site] / PlugIn.ModelCore.CellLength) * PlugIn.Parameters.FineWaterCost;
 						}
 
 						// We add the cost associated with the soil, if there was an input for the soil raster. The cost is the mean of the cost for the two sites.
-						if (PlugIn.Parameters.SoilsRaster != "none")
+						if (PlugIn.Parameters.SoilsRaster.ToUpper() != "NONE")
 						{
 							cost += SiteVars.Soils[site];
 						}
 
 						// Finally, we multiply with the fine elevation cost if there was a input of fine elevation rasters. This multiplication represents a detour taken to avoid the fine topography.
-						if (PlugIn.Parameters.FineElevationRaster != "none")
+						if (PlugIn.Parameters.FineElevationRaster.ToUpper() != "NONE")
 						{
 							cost = cost * PlugIn.Parameters.FineElevationCosts.GetCorrespondingValue(SiteVars.FineElevation[site]);
 						}
