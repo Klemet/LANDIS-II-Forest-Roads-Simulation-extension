@@ -1,7 +1,7 @@
 ; LANDIS-II Extension infomation
 #define CoreRelease "LANDIS-II-V7"
 #define ExtensionName "Forest Road Simulation module"
-#define AppVersion "1.2"
+#define AppVersion "1.2.1"
 #define AppPublisher "Clément Hardy"
 #define AppURL "https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module"
 
