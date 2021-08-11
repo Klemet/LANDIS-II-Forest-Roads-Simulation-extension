@@ -388,8 +388,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					// If this second least cost path is not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it., then we'll build it too.
 					// The random number will be between 1 and 100, and it must be inferior to 100 - the probability parameter. This way, the higher the probability parameter, 
 					// the higher the chance that the random number will be above the threshold.
-					Random rnd = new Random();
-					if ((costOfSecondPath / loopingMaxCost) < costOfFirstPath && rnd.Next(1, 101) > (100 - PlugIn.Parameters.LoopingProbability))
+					// We use the random number generator from the LANDIS-II core, which implies that results will always be the same as long as the random number seed given with the scenario is the same.
+					if ((costOfSecondPath / loopingMaxCost) < costOfFirstPath && (PlugIn.ModelCore.GenerateUniform()*100) > (100 - PlugIn.Parameters.LoopingProbability))
 					{
 						for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
 						{
