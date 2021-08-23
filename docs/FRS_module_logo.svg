@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="102.83955mm"
-   height="102.83955mm"
-   viewBox="0 0 102.83955 102.83955"
+   width="107.43093mm"
+   height="107.43094mm"
+   viewBox="0 0 107.43094 107.43094"
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
@@ -31,26 +31,26 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:zoom="1.0607991"
-     inkscape:cx="336.53875"
-     inkscape:cy="129.61927"
+     inkscape:cx="-57.032477"
+     inkscape:cy="97.567956"
      inkscape:window-width="1920"
      inkscape:window-height="1027"
      inkscape:window-x="-8"
      inkscape:window-y="22"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer3" />
+     inkscape:current-layer="layer2" />
   <defs
      id="defs2">
     <rect
-       x="143.75956"
+       x="143.75957"
        y="52.790394"
        width="253.58244"
-       height="151.77239"
+       height="151.77238"
        id="rect14648" />
     <rect
-       x="-208.63935"
-       y="-1.3331588"
-       width="281.2965"
+       x="-208.63934"
+       y="-1.3331589"
+       width="281.29651"
        height="189.30855"
        id="rect3597" />
     <clipPath
@@ -72,7 +72,8 @@
          inkscape:randomized="0"
          transform="matrix(0.26458333,0,0,0.26458333,-35.616745,-37.027665)"
          inkscape:transform-center-x="1.0965231e-06"
-         inkscape:transform-center-y="-1.1142985e-06" />
+         inkscape:transform-center-y="-1.1142985e-06"
+         d="M 523.29941,334.28955 328.95694,528.63202 134.61447,334.28955 328.95694,139.94708 Z" />
     </clipPath>
     <clipPath
        clipPathUnits="userSpaceOnUse"
@@ -93,7 +94,8 @@
          inkscape:randomized="0"
          transform="matrix(0.26458333,0,0,0.26458333,-35.616745,-37.027665)"
          inkscape:transform-center-x="1.0965231e-06"
-         inkscape:transform-center-y="-1.1142985e-06" />
+         inkscape:transform-center-y="-1.1142985e-06"
+         d="M 523.29941,334.28955 328.95694,528.63202 134.61447,334.28955 328.95694,139.94708 Z" />
     </clipPath>
     <clipPath
        clipPathUnits="userSpaceOnUse"
@@ -114,7 +116,8 @@
          inkscape:randomized="0"
          transform="matrix(0.26458333,0,0,0.26458333,-35.616745,-37.027665)"
          inkscape:transform-center-x="1.0965231e-06"
-         inkscape:transform-center-y="-1.1142985e-06" />
+         inkscape:transform-center-y="-1.1142985e-06"
+         d="M 523.29941,334.28955 328.95694,528.63202 134.61447,334.28955 328.95694,139.94708 Z" />
     </clipPath>
     <clipPath
        clipPathUnits="userSpaceOnUse"
@@ -146,7 +149,7 @@
      transform="translate(-35.616745,-37.027665)">
     <path
        sodipodi:type="star"
-       style="fill:#abdae1;stroke-width:5.53701;stroke-linejoin:bevel;fill-opacity:1"
+       style="fill:#abdae1;fill-opacity:1;stroke-width:5.53701;stroke-linejoin:bevel"
        id="path846"
        inkscape:flatsided="true"
        sodipodi:sides="4"
@@ -206,7 +209,7 @@
        clip-path="url(#clipPath32714)">
       <path
          style="fill:#4c443c;fill-opacity:1;stroke:none;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="M -4.8636684,55.994543 5.3625064,52.876807 20.078221,41.278828 l 4.364831,-3.741285 4.988377,6.609601 3.117737,0.997678 c 0,0 2.24477,4.364828 2.24477,4.863666 0,0.49884 2.618898,5.113088 2.618898,5.113088 l 5.611925,4.489542 9.35321,-0.06235 c 0,0 5.861344,-3.928349 6.235472,-4.926024 0.374129,-0.997675 2.24477,-5.611926 2.618899,-6.110764 0.374129,-0.498837 5.611924,-1.496512 5.611924,-1.496512 l 5.861346,-4.115414 2.618896,-3.9907 4.053059,5.362506 3.180091,3.616574 4.364831,3.367154 1.870641,1.870644 3.242445,0.124708 7.482568,-0.623549 3.990699,1.745933 5.11309,3.367156 -53.749774,52.003845 z"
+         d="M -4.8636684,55.994543 5.3625064,52.876807 20.078221,41.278828 l 4.364831,-3.741285 4.988377,6.609601 3.117737,0.997678 c 0,0 2.24477,4.364828 2.24477,4.863666 0,0.49884 2.618898,5.113088 2.618898,5.113088 l 5.611925,4.489542 9.35321,-0.06235 c 0,0 5.861344,-3.928349 6.235472,-4.926024 0.374129,-0.997675 2.24477,-5.611926 2.618899,-6.110764 0.374129,-0.498837 5.611924,-1.496512 5.611924,-1.496512 l 5.861346,-4.115414 2.618896,-3.9907 4.053059,5.362506 3.180091,3.616574 4.364831,3.367154 1.870641,1.870644 3.242445,0.124708 7.482568,-0.623549 3.990699,1.745933 5.11309,3.367156 -53.749774,52.00384 z"
          id="path11629"
          sodipodi:nodetypes="ccccccscccssccccccccccccc" />
       <path
@@ -923,28 +926,86 @@
            y="99.841522" />
       </g>
     </g>
+    <g
+       id="g13563"
+       transform="rotate(-45,105.89443,131.67682)">
+      <path
+         sodipodi:type="star"
+         style="fill:#fffafa;fill-opacity:1;stroke-width:5.53701;stroke-linejoin:bevel"
+         id="path846-7-6"
+         inkscape:flatsided="true"
+         sodipodi:sides="4"
+         sodipodi:cx="328.95694"
+         sodipodi:cy="334.28955"
+         sodipodi:r1="194.34247"
+         sodipodi:r2="137.42088"
+         sodipodi:arg1="0"
+         sodipodi:arg2="0.78539816"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         transform="matrix(0.18708867,0.01670554,-0.18708867,0.01670554,125.123,64.933105)"
+         inkscape:transform-center-x="-1.2564354e-06"
+         d="M 523.29941,334.28955 328.95694,528.63202 134.61447,334.28955 328.95694,139.94708 Z"
+         inkscape:transform-center-y="-2.8760282e-06" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:7.05556px;line-height:1.25;font-family:sans-serif;fill:#f50a2f;fill-opacity:1;stroke:none;stroke-width:0.264583"
+         x="106.37357"
+         y="78.482445"
+         id="text1921"><tspan
+           sodipodi:role="line"
+           id="tspan1919"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05556px;font-family:Montserrat;-inkscape-font-specification:Montserrat;fill:#f50a2f;fill-opacity:1;stroke-width:0.264583"
+           x="106.37357"
+           y="78.482445">LANDIS-II</tspan></text>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Layer 2">
-    <text
-       xml:space="preserve"
+    <g
+       aria-label="FRS
+module"
        transform="matrix(0.26458333,0,0,0.26458333,-19.606062,-2.2447701)"
        id="text14646"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:1.05;font-family:sans-serif;text-align:center;white-space:pre;shape-inside:url(#rect14648);fill:#000000;fill-opacity:1;stroke:none"
-       x="35.019531"
-       y="0"><tspan
-         x="228.84421"
-         y="94.645156"
-         id="tspan1131"><tspan
-           style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
-           id="tspan1129">FRS
-</tspan></tspan><tspan
-         x="195.56425"
-         y="151.16595"
-         id="tspan1135"><tspan
-           style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
-           id="tspan1133">module</tspan></tspan></text>
+       style="font-size:53.3333px;line-height:1.05;text-align:center;white-space:pre;shape-inside:url(#rect14648)">
+      <path
+         d="m 228.84421,57.205178 h 20.79999 v 4.159998 h -16.63999 v 12.479992 h 12.47999 v 4.159998 h -12.47999 v 16.63999 h -4.16 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path977" />
+      <path
+         d="m 266.33752,78.005166 h -8.32 v 16.63999 h -4.16 V 57.205178 h 20.79999 v 4.159998 h 4.16 v 12.479992 h -4.16 V 61.365176 h -16.63999 v 12.479992 h 16.63999 v 4.159998 h -4.16 v 4.159998 h 4.16 v 8.319995 h 4.16 v 4.159997 h -4.16 v -4.159997 h -4.16 v -8.319995 h -4.15999 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path979" />
+      <path
+         d="m 287.19078,73.845168 h 16.63999 v 4.159998 h 4.16 v 12.479993 h -4.16 V 78.005166 h -16.63999 v -4.159998 h -4.15999 V 61.365176 h 4.15999 z m 0,16.639991 h -4.15999 v -8.319995 h 4.15999 v 8.319995 h 16.63999 v 4.159997 h -16.63999 z m 20.79999,-20.799988 h -4.16 v -8.319995 h -16.63999 v -4.159998 h 16.63999 v 4.159998 h 4.16 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path981" />
+      <path
+         d="m 212.20424,126.20597 h -8.31999 v -4.16 h 8.31999 v 4.16 h 8.32 v 4.16 h -4.16 v 20.79998 h -4.16 z m 20.79999,24.95998 h -4.16 v -24.95998 h -8.31999 v -4.16 h 8.31999 v 4.16 h 4.16 z m -33.27998,-29.11998 v 4.16 h 4.16 v 4.16 h -4.16 v 20.79998 h -4.16 v -29.11998 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path983" />
+      <path
+         d="m 258.01745,147.00596 h -4.15999 v -20.79999 h -12.48 v -4.16 h 12.48 v 4.16 h 4.15999 z m -20.79998,0 v -20.79999 h 4.15999 v 20.79999 z m 16.63999,0 v 4.15999 h -12.48 v -4.15999 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path985" />
+      <path
+         d="m 274.71077,122.04597 v 4.16 h 4.16 v -12.47999 h 4.16 v 37.43997 h -16.63999 v -4.15999 h 12.47999 v -16.63999 h -4.16 v -4.16 h -8.31999 v -4.16 z m -12.47999,4.16 h 4.16 v 20.79999 h -4.16 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path987" />
+      <path
+         d="m 291.40409,147.00596 h 12.47999 v -24.95999 h 4.16 v 29.11998 h -16.63999 z m -4.16,0 v -24.95999 h 4.16 v 24.95999 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path989" />
+      <path
+         d="m 316.4174,113.72598 v 37.43997 h -4.16 v -37.43997 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path991" />
+      <path
+         d="m 320.524,147.00596 v -20.79999 h 4.16 v 8.31999 h 12.47999 v -8.31999 H 324.684 v -4.16 h 12.47999 v 4.16 h 4.16 v 12.47999 H 324.684 v 8.32 h 12.47999 v 4.15999 H 324.684 v -4.15999 z m 20.79999,0 h -4.16 v -4.16 h 4.16 z"
+         style="font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN]'"
+         id="path993" />
+    </g>
   </g>
 </svg>
