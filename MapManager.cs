@@ -842,7 +842,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				// We check if the stand where the cell is is harvested by a repeated prescription
 				// If it is not, we return 0.
-				PlugIn.ModelCore.UI.WriteLine("Testing if prescription is repeat harvest.");
+				// PlugIn.ModelCore.UI.WriteLine("Testing if prescription is repeat harvest.");
 				if (!(standOfTheSite.LastPrescription is Landis.Library.HarvestManagement.RepeatHarvest)) { return (0); }
 
 				// If it is a repeated prescription, we check if it is a single repeat
