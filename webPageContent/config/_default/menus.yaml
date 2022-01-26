@@ -1,0 +1,27 @@
+# Navigation Links
+#   To link a homepage widget, specify the URL as a hash `#` followed by the filename of the
+#     desired widget in your `content/home/` folder.
+#   The weight parameter defines the order that the links will appear in.
+
+main:
+  - name: Home
+    url: /
+    weight: 10
+  - name: Workshop
+    url: https://klemet.github.io/frs-module-workshop/
+    weight: 20
+  - name: Features
+    url: '#features'
+    weight: 30
+  - name: Screenshots
+    url: '#screenshots'
+    weight: 40
+  - name: Specificities
+    url: '#performance'
+    weight: 50
+  - name: Testing
+    url: '#example-testing'
+    weight: 60
+  - name: Support
+    url: '#support'
+    weight: 70

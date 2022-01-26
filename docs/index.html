@@ -1,0 +1,1999 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  
+  
+    <meta name="generator" content="Wowchemy 5.2.0 for Hugo" />
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Information about the FRS module" />
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/" />
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+
+  
+  
+  
+    <meta name="theme-color" content="#4caf50" />
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha256-FMvZuGapsJLjouA6k7Eo2lusoAX9i0ShlWFG6qt7SLc=" crossorigin="anonymous">
+
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous" media="print" onload="this.media='all'">
+    
+
+    
+    
+    
+      
+    
+    
+
+    
+    
+    
+
+    
+
+    
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+  
+
+  
+  
+  
+    
+      
+      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap" media="print" onload="this.media='all'">
+    
+  
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/LANDIS-II-Forest-Roads-Simulation-extension/css/wowchemy.7d3884d8e950a913a82e019908f2c1b9.css" />
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+  
+  
+  
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+
+  
+    <link rel="alternate" href="/LANDIS-II-Forest-Roads-Simulation-extension/index.xml" type="application/rss+xml" title="FRS module" />
+  
+
+  
+    <link rel="manifest" href="/LANDIS-II-Forest-Roads-Simulation-extension/index.webmanifest" />
+  
+
+  <link rel="icon" type="image/png" href="/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_32x32_fill_lanczos_center_3.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_180x180_fill_lanczos_center_3.png" />
+
+  <link rel="canonical" href="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/" />
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary" />
+  
+  <meta property="og:site_name" content="FRS module" />
+  <meta property="og:url" content="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/" />
+  <meta property="og:title" content="FRS module" />
+  <meta property="og:description" content="Information about the FRS module" /><meta property="og:image" content="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_512x512_fill_lanczos_center_3.png" />
+    <meta property="twitter:image" content="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_512x512_fill_lanczos_center_3.png" /><meta property="og:locale" content="en-us" />
+  
+    
+  
+
+  
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "url": "https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/"
+}
+</script>
+
+
+  
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Project",
+  "@id": "https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/",
+  "name": "FRS module",
+  "logo": "https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_192x192_fill_lanczos_center_3.png",
+  
+  
+  
+  
+  "url": "https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/"
+}
+</script>
+
+  
+
+  
+
+  
+
+
+
+
+
+  <title>FRS module</title>
+</head>
+
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#navbar-main" class="page-wrapper   "  >
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script src="/LANDIS-II-Forest-Roads-Simulation-extension/js/wowchemy-init.min.b8153d4570dcbb34350a2a846dba8c03.js"></script>
+
+  
+
+
+<aside class="search-modal" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#" aria-label="Close"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search" class="form-control"
+        aria-label="Search...">
+        
+      </div>
+
+      
+      
+
+      
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+  <div class="page-header">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container-xl">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/LANDIS-II-Forest-Roads-Simulation-extension/">FRS module</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/LANDIS-II-Forest-Roads-Simulation-extension/">FRS module</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/LANDIS-II-Forest-Roads-Simulation-extension/LANDIS-II-Forest-Roads-Simulation-extension/" data-target="[]"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+            
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="https://klemet.github.io/frs-module-workshop/" target="_blank" rel="noopener"><span>Workshop</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+            
+            
+            
+              
+            
+            
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/LANDIS-II-Forest-Roads-Simulation-extension/#features" data-target="#features"><span>Features</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+            
+            
+            
+              
+            
+            
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/LANDIS-II-Forest-Roads-Simulation-extension/#screenshots" data-target="#screenshots"><span>Screenshots</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+            
+            
+            
+              
+            
+            
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/LANDIS-II-Forest-Roads-Simulation-extension/#performance" data-target="#performance"><span>Specificities</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+            
+            
+            
+              
+            
+            
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/LANDIS-II-Forest-Roads-Simulation-extension/#example-testing" data-target="#example-testing"><span>Testing</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+            
+            
+            
+              
+            
+            
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/LANDIS-II-Forest-Roads-Simulation-extension/#support" data-target="#support"><span>Support</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+
+      
+      
+
+      
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-label="Display preferences">
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  </div>
+
+  <div class="page-body">
+    
+
+
+
+
+
+
+
+
+
+  
+<span class="js-widget-page d-none"></span>
+
+
+
+
+
+  
+  
+  
+  
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+    
+    
+      
+    
+    
+    
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="hero" class="home-section wg-hero dark "  >
+   <div class="home-section-bg  bg-image parallax" style="background-image: url(&#39;https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/media/BackGround_Site_FRS_Module.jpg&#39;);"></div>
+    <div class="container">
+
+    
+
+      
+
+
+
+
+<div class="row">
+  <div class="col-12 col-md-6 text-center text-md-left">
+
+
+    
+      <h1 class="hero-title">The FRS module for LANDIS-II</h1>
+    
+
+    
+      <div class="hero-lead"><p>Simulate forest roads for your research easily, and flexibly.</p>
+<p><a class="github-button" href="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star the FRS module">Star the FRS module</a><script async defer src="https://buttons.github.io/buttons.js"></script></p>
+</div>
+    
+
+    
+    
+      
+      
+      
+        
+      
+      
+      
+      
+      
+        
+      
+    <p class="cta-btns">
+      <a href="https://klemet.github.io/frs-module-workshop/" target="_blank" rel="noopener" class="btn btn-light btn-lg mb-3 mb-md-1"><i class="fas fa-book-open pr-1" aria-hidden="true"></i>Learn more</a>
+
+      
+      
+    </p>
+    
+
+    
+    
+
+  
+  
+  </div>
+  <div class="col-12 mx-auto col-md-6  hero-media">
+      
+      <img src="/LANDIS-II-Forest-Roads-Simulation-extension/media/FRS_module_logo.svg" alt="The FRS module for LANDIS-II">
+    
+  </div>
+</div>
+
+
+
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="features" class="home-section wg-featurette  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+
+      
+
+
+<div class="row featurette">
+  
+  <div class="col-md-12 section-heading">
+    <h1>Features</h1>
+    
+  </div>
+  
+
+  
+
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-snowplow"></i></div>
+    
+    <div class="section-subheading">Build forest roads</div>
+    <p>from harvested cells to delivery areas</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-road"></i></div>
+    
+    <div class="section-subheading">Make realistic paths</div>
+    <p>using least-cost path algorithms</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-circle-notch"></i></div>
+    
+    <div class="section-subheading">Create loops</div>
+    <p>and control their size and distribution</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-clock"></i></div>
+    
+    <div class="section-subheading">Age the roads</div>
+    <p>to simulate their wear and destruction</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-arrow-right"></i></div>
+    
+    <div class="section-subheading">Determine wood fluxes</div>
+    <p>account for the mouvement of timber trucks</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-undo"></i></div>
+    
+    <div class="section-subheading">Consider repeated harvest</div>
+    <p>to choose the right road type to build</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-book-open"></i></div>
+    
+    <div class="section-subheading">Extensive documentation</div>
+    <p>to know everything about how it works</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-hard-hat"></i></div>
+    
+    <div class="section-subheading">Self-guided workshop</div>
+    <p>to learn how to use it for your research</p>
+  </div>
+  
+  
+  
+  
+    
+  
+  <div class="col-12 col-sm-4">
+    
+    <div class="featurette-icon"><i class="fas fa-wrench"></i></div>
+    
+    <div class="section-subheading">Easy parameterization</div>
+    <p>adapted to the data you have</p>
+  </div>
+  
+</div>
+
+
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="screenshots" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  justify-content-center">
+      
+        
+          <div class="section-heading col-12 mb-3 text-center">
+            <h1 class="mb-0">📸 Screenshots</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12">
+    <center>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /LANDIS-II-Forest-Roads-Simulation-extension/media/EvolutionOfNetwork_hub0b691329f6c626b802d9b3f705ef30c_410774_31c619df8038d0c641205a775cb5fb55.png 400w,
+               /LANDIS-II-Forest-Roads-Simulation-extension/media/EvolutionOfNetwork_hub0b691329f6c626b802d9b3f705ef30c_410774_c523353e96185defff046625c8f7fe04.png 760w,
+               /LANDIS-II-Forest-Roads-Simulation-extension/media/EvolutionOfNetwork_hub0b691329f6c626b802d9b3f705ef30c_410774_1200x1200_fit_lanczos_3.png 1200w"
+               src="/LANDIS-II-Forest-Roads-Simulation-extension/media/EvolutionOfNetwork_hub0b691329f6c626b802d9b3f705ef30c_410774_31c619df8038d0c641205a775cb5fb55.png"
+               width="760"
+               height="587"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<!-- The gif images are linked as absolutes, as Hugo cannot process animated gifs right now. See https://github.com/gohugoio/hugo/issues/5030-->
+<img src="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/raw/master/screenshots/animation150Years.gif" width="50%"/><br><br>
+<img src="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/raw/master/screenshots/animationCartesClement.gif" width="50%"/><br><br>
+<img src="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/raw/master/screenshots/animationCartesGuillemette.gif" width="50%"/><br><br>
+</center>
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="performance" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">⏱ Performance</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>Creating thousands of roads in a landscape made of millions of cells takes <strong>less than a minute</strong> for each time step with our module, when using an average CPU for the time (Intel i7 CPU with 4 cores working at 2.60GHz).</p>
+<p>Using the woodflux algorithm is also really quick, often flushing the wood half the time that was needed to create the roads for the time step.</p>
+<p>This is due to optimizations using two open-source C# Nuget packages (see Acknowledgments) that greatly improved the running time of the module.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="requirements" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">🧱 Requirements</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>To use the FRS module, you need:</p>
+<ul>
+<li>The <a href="http://www.landis-ii.org/install" target="_blank" rel="noopener">LANDIS-II model v7.0</a> installed on your computer.</li>
+<li>One of the succession extensions of LANDIS-II installed on your computer.</li>
+<li>One of the harvest extensions (<a href="http://www.landis-ii.org/extensions/base-harvest" target="_blank" rel="noopener">Base Harvest</a> or <a href="http://www.landis-ii.org/extensions/biomass-harvest" target="_blank" rel="noopener">Biomass Harvest</a>) installed on your computer.</li>
+<li>The FRS module installed on your computer (see Download section below).</li>
+<li>The parameter files for your scenario (see Parameterization section below).</li>
+</ul>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="download" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">💾 Download</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>Version 1.3 can be downloaded <a href="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/releases/download/1.1/LANDIS-II-V7.Forest.Road.Simulation.module.1.3-setup.exe" target="_blank" rel="noopener">here</a>.</p>
+<p>To install it on your computer, just launch the installer.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="parameterization" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">🛠 Parameters and use</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>To learn how to parameterize and use the FRS module, take a look at the <a href="https://klemet.github.io/frs-module-workshop/" target="_blank" rel="noopener">FRS module workshop</a>.</p>
+<p><strong>The workshop will give you files, scripts, figures and examples to understand and use the FRS module for your research</strong>. It will also give you tips to better interpret the output data of the module.</p>
+<p>To know how to generate the parameter files for the succession extension and the harvest extension that you will use, please refer to their user manual.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="example-testing" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">🎮 Example and testing</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>If you want to experiment with the module or test it, you can <a href="https://downgit.github.io/#/home?url=https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/tree/master/Examples" target="_blank" rel="noopener">download the example files</a>, or try the <a href="https://klemet.github.io/frs-module-workshop/" target="_blank" rel="noopener">workshop</a>.</p>
+<p>To launch the example scenario, you&rsquo;ll need the <a href="http://www.landis-ii.org/extensions/age-only-succession" target="_blank" rel="noopener">Age-Only succession</a> extension and the <a href="http://www.landis-ii.org/extensions/base-harvest" target="_blank" rel="noopener">Base Harvest</a> extension installed on your computer, in addition to the FRS module. Just launch the <code>test_scenario.bat</code> file, and the example scenario should run.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="support" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">☎️ Support</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p>If you have a question, please send me an e-mail at <a href="mailto:clem.hardy@outlook.fr">clem.hardy@outlook.fr</a>. I&rsquo;ll do my best to answer you in time.</p>
+<p>You can also ask for help in the <a href="http://www.landis-ii.org/users" target="_blank" rel="noopener">LANDIS-II users group</a>.</p>
+<p>If you come across any issue or suspected bug when using the FRS module, please post about it in the <a href="https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/issues" target="_blank" rel="noopener">issue section of the Github repository of the module</a>.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="author" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  ">
+      
+        
+          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
+            <h1 class="mb-0">✒️ Author</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12 col-lg-8">
+    <p><a href="http://klemet.github.io" target="_blank" rel="noopener">Clément Hardy</a></p>
+<p>PhD Student at the Université du Québec à Montréal</p>
+<p>Mail : <a href="mailto:clem.hardy@outlook.fr">clem.hardy@outlook.fr</a></p>
+<p>Github : <a href="https://github.com/Klemet" target="_blank" rel="noopener">https://github.com/Klemet</a></p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+  <section id="acknowledgments" class="home-section wg-blank  "  >
+   <div class="home-section-bg " ></div>
+    <div class="container">
+
+    
+      <div class="row  justify-content-center">
+      
+        
+          <div class="section-heading col-12 mb-3 text-center">
+            <h1 class="mb-0">💚 Acknowledgments</h1>
+            
+          </div>
+        
+      
+    
+
+      
+
+
+
+  <div class="col-12">
+    <p>This work would not be possible without the incredible project that is LANDIS-II, and without the care and passion that the LANDIS-II fondation have to make the project as participative and accessible as it is. I thank them all tremendously.</p>
+<p>I would also like to thank Github users <a href="https://github.com/BlueRaja" target="_blank" rel="noopener">BlueRaja</a> and <a href="https://github.com/eregina92/" target="_blank" rel="noopener">eregina92</a> for their respective packages, <a href="https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp" target="_blank" rel="noopener">High Speed Priority Queue for C#</a> and <a href="https://github.com/eregina92/Supercluster.KDTree" target="_blank" rel="noopener">Supercluster.KDTree</a>. Both packages were of tremendous use to improve the performance of the FRS module, and I highly recommend you to check out their work.</p>
+<p>The background picture for the webpage of the module is from <a href="https://unsplash.com/photos/F5qVefeCrp8" target="_blank" rel="noopener">Tom Parsons on Unsplash</a>.</p>
+
+  </div>
+
+
+
+    
+      </div>
+    
+
+    </div>
+  </section>
+
+
+
+  </div>
+
+  <div class="page-footer">
+    
+    
+    <div class="container">
+      <footer class="site-footer">
+
+  
+
+  
+
+  
+  <p class="powered-by">
+    © 2022 <a href="https://klemet.github.io">Clément Hardy</a>
+  </p>
+  
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    
+    
+    
+      
+      
+      
+      
+      
+      
+      Published with <a href="https://wowchemy.com/?utm_campaign=poweredby" target="_blank" rel="noopener">Wowchemy</a> — the free, <a href="https://github.com/wowchemy/wowchemy-hugo-modules" target="_blank" rel="noopener">open source</a> website builder that empowers creators.
+    
+  </p>
+</footer>
+
+    </div>
+    
+  </div>
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js" integrity="sha512-1+qUtKoh9XZW7j+6LhRMAyOrgSQKenQ4mluTR+cvxXjP1Z54RxZuzstR/H9kgPXQsVB8IW7DMDFUJpzLjvhGSQ==" crossorigin="anonymous"></script>
+
+      
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      
+
+      
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+    
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+      
+      <script id="search-hit-fuse-template" type="text/x-template">
+        <div class="search-hit" id="summary-{{key}}">
+          <div class="search-hit-content">
+            <div class="search-hit-name">
+              <a href="{{relpermalink}}">{{title}}</a>
+              <div class="article-metadata search-hit-type">{{type}}</div>
+              <p class="search-hit-description">{{snippet}}</p>
+            </div>
+          </div>
+        </div>
+      </script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    <script src="/LANDIS-II-Forest-Roads-Simulation-extension/js/bootstrap.bundle.min.6aed84840afc03ab4d5750157f69c120.js"></script>
+
+    
+    
+      
+      
+      
+      
+      
+      
+      
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+      
+      
+    
+    
+    <script src="/LANDIS-II-Forest-Roads-Simulation-extension/en/js/wowchemy.min.0c4586c4d380ba4887e4ea327b0aefb8.js"></script>
+
+    
+
+
+
+
+
+
+</body>
+</html>
