@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>FRS module</title>
+    <title>FRS extension</title>
     <link>https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/</link>
       <atom:link href="https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/index.xml" rel="self" type="application/rss+xml" />
-    <description>FRS module</description>
+    <description>FRS extension</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><copyright>© 2022 [Clément Hardy](https://klemet.github.io)</copyright>
     <image>
       <url>https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/media/icon_hu18943f8fcb8eb137cdaf5b07f80697a5_27564_512x512_fill_lanczos_center_3.png</url>
-      <title>FRS module</title>
+      <title>FRS extension</title>
       <link>https://klemet.github.io/LANDIS-II-Forest-Roads-Simulation-extension/</link>
     </image>
     

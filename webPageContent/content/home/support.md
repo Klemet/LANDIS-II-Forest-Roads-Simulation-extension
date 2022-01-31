@@ -22,4 +22,4 @@ If you have a question, please send me an e-mail at clem.hardy@outlook.fr. I'll 
 
 You can also ask for help in the [LANDIS-II users group](http://www.landis-ii.org/users).
 
-If you come across any issue or suspected bug when using the FRS module, please post about it in the [issue section of the Github repository of the module](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/issues).
+If you come across any issue or suspected bug when using the FRS extension, please post about it in the [issue section of the Github repository of the extension](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/issues).

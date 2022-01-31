@@ -18,6 +18,6 @@ design:
   columns: '2'
 ---
 
-Version 1.3 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module/releases/download/1.1/LANDIS-II-V7.Forest.Road.Simulation.module.1.3-setup.exe).
+Version 1.3.1 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/download/1.3.1/LANDIS-II-V7.Forest.Road.Simulation.module.1.3.1-setup.exe).
 
 To install it on your computer, just launch the installer.
