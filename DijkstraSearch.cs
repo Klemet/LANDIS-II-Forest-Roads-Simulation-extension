@@ -14,6 +14,342 @@ namespace Landis.Extension.ForestRoadsSimulation
 {
 	class DijkstraSearch
 	{
+        /// <summary>
+        /// Big dijkstra function to replace the several function that was before the update to 1.4.
+        /// Can make a path between two sites, or try to make two to create a loop.
+        /// Try to make two least cost path to two sites; the second path is only constructed if the site reached is far enough, and if the cost of the path isn't too high.
+        /// Optimizes both the construction of new roads, and the upgrades of existing roads. Deals with the wood flux directly (before, another function did it)
+        /// </summary>
+        /// /// <param name="ModelCore">
+        /// The model's core framework.
+        /// </param>
+        /// /// <param name="startingSite">
+        /// The starting site of the search.
+        /// </param>
+        /// /// <param name="searchNeighborhood">
+        /// The search neighborhood used to check for sites in the looping algorithm.
+        /// </param>
+        /// /// <param name="loopingActivated">
+        /// Activates the looping behaviour, which will try to create a second path.
+        /// </param>
+        /// /// <param name="loopingMaxCost">
+        /// The maximal cost that the second road must cost.
+        /// </param>
+        /// /// <param name="woodFluxActivated">
+        /// Takes into account the wood to flux down the path if activated. In the case of a loop, the wood is only fluxed on the first path
+        /// </param>
+        /// /// <param name="woodfluxNumber">
+        /// The amount of wood to flux down the path.
+        /// </param>
+        public static int DijkstraPathFinding(ICore ModelCore, Site startingSite, List<RelativeLocation> searchNeighborhood = null, bool loopingActivated = false, double loopingMaxCost = 10, bool woodFluxActivated = false, double woodfluxNumber = 0)
+		{
+			// We initialize the frontier and everything else
+			Priority_Queue.SimplePriorityQueue<Site> frontier = new Priority_Queue.SimplePriorityQueue<Site>();
+			Dictionary<Site, Site> predecessors = new Dictionary<Site, Site>();
+			Dictionary<Site, double> costSoFar = new Dictionary<Site, Double>();
+			Dictionary<Site, int> updatePlannedForSite = new Dictionary<Site, int>();
+			HashSet<Site> isClosed = new HashSet<Site>();
+			bool IsFirstSiteReached = false;
+			bool IsSecondSiteReached = false;
+			List<Site> forbiddenSites = new List<Site>();
+			costSoFar[startingSite] = 0;
+			frontier.Enqueue(startingSite, 0);
+			Site siteToClose;
+			double newDistanceToStart;
+			int yearsBeforeReturn = MapManager.GetTimeBeforeNextHarvest(ModelCore, startingSite);
+			int IDOfRoadToConstruct = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofPotentialRoadForRepeatedEntry(yearsBeforeReturn);
+            // bool debugMessages = false;
+
+            // Useless assignment to please the gods of C#
+            Site firstSiteReached = startingSite;
+			Site secondSiteReached = startingSite;
+            List<Site> listOfSitesInFirstLeastCostPath = new List<Site>();
+            List<Site> listOfSitesInSecondLeastCostPath = new List<Site>();
+
+            restartLoop:
+
+            // We loop until the list is empty
+            while (frontier.Count > 0)
+			{
+                // ModelCore.UI.WriteLine("Number of sites in Dijkstra queue = " + frontier.Count);
+                siteToClose = frontier.Dequeue();
+
+				// We look at each of its neighbours, road on them or not.
+				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose))
+				{
+                    // if (neighbourToOpen.Location.ToString() == "(367, 565)") { debugMessages = true; }
+                    // else { debugMessages = false; }
+
+                    // if (debugMessages) { ModelCore.UI.WriteLine("Checking to open neighbor" + neighbourToOpen.Location); }
+                    // We don't consider the neighbour if it is closed or if it's non-constructible, or if it's the forbiden list of sites for making a proper loop.
+                    if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!isClosed.Contains(neighbourToOpen) && (!forbiddenSites.Contains(neighbourToOpen))))
+					{
+                        // if (debugMessages) { ModelCore.UI.WriteLine("Conditions to open neighbor are OK."); }
+                        // If the neighbor has no road, we consider the construction of a road to it.
+                        if (!SiteVars.RoadsInLandscape[neighbourToOpen].IsARoad)
+                        {
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has no road, computing cost normally."); }
+                            // We get the value of the distance to start by using the current node to close, which is just an addition of the distance to the start 
+                            // from the node to close + the cost between it and the neighbor.
+                            newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
+						}
+						// If the neighbor has a road, we consider if we have to upgrade it.
+						else
+						{
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road, computing upgrade."); }
+                            // We check the current ID of the road, versus the one if we need to return to the cell, versus the one we need because of the woodflux.
+                            // The highest/costlier ID is the one we need.
+                            // First, check if it is not an exit point; we can't update those.
+                            if (!SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+							{
+								int currentRoadID = SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber;
+								int highestRankID = 0;
+
+								if (woodFluxActivated)
+								{
+                                    highestRankID = PlugIn.Parameters.RoadCatalogueNonExit.whoIsRoadOfHigherRank(new List<int>() { SiteVars.RoadsInLandscape[neighbourToOpen].UpdateNeedIfWoodFluxIncrease(woodfluxNumber), IDOfRoadToConstruct, currentRoadID });
+                                }
+								else
+								{
+									highestRankID = PlugIn.Parameters.RoadCatalogueNonExit.whoIsRoadOfHigherRank(new List<int>() { IDOfRoadToConstruct, currentRoadID });
+								}
+
+								// If highest rank = currentRoadID, no update
+								if (highestRankID != currentRoadID)
+								{
+                                    // if (debugMessages) { ModelCore.UI.WriteLine("Checking updatePlannedForSite dictionnary."); }
+                                    // We register the update to do it later when the path is found, but only if there's not an upgrade to a bigger level already planned
+                                    if (updatePlannedForSite.ContainsKey(neighbourToOpen))
+									{
+										if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(highestRankID, updatePlannedForSite[neighbourToOpen])) { updatePlannedForSite[neighbourToOpen] = highestRankID; }
+									}
+									else
+									{
+                                        updatePlannedForSite[neighbourToOpen] = highestRankID;
+                                    }
+
+                                    // if (debugMessages) { ModelCore.UI.WriteLine("Updating cost so far with update."); }
+                                    // We compute the cost : any transition cost from the two due to construction, the cost of update.
+                                    // Things are a bit ambiguous here; it was easier to compute the costs of construction going from centroid to centroid (so, half of the cells) to account for
+                                    // movements in diagonal being more expensive.
+                                    // However, it's easier to compute road upgrades from pixel to pixels, as it's difficult to upgrade half a pixel.
+                                    // Therefore, the cost for construction computed with MapManager.CostOfTransition is going to be between centroid; but if we upgrade, it's going to be pixel by pixel.
+                                    newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen) + (SiteVars.RoadsInLandscape[neighbourToOpen].ComputeUpdateCost(neighbourToOpen, currentRoadID, highestRankID));
+								}
+								else // If no update, cost is as usual
+								{
+									newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
+								}
+							}
+							else // If neighbor is exit point, no upgrade, so cost as usual.
+							{
+								newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
+							}
+						}
+
+						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+						// this node to close will become its predecessor, and its distance to start will become this one.
+						if (!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen])
+						{
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Opening neighbour in frontier."); }
+                            // ModelCore.UI.WriteLine("Neighbour is officially opened.");
+                            costSoFar[neighbourToOpen] = newDistanceToStart;
+							predecessors[neighbourToOpen] = siteToClose;
+							// Case of the node not being opened
+							if (!frontier.Contains(neighbourToOpen))
+							{
+								frontier.Enqueue(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+							// Case of the node being already open (if it is already in the frontier, we have to update)
+							else
+							{
+								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
+							}
+                            // ModelCore.UI.WriteLine("Frontier count before end of loop = " + frontier.Count);
+                        }
+
+						// Conditions for stopping
+						// 1. We're not doing a loop, and we've reached a exit point.
+						// We simply finish the search.
+						if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+						{
+                            // if (debugMessages) { ModelCore.UI.WriteLine("First path has been found."); }
+                            // We register the arrival and the path
+                            firstSiteReached = neighbourToOpen;
+							IsFirstSiteReached = true;
+							listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
+
+							// If no loop, we're done.
+							if (!loopingActivated) {goto End;}
+
+							// If loop, we keep going for the second search.
+							else
+							{
+								// To create the loop in the same way as in version 1.3, we will find the first cell the algorithm connected to that had
+								// a road connected to an exit point; we will create a forbiden zone around this cell to force the loop to be done in
+								// the second path.
+								listOfSitesInFirstLeastCostPath.Reverse(); // We reverse because we need to start from the first site in the line afterward
+								foreach (Site site in listOfSitesInFirstLeastCostPath) {if (SiteVars.RoadsInLandscape[site].isConnectedToSawMill) {forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, site); goto continuingLoop;}}
+								// Reverse again because the lines at the end of the function need it
+								listOfSitesInFirstLeastCostPath.Reverse();
+
+								continuingLoop:
+								// We reset the search to start again, but find the second path
+								predecessors = new Dictionary<Site, Site>();
+								costSoFar = new Dictionary<Site, Double>();
+								isClosed = new HashSet<Site>();
+								frontier = new Priority_Queue.SimplePriorityQueue<Site>();
+								costSoFar[startingSite] = 0;
+								frontier.Enqueue(startingSite, 0);
+                                // ModelCore.UI.WriteLine("Searching second path...");
+
+								goto restartLoop;
+                            }
+						}
+
+						// 2. We're doing a loop, and we've reached an exit point for the second time.
+						else if (loopingActivated && IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+						{
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Second path found."); }
+                            // We simply close everything.
+                            IsSecondSiteReached = true;
+							secondSiteReached = neighbourToOpen;
+							listOfSitesInSecondLeastCostPath = MapManager.FindPathToStart(startingSite, secondSiteReached, predecessors);
+							goto End; 
+						}
+					} // End of looking at one neighbour
+				} // End of looking at all neighbours in neighboorhood of a site
+				isClosed.Add(siteToClose);
+			}// End of while loop for the frontier
+
+			End:
+			
+			// We start by computing the cost of the first road, and constructing it
+			if (IsFirstSiteReached)
+			{
+				double costOfConstructionInFirstPath = 0;
+				double costOfUpgradesInFirstPath = 0;
+				for (int i = 0; i < listOfSitesInFirstLeastCostPath.Count; i++)
+				{
+					// If there is no road on this site, we construct it.
+					if (!SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].IsARoad)
+					{
+						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+						// Whatever it is, we indicate it as connected.
+						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].isConnectedToSawMill = true;
+						// We update the cost raster that contains the roads.
+						SiteVars.CostRasterWithRoads[listOfSitesInFirstLeastCostPath[i]] = 0;
+						// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+						if (i < listOfSitesInFirstLeastCostPath.Count - 1) costOfConstructionInFirstPath += MapManager.CostOfTransition(listOfSitesInFirstLeastCostPath[i], listOfSitesInFirstLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+					}
+					// If there is a road, we check if we should update it.
+					else
+					{
+						if (updatePlannedForSite.ContainsKey(listOfSitesInFirstLeastCostPath[i]))
+						{
+							int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber;
+							costOfUpgradesInFirstPath += SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].ComputeUpdateCost(listOfSitesInFirstLeastCostPath[i], oldTypeNumber, updatePlannedForSite[listOfSitesInFirstLeastCostPath[i]]);
+							SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = updatePlannedForSite[listOfSitesInFirstLeastCostPath[i]];
+                            SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].roadAge = 0; // We reset the age
+							// We destroy the key in the dictionnary; in this way, the update is considered to be done. It will not need to be done for the second path later.
+							updatePlannedForSite.Remove(listOfSitesInFirstLeastCostPath[i]);
+                        }
+
+					}
+
+                    // If the wood flux is simulated, we add it along the cells of this path.
+                    // If an upgrade due to the woodflux is needed, it has been done already because it was recorded in updatePlannedForSite.
+                    if (woodFluxActivated)
+					{
+						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].timestepWoodFlux += woodfluxNumber;
+                    }
+					
+				}
+
+				// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
+				RoadNetwork.lastArrivalSiteOfDijkstraSearch = firstSiteReached;
+				RoadNetwork.costOfLastPath = costOfConstructionInFirstPath + costOfUpgradesInFirstPath;
+				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfConstructionInFirstPath + costOfUpgradesInFirstPath;
+
+				// Now, if a second site was reached, we check how much it cost. If it's not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it.
+				if (loopingActivated && IsSecondSiteReached)
+				{
+					double costOfConstructionInSecondPath = 0;
+                    double costOfUpgradesInSecondPath = 0;
+                    for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
+					{
+						if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad)
+						{
+                            if (i < listOfSitesInSecondLeastCostPath.Count - 1) costOfConstructionInSecondPath += MapManager.CostOfTransition(listOfSitesInSecondLeastCostPath[i], listOfSitesInSecondLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+                        }
+						else
+						{
+                            if (updatePlannedForSite.ContainsKey(listOfSitesInSecondLeastCostPath[i]))
+                            {
+                                int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber;
+                                costOfUpgradesInSecondPath += SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].ComputeUpdateCost(listOfSitesInSecondLeastCostPath[i], oldTypeNumber, updatePlannedForSite[listOfSitesInSecondLeastCostPath[i]]);
+                            }
+                        }
+                    }
+					// If this second least cost path is not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it., then we'll build it too.
+					// The random number will be between 1 and 100, and it must be inferior to 100 - the probability parameter. This way, the higher the probability parameter, 
+					// the higher the chance that the random number will be above the threshold.
+					// We use the random number generator from the LANDIS-II core, which implies that results will always be the same as long as the random number seed given with the scenario is the same.
+					if (((costOfConstructionInSecondPath + costOfUpgradesInSecondPath) / loopingMaxCost) < (costOfConstructionInFirstPath + costOfUpgradesInFirstPath) && (PlugIn.ModelCore.GenerateUniform()*100) > (100 - PlugIn.Parameters.LoopingProbability))
+					{
+						for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
+						{
+                            // If there is no road on this site, we construct it.
+                            if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad)
+                            {
+                                SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
+                                // Whatever it is, we indicate it as connected.
+                                SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].isConnectedToSawMill = true;
+                                // We update the cost raster that contains the roads.
+                                SiteVars.CostRasterWithRoads[listOfSitesInSecondLeastCostPath[i]] = 0;
+                                // We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
+                                if (i < listOfSitesInSecondLeastCostPath.Count - 1) costOfConstructionInSecondPath += MapManager.CostOfTransition(listOfSitesInSecondLeastCostPath[i], listOfSitesInSecondLeastCostPath[i + 1]) * PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(IDOfRoadToConstruct);
+                            }
+                            // If there is a road, we check if we should update it.
+                            else
+                            {
+                                if (updatePlannedForSite.ContainsKey(listOfSitesInSecondLeastCostPath[i]))
+                                {
+                                    int oldTypeNumber = SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber;
+                                    costOfUpgradesInSecondPath += SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].ComputeUpdateCost(listOfSitesInSecondLeastCostPath[i], oldTypeNumber, updatePlannedForSite[listOfSitesInSecondLeastCostPath[i]]);
+                                    SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].typeNumber = updatePlannedForSite[listOfSitesInSecondLeastCostPath[i]];
+                                    SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].roadAge = 0; // We reset the age
+                                    updatePlannedForSite.Remove(listOfSitesInSecondLeastCostPath[i]);
+                                }
+
+                            }
+
+                            // If the wood flux is simulated, we add it along the cells of this path.
+                            // If an upgrade due to the woodflux is needed, it has been done already because it was recorded in updatePlannedForSite.
+							// EDIT : Actually, we don't; because if we do, we're fluxing the same wood twice. The hypothesis will be that the wood
+							// goes through the first road, and that's it.
+                            //if (woodFluxActivated)
+                            //{
+                            //    SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].timestepWoodFlux += woodfluxNumber;
+                            //}
+						}
+
+						// We register the informations relative to the arrival site and the path in the RoadNetwork static objects
+						RoadNetwork.lastArrivalSiteOfDijkstraSearch = secondSiteReached;
+						RoadNetwork.costOfLastPath = costOfConstructionInSecondPath + costOfUpgradesInSecondPath;
+						RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfConstructionInSecondPath + costOfUpgradesInSecondPath;
+
+						// If both roads have been constructed, we return that it's the case
+						return (2);
+					}
+				}
+				// If only one road has been constructed, we return that that's the case.
+				return (1);
+			}
+			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
+		}
+
+
 		/// <summary>
 		/// Finds the least cost path from a given site to a site with a road already connected to somewhere where the wood can flow.
 		/// Different from DijkstraSearchForPlaceToPutWood in the sense that we do not only look for sites with paths, but all sites (even with no paths),

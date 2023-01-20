@@ -222,10 +222,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 			get; set;
 		}
 
-		/// <summary>
-		/// Table of parameters for the roads that are not exit points, meaning the forest roads that can be created by the module
-		/// </summary>
-		RoadCatalogue RoadCatalogueNonExit
+        /// <summary>
+        /// Parameter indicating how much the cost of upgrading a road is reduced compared to constructing it
+        /// </summary>
+        double UpgradeCostReduction
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Table of parameters for the roads that are not exit points, meaning the forest roads that can be created by the module
+        /// </summary>
+        RoadCatalogue RoadCatalogueNonExit
 		{
 			get; set;
 		}
@@ -272,7 +280,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		private bool simulationOfRoadAging;
 		private bool simulationOfWoodFlux;
-		private RoadCatalogue roadCatalogueNonExit;
+        private double upgradeCostReduction;
+        private RoadCatalogue roadCatalogueNonExit;
 		private RoadCatalogue roadCatalogueExit;
 
 		// ------------------------------------------------------------------------------
@@ -729,10 +738,26 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		/// <summary>
-		/// The object containing all of the informations on the road types.
-		/// </summary>
-		public RoadCatalogue RoadCatalogueNonExit
+        /// <summary>
+        /// Indicate if road aging will be simulated
+        /// </summary>
+        public double UpgradeCostReduction
+        {
+            get
+            {
+                return upgradeCostReduction;
+            }
+            set
+            {
+                upgradeCostReduction = value;
+            }
+        }
+        
+
+        /// <summary>
+        /// The object containing all of the informations on the road types.
+        /// </summary>
+        public RoadCatalogue RoadCatalogueNonExit
 		{
 			get
 			{

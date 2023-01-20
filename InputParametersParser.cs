@@ -34,12 +34,14 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 		protected override IInputParameters Parse()
 		{
-			// ------------------------------------------------------------------------------
-			// BASIC PARAMETERS
+			StringReader currentLine;
 
-			// To start, we look at the "LandisData" parameter. If it's not the name of the extension, 
-			// we raise an exception.
-			InputVar<string> landisData = new InputVar<string>("LandisData");
+            // ------------------------------------------------------------------------------
+            // BASIC PARAMETERS
+
+            // To start, we look at the "LandisData" parameter. If it's not the name of the extension, 
+            // we raise an exception.
+            InputVar<string> landisData = new InputVar<string>("LandisData");
 			ReadVar(landisData);
 			if (landisData.Value.Actual != PlugIn.ExtensionName)
 				throw new InputValueException(landisData.Value.String, "The value is not \"{0}\"", PlugIn.ExtensionName);
@@ -139,7 +141,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			while (!AtEndOfInput && CurrentName != FineElevationRasterName)
 			{
-				StringReader currentLine = new StringReader(CurrentLine);
+				currentLine = new StringReader(CurrentLine);
 
 				ReadValue(LowerThresholdCoarse, currentLine);
 				ReadValue(UpperThresholdCoarse, currentLine);
@@ -179,7 +181,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 				while (!AtEndOfInput && CurrentName != CoarseWaterRasterName)
 				{
-					StringReader currentLine = new StringReader(CurrentLine);
+					currentLine = new StringReader(CurrentLine);
 
 					ReadValue(LowerThresholdFine, currentLine);
 					ReadValue(UpperThresholdFine, currentLine);
@@ -244,8 +246,24 @@ namespace Landis.Extension.ForestRoadsSimulation
 				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION WARNING : You chosed to simulate road aging, but not wood fluxes. However, when wood fluxes are not simulated, all the constructed roads will correspond to the lowest road type, as they will never be upgraded. Therefore, all of your roads will have a maximum age before destruction equal to the lowest road type that you entered.");
 			}
 
-			// We read the road catalogue for non-exit roads
-				RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
+            // We read the parameter to reduce update costs if he is given
+            InputVar<double> UpgradeCostReduction = new InputVar<double>("UpgradeCostReduction");
+			// We initialize a reader object that will tell us what word is on the current line.
+            currentLine = new StringReader(CurrentLine);
+            string word = TextReader.ReadWord(currentLine);
+			if (word == "UpgradeCostReduction")
+			{
+				ReadVar(UpgradeCostReduction);
+				parameters.UpgradeCostReduction = UpgradeCostReduction.Value;
+			}
+			else // If parameter is not entered, we put the defaults value.
+			{
+				parameters.UpgradeCostReduction = 0.5;
+
+            }
+
+            // We read the road catalogue for non-exit roads
+            RoadCatalogue RoadCatalogueNonExit = new RoadCatalogue(false);
 
 			const string RoadCatalogueName = "RoadTypes";
 			ReadName(RoadCatalogueName);
@@ -265,7 +283,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			while (!AtEndOfInput && CurrentName != ExitRoadsCatalogueName)
 			{
-				StringReader currentLine = new StringReader(CurrentLine);
+				currentLine = new StringReader(CurrentLine);
 
 				// We only read flux values if wood flux will be simulated
 				if (parameters.SimulationOfWoodFlux)
@@ -328,7 +346,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			while (!AtEndOfInput)
 			{
-				StringReader currentLine = new StringReader(CurrentLine);
+				currentLine = new StringReader(CurrentLine);
 
 				ReadValue(RoadTypeIDExit, currentLine);
 				ReadValue(RoadTypeNameExit, currentLine);

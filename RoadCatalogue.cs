@@ -223,6 +223,34 @@ namespace Landis.Extension.ForestRoadsSimulation
 		}
 
 		/// <summary>
+		/// Return the ID corresponding to the road of highest rank amongst a list of them.
+		/// </summary>
+		public int whoIsRoadOfHigherRank(List<int> roadTypesIDs)
+		{
+			if (roadTypesIDs.Count == 0)
+			{
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION ERROR : Tried to compare several road IDs, but the list was empty." + PlugIn.errorToGithub);
+				return(this.GetIDofLowestRoadType());
+			}
+			else if (roadTypesIDs.Count == 1)
+			{
+				return (roadTypesIDs[0]);
+			}
+			else
+			{
+				int maximumRankID = roadTypesIDs[0];
+				for (int i = 0; i < (roadTypesIDs.Count - 1); i++)
+				{
+					if (this.IsRoadTypeOfHigherRank(roadTypesIDs[i+1], maximumRankID))
+					{
+						maximumRankID = roadTypesIDs[i+1];
+					}
+				}
+				return (maximumRankID);
+			}
+		}
+
+		/// <summary>
 		/// A function for debugging purposes, to display the ranges in a console.
 		/// </summary>
 		public void DisplayRangesInConsole(ICore ModelCore)

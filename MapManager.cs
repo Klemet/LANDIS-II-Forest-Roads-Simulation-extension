@@ -514,7 +514,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		/// Checks in the search neighborhood of a site if there is an existing road connected to a sawmill, and return a list of them.
 		/// </summary>
 		/// <returns>
-		/// A list of sites with a road on them that is connected to a sawmill.
+		/// A list of sites.
 		/// </returns>
 		/// <param name="searchNeighborhood">
 		/// A list of relativeLocations that we will explore to check if there is a road on the corresponding sites.
@@ -1013,5 +1013,5 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 			return (ListOfSitesInThePath);
 		}
-	}
+    }
 }

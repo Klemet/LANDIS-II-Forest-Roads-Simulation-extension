@@ -1,5 +1,6 @@
 ﻿// Author: Clément Hardy
 
+using Landis.Ecoregions;
 using Landis.SpatialModeling;
 // using Landis.SpatialModeling.CoreServices;
 using Landis.Utilities;
@@ -127,14 +128,43 @@ namespace Landis.Extension.ForestRoadsSimulation
 			}
 		}
 
-		/// <summary>
-		/// Computes the cost of a road update.
-		/// </summary>
-		public double ComputeUpdateCost(Site site, int OldTypeNumber, int NewTypeNumber)
+        /// <summary>
+        /// Returns the road type ID that this current road will be updated to if we increase the road flux on it by a particular amount
+        /// </summary>
+        public int UpdateNeedIfWoodFluxIncrease(double woodFluxNumber)
+        {
+			int oldTypeNumber = this.typeNumber;
+
+            // If the road ID of this road corresponds to an exit point for the road, we won't update it; If it's not in the Road catalogue for non-exits, there's an issue.
+            if (PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber))
+            {
+                int roadIDCorrespondingToFlux = PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingIDForWoodFlux(this.timestepWoodFlux + woodFluxNumber);
+                // We make the update only if the current road is not of a higher rank, wood-flux-wise
+                if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(roadIDCorrespondingToFlux, this.typeNumber))
+                {
+					return (roadIDCorrespondingToFlux);
+                }
+				else { return (oldTypeNumber); }
+            }
+            // If it's in neither road catalogue, there's a problem.
+            else if (!PlugIn.Parameters.RoadCatalogueNonExit.isRoadIDInCatalogue(this.typeNumber) && !PlugIn.Parameters.RoadCatalogueExit.isRoadIDInCatalogue(this.typeNumber))
+            {
+                PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION ERROR : Tried to update " + this.typeNumber + " , but it's not registered as a valid RoadID.");
+				return (oldTypeNumber);
+            }
+			else { return (oldTypeNumber); }
+        }
+
+
+        /// <summary>
+        /// Computes the cost of a road update. It corresponds to the costs of construction on the cost raster (without taking roads into account), times
+		/// the difference between the multiplicative costs of the two types of roads, times a parameter to reduce the cost.
+        /// </summary>
+        public double ComputeUpdateCost(Site site, int OldTypeNumber, int NewTypeNumber)
 		{
 			return (SiteVars.BaseCostRaster[site] *
 				   (PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(NewTypeNumber) -
-				   PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(OldTypeNumber)));
+				   PlugIn.Parameters.RoadCatalogueNonExit.GetCorrespondingMultiplicativeCostValue(OldTypeNumber)) * PlugIn.Parameters.UpgradeCostReduction);
 
 		}
 
