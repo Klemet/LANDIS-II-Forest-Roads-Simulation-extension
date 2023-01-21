@@ -58,7 +58,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 			double newDistanceToStart;
 			int yearsBeforeReturn = MapManager.GetTimeBeforeNextHarvest(ModelCore, startingSite);
 			int IDOfRoadToConstruct = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofPotentialRoadForRepeatedEntry(yearsBeforeReturn);
-            // bool debugMessages = false;
+			// bool debugMessages = false;
+			bool restrictToExistingRoads = false;
 
             // Useless assignment to please the gods of C#
             Site firstSiteReached = startingSite;
@@ -68,19 +69,22 @@ namespace Landis.Extension.ForestRoadsSimulation
 
             restartLoop:
 
+            // if (startingSite.Location.ToString() == "(11, 534)") { debugMessages = true; MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps + "-DEBUG", ModelCore); }
+            // else { debugMessages = false; }
+
             // We loop until the list is empty
             while (frontier.Count > 0)
 			{
-                // ModelCore.UI.WriteLine("Number of sites in Dijkstra queue = " + frontier.Count);
+                // if (debugMessages) { ModelCore.UI.WriteLine("Number of sites in Dijkstra queue = " + frontier.Count); }
                 siteToClose = frontier.Dequeue();
 
 				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose))
 				{
-                    // if (neighbourToOpen.Location.ToString() == "(367, 565)") { debugMessages = true; }
-                    // else { debugMessages = false; }
 
                     // if (debugMessages) { ModelCore.UI.WriteLine("Checking to open neighbor" + neighbourToOpen.Location); }
+                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has type : " + SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber); }
+                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has age : " + SiteVars.RoadsInLandscape[neighbourToOpen].roadAge); }
                     // We don't consider the neighbour if it is closed or if it's non-constructible, or if it's the forbiden list of sites for making a proper loop.
                     if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!isClosed.Contains(neighbourToOpen) && (!forbiddenSites.Contains(neighbourToOpen))))
 					{
@@ -102,7 +106,15 @@ namespace Landis.Extension.ForestRoadsSimulation
                             // First, check if it is not an exit point; we can't update those.
                             if (!SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
 							{
-								int currentRoadID = SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber;
+								// If we've found a road connected to an exit point, we will restrict the search to navigating inside the road network.
+								// This prevents complete optimisation of both road construction and road upgrades; but it's much quicker.
+								if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill)
+								{
+                                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road and is connected to exist point. Restricting to roads; restriction before was : " + restrictToExistingRoads); }
+                                    restrictToExistingRoads = true; 
+								}
+
+                                int currentRoadID = SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber;
 								int highestRankID = 0;
 
 								if (woodFluxActivated)
@@ -149,10 +161,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
 						// this node to close will become its predecessor, and its distance to start will become this one.
-						if (!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen])
+						// We will not add the neighbor if it's not part of the existing road network and we're restricting ourselves to the road network.
+						if ((!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen]) && (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill || !restrictToExistingRoads))
 						{
                             // if (debugMessages) { ModelCore.UI.WriteLine("Opening neighbour in frontier."); }
-                            // ModelCore.UI.WriteLine("Neighbour is officially opened.");
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Neighbour is officially opened."); }
                             costSoFar[neighbourToOpen] = newDistanceToStart;
 							predecessors[neighbourToOpen] = siteToClose;
 							// Case of the node not being opened
@@ -165,19 +178,30 @@ namespace Landis.Extension.ForestRoadsSimulation
 							{
 								frontier.UpdatePriority(neighbourToOpen, (float)costSoFar[neighbourToOpen]);
 							}
-                            // ModelCore.UI.WriteLine("Frontier count before end of loop = " + frontier.Count);
+                            // if (debugMessages) { ModelCore.UI.WriteLine("Frontier count before end of loop = " + frontier.Count); }
                         }
 
-						// Conditions for stopping
-						// 1. We're not doing a loop, and we've reached a exit point.
-						// We simply finish the search.
-						if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+                        // Conditions for stopping
+                        // 1. We're not doing a loop, and we've reached a exit point.
+                        // We simply finish the search.
+                        if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
 						{
                             // if (debugMessages) { ModelCore.UI.WriteLine("First path has been found."); }
                             // We register the arrival and the path
                             firstSiteReached = neighbourToOpen;
 							IsFirstSiteReached = true;
 							listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
+
+							// We want to check the path and see if there is no update cost that is too expensive, e.g. upgrading a bridge.
+
+							// If there is an expensive update, we want to start back the search at the cell just before this update.
+							// We save the path to start that well connect to later
+							
+							// We reset the dictionnaries and variables
+
+							// The starting cell becomes this cell just before the costly update.
+
+							// 
 
 							// If no loop, we're done.
 							if (!loopingActivated) {goto End;}
@@ -189,7 +213,16 @@ namespace Landis.Extension.ForestRoadsSimulation
 								// a road connected to an exit point; we will create a forbiden zone around this cell to force the loop to be done in
 								// the second path.
 								listOfSitesInFirstLeastCostPath.Reverse(); // We reverse because we need to start from the first site in the line afterward
-								foreach (Site site in listOfSitesInFirstLeastCostPath) {if (SiteVars.RoadsInLandscape[site].isConnectedToSawMill) {forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, site); goto continuingLoop;}}
+								foreach (Site site in listOfSitesInFirstLeastCostPath)
+								{
+									if (SiteVars.RoadsInLandscape[site].isConnectedToSawMill)
+									{
+										forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, site);
+										// We remove the roads from the forbidden sites; if not, the current algorithm can get stuck.
+										forbiddenSites.RemoveAll(forbidenSite => SiteVars.RoadsInLandscape[forbidenSite].isConnectedToSawMill);
+                                        goto continuingLoop;
+                                    }
+								}
 								// Reverse again because the lines at the end of the function need it
 								listOfSitesInFirstLeastCostPath.Reverse();
 
@@ -201,9 +234,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 								frontier = new Priority_Queue.SimplePriorityQueue<Site>();
 								costSoFar[startingSite] = 0;
 								frontier.Enqueue(startingSite, 0);
+                                restrictToExistingRoads = false;
                                 // ModelCore.UI.WriteLine("Searching second path...");
 
-								goto restartLoop;
+                                goto restartLoop;
                             }
 						}
 
@@ -231,12 +265,13 @@ namespace Landis.Extension.ForestRoadsSimulation
 				double costOfUpgradesInFirstPath = 0;
 				for (int i = 0; i < listOfSitesInFirstLeastCostPath.Count; i++)
 				{
-					// If there is no road on this site, we construct it.
-					if (!SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].IsARoad)
+                    // Werever we update it or not, this pixel is now going to be connected to an exit point.
+                    SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].isConnectedToSawMill = true;
+
+                    // If there is no road on this site, we construct it.
+                    if (!SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].IsARoad)
 					{
 						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].typeNumber = IDOfRoadToConstruct;
-						// Whatever it is, we indicate it as connected.
-						SiteVars.RoadsInLandscape[listOfSitesInFirstLeastCostPath[i]].isConnectedToSawMill = true;
 						// We update the cost raster that contains the roads.
 						SiteVars.CostRasterWithRoads[listOfSitesInFirstLeastCostPath[i]] = 0;
 						// We also add the cost of transition to the costs of construction and repair for this timestep : it's the cost of transition multiplied by the type of the road that we are constructing. If there are already roads of other types on these cells, it doesn't change anything, as the value in the cost raster is 0 for them.
@@ -255,7 +290,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 							updatePlannedForSite.Remove(listOfSitesInFirstLeastCostPath[i]);
                         }
 
-					}
+                    }
 
                     // If the wood flux is simulated, we add it along the cells of this path.
                     // If an upgrade due to the woodflux is needed, it has been done already because it was recorded in updatePlannedForSite.
@@ -299,6 +334,9 @@ namespace Landis.Extension.ForestRoadsSimulation
 					{
 						for (int i = 0; i < listOfSitesInSecondLeastCostPath.Count; i++)
 						{
+                            // Werever we update it or not, this pixel is now going to be connected to an exit point.
+                            SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].isConnectedToSawMill = true;
+
                             // If there is no road on this site, we construct it.
                             if (!SiteVars.RoadsInLandscape[listOfSitesInSecondLeastCostPath[i]].IsARoad)
                             {
