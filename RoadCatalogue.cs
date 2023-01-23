@@ -164,10 +164,27 @@ namespace Landis.Extension.ForestRoadsSimulation
 			throw new Exception("FOREST ROADS SIMULATION ERROR : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file." + PlugIn.errorToGithub);
 		}
 
-		/// <summary>
-		/// A function to get the multiplicative value associated with a certain value of fine elevation.
-		/// </summary>
-		public double GetCorrespondingMultiplicativeCostValue(int roadTypeID)
+        /// <summary>
+        /// Given a certain woodflux on a cell, returns the woodflux threshold for the next category of road.
+        /// </summary>
+        public double nextWoodFluxThreshold(double woodFlux)
+        {
+            for (int i = 0; i < this.numberOfRanges; i++)
+            {
+                if (woodFlux < this.listOfUpperThresholds[i] && woodFlux >= this.listOfLowerThresholds[i]) return (this.listOfUpperThresholds[i]);
+            }
+            // Case of the woodflux being under the lowest threshold
+            if (woodFlux < this.listOfLowerThresholds.First()) return (this.listOfUpperThresholds.First());
+            // Case of the woodflux being above the highest threshold
+            if (woodFlux > this.listOfUpperThresholds.Last()) return (this.listOfUpperThresholds.Last());
+
+            throw new Exception("FOREST ROADS SIMULATION ERROR : Couldn't find the road type ID associated to the wood flux : " + woodFlux + ". Please check you parameter file." + PlugIn.errorToGithub);
+        }
+
+        /// <summary>
+        /// A function to get the multiplicative value associated with a certain value of fine elevation.
+        /// </summary>
+        public double GetCorrespondingMultiplicativeCostValue(int roadTypeID)
 		{
 			if (this.listOfRoadTypesID.Contains(roadTypeID))
 			{

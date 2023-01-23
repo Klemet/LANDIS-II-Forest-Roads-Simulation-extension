@@ -28,6 +28,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 		private List<RelativeLocation> maxLoopingNeighborhood;
         private Dictionary<Site, double> dictWoodToFluxForSite;
         private Dictionary<Site, bool> dictWoodFluxConsidered;
+		public static Dictionary<Site, EndPath> endPathsAssociatedToSite = new Dictionary<Site, EndPath>();
         public static MetadataTable<RoadLog> roadConstructionLog;
 		public static string errorToGithub = " If you cannot solve the issue, please post it on the Github repository and I'll try to help : https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module";
 

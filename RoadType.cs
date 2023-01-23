@@ -93,6 +93,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 					this.isConnectedToSawMill = false;
 					// We indicate to the cost raster with roads that there is no more road in this site.
 					SiteVars.CostRasterWithRoads[site] = SiteVars.BaseCostRaster[site];
+					// We destroy any endpath this road was part of.
+					if (PlugIn.endPathsAssociatedToSite.ContainsKey(site)) { PlugIn.endPathsAssociatedToSite[site].DissolveEndPath(); }
 					return (true);
 				}
 			}
@@ -155,6 +157,21 @@ namespace Landis.Extension.ForestRoadsSimulation
 			else { return (oldTypeNumber); }
         }
 
+        /// <summary>
+        /// Returns the amount of wood flux our road type can deal with before needing to be updated.
+        /// </summary>
+        public double woodFluxThatRoadCanHandleBeforeUpdate()
+        {
+			if (PlugIn.Parameters.RoadCatalogueNonExit.nextWoodFluxThreshold(this.timestepWoodFlux) < this.timestepWoodFlux)
+			{
+				PlugIn.ModelCore.UI.WriteLine("FOREST ROADS SIMULATION ERROR : Got a upper wood flux threshold that was superior to current woodflux for cell.");
+				return (0);
+			}
+			else
+			{
+                return (PlugIn.Parameters.RoadCatalogueNonExit.nextWoodFluxThreshold(this.timestepWoodFlux) - this.timestepWoodFlux);
+            }
+        }
 
         /// <summary>
         /// Computes the cost of a road update. It corresponds to the costs of construction on the cost raster (without taking roads into account), times

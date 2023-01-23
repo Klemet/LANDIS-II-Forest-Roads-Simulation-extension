@@ -58,36 +58,91 @@ namespace Landis.Extension.ForestRoadsSimulation
 			double newDistanceToStart;
 			int yearsBeforeReturn = MapManager.GetTimeBeforeNextHarvest(ModelCore, startingSite);
 			int IDOfRoadToConstruct = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofPotentialRoadForRepeatedEntry(yearsBeforeReturn);
-			// bool debugMessages = false;
+			bool debugMessages = false;
 			bool restrictToExistingRoads = false;
+			bool endingFoundWithEndPathInFirstSearch = false;
+            bool endingFoundWithEndPathInSecondSearch = false;
 
             // Useless assignment to please the gods of C#
             Site firstSiteReached = startingSite;
 			Site secondSiteReached = startingSite;
             List<Site> listOfSitesInFirstLeastCostPath = new List<Site>();
             List<Site> listOfSitesInSecondLeastCostPath = new List<Site>();
+            EndPath endPathForFirstPath = null;
+            EndPath endPathForSecondPath = null;
 
-            restartLoop:
+			restartLoop:
 
-            // if (startingSite.Location.ToString() == "(11, 534)") { debugMessages = true; MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps + "-DEBUG", ModelCore); }
-            // else { debugMessages = false; }
+            //if (startingSite.Location.ToString() == "(74, 58)") { debugMessages = true; MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps + "-DEBUG", ModelCore); }
+            //else { debugMessages = false; }
 
             // We loop until the list is empty
             while (frontier.Count > 0)
 			{
-                // if (debugMessages) { ModelCore.UI.WriteLine("Number of sites in Dijkstra queue = " + frontier.Count); }
+                if (debugMessages) { ModelCore.UI.WriteLine("Number of sites in Dijkstra queue = " + frontier.Count); }
                 siteToClose = frontier.Dequeue();
 
 				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose))
 				{
 
-                    // if (debugMessages) { ModelCore.UI.WriteLine("Checking to open neighbor" + neighbourToOpen.Location); }
-                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has type : " + SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber); }
-                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has age : " + SiteVars.RoadsInLandscape[neighbourToOpen].roadAge); }
+                    if (debugMessages) { ModelCore.UI.WriteLine("Checking to open neighbor" + neighbourToOpen.Location); }
+                    if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has type : " + SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber); }
+                    if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has age : " + SiteVars.RoadsInLandscape[neighbourToOpen].roadAge); }
                     // We don't consider the neighbour if it is closed or if it's non-constructible, or if it's the forbiden list of sites for making a proper loop.
                     if ((SiteVars.CostRasterWithRoads[neighbourToOpen] >= 0) && (!isClosed.Contains(neighbourToOpen) && (!forbiddenSites.Contains(neighbourToOpen))))
 					{
+						// If neighbor is associated to an endpath, we can pause the search and see if we can end it here and there.
+						if (PlugIn.endPathsAssociatedToSite.ContainsKey(neighbourToOpen))
+						{
+                            if (debugMessages) { ModelCore.UI.WriteLine("Neighbor is associated to EndPath."); }
+                            bool destroyPath = false;
+							// We check if the road ID to build and the wood to flux are not too much for this endpath.
+							// WARNING : If it's a second path for a loop, no need to check the flux. We don't flux down this path.
+							if (woodFluxActivated && !firstSiteReached && (woodfluxNumber > PlugIn.endPathsAssociatedToSite[neighbourToOpen].woodFluxBeforeUpdate))
+							{
+								destroyPath = true;
+                                if (debugMessages) { ModelCore.UI.WriteLine("Destroying EndPath because of woodflux."); }
+                            }
+							// If the road ID to build with this road is higher than the lowest road ID in the end path, this means we'll need to do updates
+							// in this end path. Hence, we'll destroy it and search instead.
+							if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, PlugIn.endPathsAssociatedToSite[neighbourToOpen].lowestRoadID))
+							{
+								destroyPath = true;
+                                if (debugMessages) { ModelCore.UI.WriteLine("Destroying EndPath because of ID to construct.."); }
+                            }
+							// If it's not OK, we dissolve the flux path, and we keep going with the search.
+							if (destroyPath) { PlugIn.endPathsAssociatedToSite[neighbourToOpen].DissolveEndPath(); }
+
+							else
+							{
+                                if (debugMessages) { ModelCore.UI.WriteLine("EndPath not destroyed : ending the search."); }
+
+                                if (!IsFirstSiteReached)
+                                {
+                                    listOfSitesInFirstLeastCostPath = PlugIn.endPathsAssociatedToSite[neighbourToOpen].GetRestOfPath(neighbourToOpen);
+                                    List<Site> restOfPath = MapManager.FindPathToStart(startingSite, siteToClose, predecessors, true);
+                                    listOfSitesInFirstLeastCostPath.AddRange(restOfPath);
+                                    firstSiteReached = listOfSitesInFirstLeastCostPath.First();
+                                    endingFoundWithEndPathInFirstSearch = true;
+                                    endPathForFirstPath = PlugIn.endPathsAssociatedToSite[neighbourToOpen];
+                                    // We go to the rest of the function : have we found a first path, or a second path if we're looping ?
+                                    goto endingChecks;
+                                }
+
+                                else // if first site has been reached and we're still there, we have to be looping.
+                                {
+                                    listOfSitesInSecondLeastCostPath = PlugIn.endPathsAssociatedToSite[neighbourToOpen].GetRestOfPath(neighbourToOpen);
+                                    List<Site> restOfPath = MapManager.FindPathToStart(startingSite, siteToClose, predecessors, true);
+                                    listOfSitesInSecondLeastCostPath.AddRange(restOfPath);
+                                    secondSiteReached = listOfSitesInSecondLeastCostPath.First();
+                                    endingFoundWithEndPathInSecondSearch = true;
+                                    endPathForSecondPath = PlugIn.endPathsAssociatedToSite[neighbourToOpen];
+                                    goto endingChecks;
+                                }
+                            }
+                        }
+
                         // if (debugMessages) { ModelCore.UI.WriteLine("Conditions to open neighbor are OK."); }
                         // If the neighbor has no road, we consider the construction of a road to it.
                         if (!SiteVars.RoadsInLandscape[neighbourToOpen].IsARoad)
@@ -100,7 +155,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 						// If the neighbor has a road, we consider if we have to upgrade it.
 						else
 						{
-                            // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road, computing upgrade."); }
+                            if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road, computing upgrade."); }
                             // We check the current ID of the road, versus the one if we need to return to the cell, versus the one we need because of the woodflux.
                             // The highest/costlier ID is the one we need.
                             // First, check if it is not an exit point; we can't update those.
@@ -110,7 +165,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 								// This prevents complete optimisation of both road construction and road upgrades; but it's much quicker.
 								if (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill)
 								{
-                                    // if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road and is connected to exist point. Restricting to roads; restriction before was : " + restrictToExistingRoads); }
+                                    if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has road and is connected to exist point. Restricting to roads; restriction before was : " + restrictToExistingRoads); }
                                     restrictToExistingRoads = true; 
 								}
 
@@ -148,7 +203,7 @@ namespace Landis.Extension.ForestRoadsSimulation
                                     // Therefore, the cost for construction computed with MapManager.CostOfTransition is going to be between centroid; but if we upgrade, it's going to be pixel by pixel.
                                     newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen) + (SiteVars.RoadsInLandscape[neighbourToOpen].ComputeUpdateCost(neighbourToOpen, currentRoadID, highestRankID));
 								}
-								else // If no update, cost is as usual
+								else // If no update, cost is as usual; 
 								{
 									newDistanceToStart = costSoFar[siteToClose] + MapManager.CostOfTransition(siteToClose, neighbourToOpen);
 								}
@@ -159,10 +214,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 							}
 						}
 
-						// If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
-						// this node to close will become its predecessor, and its distance to start will become this one.
-						// We will not add the neighbor if it's not part of the existing road network and we're restricting ourselves to the road network.
-						if ((!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen]) && (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill || !restrictToExistingRoads))
+                        // If the node isn't opened yet, or if it is opened and going to start throught the current node to close is closer; then, 
+                        // this node to close will become its predecessor, and its distance to start will become this one.
+                        // We will not add the neighbor if it's not part of the existing road network and we're restricting ourselves to the road network.
+                        if ((!costSoFar.ContainsKey(neighbourToOpen) || newDistanceToStart < costSoFar[neighbourToOpen]) && (SiteVars.RoadsInLandscape[neighbourToOpen].isConnectedToSawMill || !restrictToExistingRoads))
 						{
                             // if (debugMessages) { ModelCore.UI.WriteLine("Opening neighbour in frontier."); }
                             // if (debugMessages) { ModelCore.UI.WriteLine("Neighbour is officially opened."); }
@@ -181,27 +236,22 @@ namespace Landis.Extension.ForestRoadsSimulation
                             // if (debugMessages) { ModelCore.UI.WriteLine("Frontier count before end of loop = " + frontier.Count); }
                         }
 
+						endingChecks:
+
                         // Conditions for stopping
                         // 1. We're not doing a loop, and we've reached a exit point.
                         // We simply finish the search.
-                        if (!IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+                        if (!IsFirstSiteReached && (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo || endingFoundWithEndPathInFirstSearch))
 						{
-                            // if (debugMessages) { ModelCore.UI.WriteLine("First path has been found."); }
-                            // We register the arrival and the path
-                            firstSiteReached = neighbourToOpen;
-							IsFirstSiteReached = true;
-							listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
+                            IsFirstSiteReached = true;
 
-							// We want to check the path and see if there is no update cost that is too expensive, e.g. upgrading a bridge.
-
-							// If there is an expensive update, we want to start back the search at the cell just before this update.
-							// We save the path to start that well connect to later
-							
-							// We reset the dictionnaries and variables
-
-							// The starting cell becomes this cell just before the costly update.
-
-							// 
+                            if (!endingFoundWithEndPathInFirstSearch)
+							{
+                                if (debugMessages) { ModelCore.UI.WriteLine("First path has been found."); }
+                                // We register the arrival and the path
+                                firstSiteReached = neighbourToOpen;
+                                listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
+                            }
 
 							// If no loop, we're done.
 							if (!loopingActivated) {goto End;}
@@ -242,13 +292,18 @@ namespace Landis.Extension.ForestRoadsSimulation
 						}
 
 						// 2. We're doing a loop, and we've reached an exit point for the second time.
-						else if (loopingActivated && IsFirstSiteReached && SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo)
+						else if (loopingActivated && IsFirstSiteReached && (SiteVars.RoadsInLandscape[neighbourToOpen].IsAPlaceForTheWoodToGo || endingFoundWithEndPathInSecondSearch))
 						{
-                            // if (debugMessages) { ModelCore.UI.WriteLine("Second path found."); }
-                            // We simply close everything.
                             IsSecondSiteReached = true;
-							secondSiteReached = neighbourToOpen;
-							listOfSitesInSecondLeastCostPath = MapManager.FindPathToStart(startingSite, secondSiteReached, predecessors);
+
+                            if (debugMessages) { ModelCore.UI.WriteLine("Second path found."); }
+                            // We simply close everything.
+                            if (!endingFoundWithEndPathInSecondSearch)
+							{
+                                secondSiteReached = neighbourToOpen;
+                                listOfSitesInSecondLeastCostPath = MapManager.FindPathToStart(startingSite, secondSiteReached, predecessors);
+                            }
+
 							goto End; 
 						}
 					} // End of looking at one neighbour
@@ -306,8 +361,20 @@ namespace Landis.Extension.ForestRoadsSimulation
 				RoadNetwork.costOfLastPath = costOfConstructionInFirstPath + costOfUpgradesInFirstPath;
 				RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfConstructionInFirstPath + costOfUpgradesInFirstPath;
 
-				// Now, if a second site was reached, we check how much it cost. If it's not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it.
-				if (loopingActivated && IsSecondSiteReached)
+				// Now that everything if done and that we have at least one road, we can construct an endPath object to make future searches quicker.
+				// We initialize it.
+				if (!endingFoundWithEndPathInFirstSearch)
+				{
+                    // Also, we don't make an endpath if the path is too short.
+                    if (listOfSitesInFirstLeastCostPath.Count > 3) { EndPath newEndPath = new EndPath(listOfSitesInFirstLeastCostPath); }
+                }
+				else // If we found one, we update it.
+				{
+					endPathForFirstPath.UpdateEndPath();
+                }
+
+                // Now, if a second site was reached, we check how much it cost. If it's not too costly AND a probabilities are OK (see probability of loop construction parameter), we build it.
+                if (loopingActivated && IsSecondSiteReached)
 				{
 					double costOfConstructionInSecondPath = 0;
                     double costOfUpgradesInSecondPath = 0;
@@ -377,14 +444,31 @@ namespace Landis.Extension.ForestRoadsSimulation
 						RoadNetwork.costOfLastPath = costOfConstructionInSecondPath + costOfUpgradesInSecondPath;
 						RoadNetwork.costOfConstructionAndRepairsAtTimestep += costOfConstructionInSecondPath + costOfUpgradesInSecondPath;
 
-						// If both roads have been constructed, we return that it's the case
-						return (2);
+						// If we have found the first path using an endpath, but that we didn't run into any
+						// endpath for the second path, we can create one. It's because in that way, we know
+						// that we haven't created a new EndPath with the first path; and we know we haven't
+						// found the same EndPath as the one before, thus avoiding to collide two EndPaths.
+						if (endingFoundWithEndPathInFirstSearch && !endingFoundWithEndPathInSecondSearch)
+						{
+                            if (listOfSitesInSecondLeastCostPath.Count > 3) { EndPath secondNewEndPath = new EndPath(listOfSitesInSecondLeastCostPath); }
+                        }
+						else if(endingFoundWithEndPathInSecondSearch) // If we found one, we update it.
+						{
+							endPathForSecondPath.UpdateEndPath();
+						}
+
+                        // If both roads have been constructed, we return that it's the case
+                        return (2);
+
 					}
 				}
 				// If only one road has been constructed, we return that that's the case.
 				return (1);
-			}
-			else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
+
+                // We update the woodflux and lowest ID that of the endpath we met if we did meet one.
+
+            }
+            else throw new Exception("FOREST ROADS SIMULATION ERROR : A Dijkstra search wasn't able to connect the site " + startingSite.Location + " to any site. This isn't supposed to happen. Check if there are exit points in your landscape, and if they are reachable by the pathfinding algorithm (e.g. not surrounded by areas we roads can't be built)." + PlugIn.errorToGithub);
 		}
 
 
