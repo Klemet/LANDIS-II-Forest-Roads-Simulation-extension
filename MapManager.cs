@@ -999,7 +999,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 			Site currentSite = arrivalSite;
 			Site nextPredecessor;
 			bool foundStartingSite = false;
-			if (includeArrivalSite) { ListOfSitesInThePath.Add(arrivalSite); }
+			if (includeArrivalSite && (arrivalSite != startingSite)) { ListOfSitesInThePath.Add(arrivalSite); }
             // Case of this node being the starting site (you never know)
             // so as to avoid potential errors.
             if (arrivalSite.Location == startingSite.Location) { foundStartingSite = true; nextPredecessor = currentSite; ListOfSitesInThePath.Add(currentSite); }

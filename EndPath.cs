@@ -30,8 +30,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 		{
 			if (sitesInPath.Count == 0) { throw new Exception("FOREST ROADS SIMULATION ERROR : EndPath Error. Tried to create a path with no sites in it." + PlugIn.errorToGithub); }
 
-			this.sitesInPath = sitesInPath;
-            this.sitesInPath.Reverse(); // We want this path to start with the starting, and end with the exit point.
+			this.sitesInPath = new List<Site>();
+            sitesInPath.Reverse(); // We want this path to start with the starting, and end with the exit point.
             this.woodFluxBeforeUpdate = double.PositiveInfinity;
 			this.lowestRoadID = PlugIn.Parameters.RoadCatalogueNonExit.GetIDofLowestRoadType();
             nextSiteForDirection = new Dictionary<Site, Site>();
@@ -56,14 +56,16 @@ namespace Landis.Extension.ForestRoadsSimulation
                         this.lowestRoadID = SiteVars.RoadsInLandscape[sitesInPath[i]].typeNumber;
                     }
                     PlugIn.endPathsAssociatedToSite[sitesInPath[i]] = this;
+                    this.sitesInPath.Add(sitesInPath[i]);
                 }
             }
-		}
+            sitesInPath.Reverse(); // Just in case the real object passed as argument is edited, we put it back as it was.
+        }
 
         // Updates the wood flux that the path can handle and the lowest road ID in the path for future checks during dijkstra searches.
         public void UpdateEndPath()
         {
-            foreach (Site site in sitesInPath)
+            foreach (Site site in this.sitesInPath)
             {
                 if (PlugIn.Parameters.SimulationOfWoodFlux)
                 {

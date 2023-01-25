@@ -38,10 +38,10 @@
       <HintPath>packages\Landis.Core.2.0.0\lib\netstandard2.0\Landis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Core.Implementation, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.Core.Implementation.2.0.0\lib\netstandard2.0\Landis.Core.Implementation.dll</HintPath>
+      <HintPath>C:\Program Files\LANDIS-II-v7\v7\Landis.Core.Implementation.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Landscapes, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.Landscapes.2.0.0\lib\netstandard2.0\Landis.Landscapes.dll</HintPath>
+      <HintPath>C:\Program Files\LANDIS-II-v7\v7\Landis.Landscapes.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
       <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
@@ -56,7 +56,7 @@
       <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.SpatialModeling.2.0.0\lib\netstandard2.0\Landis.SpatialModeling.dll</HintPath>
+      <HintPath>C:\Program Files\LANDIS-II-v7\v7\Landis.SpatialModeling.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Utilities, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.Utilities.2.0.0\lib\netstandard2.0\Landis.Utilities.dll</HintPath>
@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BytePixel.cs" />
+    <Compile Include="EndPath.cs" />
     <Compile Include="FluxPath.cs" />
     <Compile Include="RoadCatalogue.cs" />
     <Compile Include="MetadataHandler.cs" />

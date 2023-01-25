@@ -9,6 +9,9 @@ using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Landis.Utilities;
+using System.Security.Policy;
+using Site = Landis.SpatialModeling.Site;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {
@@ -71,10 +74,104 @@ namespace Landis.Extension.ForestRoadsSimulation
             EndPath endPathForFirstPath = null;
             EndPath endPathForSecondPath = null;
 
+			// PARTICULAR CASES RELATED TO THE STARTING SITE
+			// --------------------------------------------------------------------
+			if (PlugIn.endPathsAssociatedToSite.ContainsKey(startingSite)) // Singular case where this can happen.
+			{
+                bool destroyPath = false;
+                // We check if the road ID to build and the wood to flux are not too much for this endpath.
+                // WARNING : If it's a second path for a loop, no need to check the flux. We don't flux down this path.
+                if (woodFluxActivated && !IsFirstSiteReached && (woodfluxNumber > PlugIn.endPathsAssociatedToSite[startingSite].woodFluxBeforeUpdate))
+                {
+                    destroyPath = true;
+                    if (debugMessages) { ModelCore.UI.WriteLine("Destroying EndPath because of woodflux."); }
+                }
+                // If the road ID to build with this road is higher than the lowest road ID in the end path, this means we'll need to do updates
+                // in this end path. Hence, we'll destroy it and search instead.
+                if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(IDOfRoadToConstruct, PlugIn.endPathsAssociatedToSite[startingSite].lowestRoadID))
+                {
+                    destroyPath = true;
+                    if (debugMessages) { ModelCore.UI.WriteLine("Destroying EndPath because of ID to construct.."); }
+                }
+				// If it's not OK, we dissolve the flux path, and we keep going with the search.
+				if (destroyPath) { PlugIn.endPathsAssociatedToSite[startingSite].DissolveEndPath(); }
+
+				else // If it's OK, we stop the search right here.
+				{
+                    listOfSitesInFirstLeastCostPath = PlugIn.endPathsAssociatedToSite[startingSite].GetRestOfPath(startingSite);
+                    firstSiteReached = listOfSitesInFirstLeastCostPath.First();
+                    endingFoundWithEndPathInFirstSearch = true;
+                    endPathForFirstPath = PlugIn.endPathsAssociatedToSite[startingSite];
+                    IsFirstSiteReached = true;
+
+                    // If no loop, we're done.
+                    if (!loopingActivated) { goto End; }
+
+                    // If loop, we keep going for the second search.
+                    else
+                    {
+                        // To create the loop in the same way as in version 1.3, we will find the first cell the algorithm connected to that had
+                        // a road connected to an exit point; we will create a forbiden zone around this cell to force the loop to be done in
+                        // the second path.
+                        listOfSitesInFirstLeastCostPath.Reverse(); // We reverse because we need to start from the first site in the line afterward
+                        foreach (Site site in listOfSitesInFirstLeastCostPath)
+                        {
+                            if (SiteVars.RoadsInLandscape[site].isConnectedToSawMill)
+                            {
+                                forbiddenSites = MapManager.GetNearbySites(searchNeighborhood, site);
+                                // We remove the roads from the forbidden sites; if not, the current algorithm can get stuck.
+                                forbiddenSites.RemoveAll(forbidenSite => SiteVars.RoadsInLandscape[forbidenSite].isConnectedToSawMill);
+                                break;
+                            }
+                        }
+                        // Reverse again because the lines at the end of the function need it
+                        listOfSitesInFirstLeastCostPath.Reverse();
+                    }
+                }
+            }
+
+            // Particular case : the starting site is a road, and we might need to do an update on it.
+			// This is due to the new way that we're handling wood fluxes, in which we can "flux" on already
+			// constructed roads (see line 324 of plugin).
+			// Not very pretty, but it does the job.
+            if (SiteVars.RoadsInLandscape[startingSite].IsARoad) 
+            {
+                int currentRoadID = SiteVars.RoadsInLandscape[startingSite].typeNumber;
+                int highestRankID = 0;
+
+                if (woodFluxActivated)
+                {
+                    highestRankID = PlugIn.Parameters.RoadCatalogueNonExit.whoIsRoadOfHigherRank(new List<int>() { SiteVars.RoadsInLandscape[startingSite].UpdateNeedIfWoodFluxIncrease(woodfluxNumber), IDOfRoadToConstruct, currentRoadID });
+                }
+                else
+                {
+                    highestRankID = PlugIn.Parameters.RoadCatalogueNonExit.whoIsRoadOfHigherRank(new List<int>() { IDOfRoadToConstruct, currentRoadID });
+                }
+
+                // If highest rank = currentRoadID, no update
+                if (highestRankID != currentRoadID)
+                {
+                    // if (debugMessages) { ModelCore.UI.WriteLine("Checking updatePlannedForSite dictionnary."); }
+                    // We register the update to do it later when the path is found, but only if there's not an upgrade to a bigger level already planned
+                    if (updatePlannedForSite.ContainsKey(startingSite))
+                    {
+                        if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(highestRankID, updatePlannedForSite[startingSite])) { updatePlannedForSite[startingSite] = highestRankID; }
+                    }
+                    else
+                    {
+                        updatePlannedForSite[startingSite] = highestRankID;
+                    }
+                }
+            }
+			// --------------------------------------------------------------------
+
 			restartLoop:
 
-            //if (startingSite.Location.ToString() == "(74, 58)") { debugMessages = true; MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps + "-DEBUG", ModelCore); }
-            //else { debugMessages = false; }
+            // STARTING THE LOOP FOR THE SEARCH
+            // --------------------------------------------------------------------
+
+            // if (startingSite.Location.ToString() == "(68, 22)") { debugMessages = true; MapManager.WriteMap(PlugIn.Parameters.OutputsOfRoadNetworkMaps + "-DEBUG", ModelCore); }
+            // else { debugMessages = false; }
 
             // We loop until the list is empty
             while (frontier.Count > 0)
@@ -85,6 +182,7 @@ namespace Landis.Extension.ForestRoadsSimulation
 				// We look at each of its neighbours, road on them or not.
 				foreach (Site neighbourToOpen in MapManager.GetNeighbouringSites(siteToClose))
 				{
+                    // if (neighbourToOpen.Location.ToString() == "(73, 57)") { debugMessages = true; }
 
                     if (debugMessages) { ModelCore.UI.WriteLine("Checking to open neighbor" + neighbourToOpen.Location); }
                     if (debugMessages) { ModelCore.UI.WriteLine("Neighbor has type : " + SiteVars.RoadsInLandscape[neighbourToOpen].typeNumber); }
@@ -99,7 +197,7 @@ namespace Landis.Extension.ForestRoadsSimulation
                             bool destroyPath = false;
 							// We check if the road ID to build and the wood to flux are not too much for this endpath.
 							// WARNING : If it's a second path for a loop, no need to check the flux. We don't flux down this path.
-							if (woodFluxActivated && !firstSiteReached && (woodfluxNumber > PlugIn.endPathsAssociatedToSite[neighbourToOpen].woodFluxBeforeUpdate))
+							if (woodFluxActivated && !IsFirstSiteReached && (woodfluxNumber > PlugIn.endPathsAssociatedToSite[neighbourToOpen].woodFluxBeforeUpdate))
 							{
 								destroyPath = true;
                                 if (debugMessages) { ModelCore.UI.WriteLine("Destroying EndPath because of woodflux."); }
@@ -174,7 +272,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 
 								if (woodFluxActivated)
 								{
+                                    if (debugMessages) { ModelCore.UI.WriteLine("Current wood flux " + SiteVars.RoadsInLandscape[neighbourToOpen].timestepWoodFlux); }
+                                    if (debugMessages) { ModelCore.UI.WriteLine("Wood flux to add " + woodfluxNumber); }
                                     highestRankID = PlugIn.Parameters.RoadCatalogueNonExit.whoIsRoadOfHigherRank(new List<int>() { SiteVars.RoadsInLandscape[neighbourToOpen].UpdateNeedIfWoodFluxIncrease(woodfluxNumber), IDOfRoadToConstruct, currentRoadID });
+                                    if (debugMessages) { ModelCore.UI.WriteLine("Upgrade needed with increase : " + SiteVars.RoadsInLandscape[neighbourToOpen].UpdateNeedIfWoodFluxIncrease(woodfluxNumber)); }
                                 }
 								else
 								{
@@ -189,10 +290,12 @@ namespace Landis.Extension.ForestRoadsSimulation
                                     if (updatePlannedForSite.ContainsKey(neighbourToOpen))
 									{
 										if (PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(highestRankID, updatePlannedForSite[neighbourToOpen])) { updatePlannedForSite[neighbourToOpen] = highestRankID; }
-									}
-									else
+                                        if (debugMessages && PlugIn.Parameters.RoadCatalogueNonExit.IsRoadTypeOfHigherRank(highestRankID, updatePlannedForSite[neighbourToOpen])) { ModelCore.UI.WriteLine("Upgrading neighbor " + neighbourToOpen + " to road : " + updatePlannedForSite[neighbourToOpen]); }
+                                    }
+                                    else
 									{
                                         updatePlannedForSite[neighbourToOpen] = highestRankID;
+                                        if (debugMessages) { ModelCore.UI.WriteLine("Upgrading neighbor " + neighbourToOpen + " to road : " + updatePlannedForSite[neighbourToOpen]); }
                                     }
 
                                     // if (debugMessages) { ModelCore.UI.WriteLine("Updating cost so far with update."); }
@@ -251,7 +354,7 @@ namespace Landis.Extension.ForestRoadsSimulation
                                 // We register the arrival and the path
                                 firstSiteReached = neighbourToOpen;
                                 listOfSitesInFirstLeastCostPath = MapManager.FindPathToStart(startingSite, firstSiteReached, predecessors);
-                            }
+							}
 
 							// If no loop, we're done.
 							if (!loopingActivated) {goto End;}
@@ -311,10 +414,15 @@ namespace Landis.Extension.ForestRoadsSimulation
 				isClosed.Add(siteToClose);
 			}// End of while loop for the frontier
 
+			// --------------------------------------------------------------------
+
 			End:
-			
-			// We start by computing the cost of the first road, and constructing it
-			if (IsFirstSiteReached)
+
+            // STARTING THE CONSTRUCTION/UPDATE ONCE THE SEARCH IS OVER
+            // --------------------------------------------------------------------
+
+            // We start by computing the cost of the first road, and constructing it
+            if (IsFirstSiteReached)
 			{
 				double costOfConstructionInFirstPath = 0;
 				double costOfUpgradesInFirstPath = 0;
@@ -456,6 +564,8 @@ namespace Landis.Extension.ForestRoadsSimulation
 						{
 							endPathForSecondPath.UpdateEndPath();
 						}
+
+                        // --------------------------------------------------------------------
 
                         // If both roads have been constructed, we return that it's the case
                         return (2);

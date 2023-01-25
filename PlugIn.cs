@@ -328,8 +328,11 @@ namespace Landis.Extension.ForestRoadsSimulation
 						if (parameters.SimulationOfWoodFlux && dictWoodToFluxForSite[harvestedSite] != 0)
 						{
                             Site closetSiteWithRoad = MapManager.GetClosestSiteWithRoad(skiddingNeighborhood, harvestedSite);
-                            DijkstraSearch.DijkstraPathFinding(ModelCore, closetSiteWithRoad, null, false, 0, true, dictWoodToFluxForSite[harvestedSite]);
-							dictWoodToFluxForSite[harvestedSite] = 0;
+							if (!SiteVars.RoadsInLandscape[closetSiteWithRoad].IsAPlaceForTheWoodToGo) // If this closest site is an exit point, no need to do anything.
+							{
+                                DijkstraSearch.DijkstraPathFinding(ModelCore, closetSiteWithRoad, null, false, 0, true, dictWoodToFluxForSite[harvestedSite]);
+                            }
+                            dictWoodToFluxForSite[harvestedSite] = 0;
                             dictWoodFluxConsidered[harvestedSite] = true;
                         }
 
