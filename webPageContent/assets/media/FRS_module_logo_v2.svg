@@ -7,7 +7,7 @@
    viewBox="0 0 102.84 102.84"
    version="1.1"
    id="svg5"
-   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   inkscape:version="1.2.1 (9c6d41e, 2022-07-14)"
    sodipodi:docname="FRS_module_logo_v2.svg"
    inkscape:export-filename="D:\OneDrive -UQAM\OneDrive - UQAM\1 - Projets\Thèse - Chapitre 1\Module de route\FRS-Module-Clean\LANDIS-II-Forest-Roads-Simulation-module\docs\FRS_module_logo.png"
    inkscape:export-xdpi="100"
@@ -30,15 +30,17 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="1.0607991"
-     inkscape:cx="304.0161"
-     inkscape:cy="130.56195"
-     inkscape:window-width="3378"
-     inkscape:window-height="1417"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:zoom="1.5001965"
+     inkscape:cx="264.632"
+     inkscape:cy="157.64602"
+     inkscape:window-width="1600"
+     inkscape:window-height="868"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2" />
+     inkscape:current-layer="g1567"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
   <defs
      id="defs2">
     <rect
@@ -992,29 +994,80 @@
          inkscape:transform-center-x="-1.2564354e-06"
          inkscape:transform-center-y="-2.8760282e-06"
          d="M 523.29941,334.28955 328.95694,528.63202 134.61447,334.28955 328.95694,139.94708 Z" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:5.44913px;line-height:1.25;font-family:sans-serif;fill:#bc4749;fill-opacity:1;stroke:none;stroke-width:0.204342;stroke-linecap:butt;stroke-linejoin:round"
-         x="-1.0116498"
-         y="155.91327"
+      <g
+         aria-label="LANDIS-II"
+         transform="rotate(-45)"
          id="text1921-9"
-         transform="rotate(-45)"><tspan
-           sodipodi:role="line"
-           id="tspan1919-0"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.44913px;font-family:Montserrat;-inkscape-font-specification:Montserrat;fill:#bc4749;fill-opacity:1;stroke-width:0.204342"
-           x="-1.0116498"
-           y="155.91327">LANDIS-II</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN], Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:round"
-         x="76.833435"
-         y="66.036224"
-         id="text4588"><tspan
-           sodipodi:role="line"
-           id="tspan4586"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN], Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:0.264583"
-           x="76.833435"
-           y="66.036224">extension</tspan></text>
+         style="font-size:5.44913px;fill:#bc4749;stroke-width:0.204342;stroke-linejoin:round">
+        <path
+           d="m -0.55937205,155.91327 v -3.81439 h 0.88275907 v 3.0951 H 2.2360317 v 0.71929 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path556" />
+        <path
+           d="m 2.2521804,155.91327 1.7001286,-3.81439 h 0.8718608 l 1.7055777,3.81439 H 5.6033954 l -1.3949773,-3.36756 h 0.3487443 l -1.4004264,3.36756 z m 0.8500643,-0.81737 0.2343126,-0.67024 h 1.9616868 l 0.2397617,0.67024 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path558" />
+        <path
+           d="m 6.9275278,155.91327 v -3.81439 h 0.7301834 l 2.2504907,2.74636 H 9.5540085 v -2.74636 h 0.8718605 v 3.81439 H 9.701135 l -2.2559398,-2.74636 h 0.3541934 v 2.74636 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path560" />
+        <path
+           d="m 11.330418,155.91327 v -3.81439 h 1.732823 q 0.621201,0 1.095275,0.23976 0.474074,0.23431 0.741082,0.65934 0.267007,0.42504 0.267007,1.00809 0,0.57761 -0.267007,1.00809 -0.267008,0.42503 -0.741082,0.6648 -0.474074,0.23431 -1.095275,0.23431 z m 0.882759,-0.72474 h 0.806471 q 0.381439,0 0.659345,-0.14167 0.283354,-0.14713 0.43593,-0.41414 0.158025,-0.267 0.158025,-0.62665 0,-0.36509 -0.158025,-0.62665 -0.152576,-0.267 -0.43593,-0.40868 -0.277906,-0.14713 -0.659345,-0.14713 h -0.806471 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path562" />
+        <path
+           d="m 15.83139,155.91327 v -3.81439 h 0.882759 v 3.81439 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path564" />
+        <path
+           d="m 18.872,155.97866 q -0.457727,0 -0.87731,-0.11988 -0.419583,-0.12533 -0.675692,-0.3215 l 0.299702,-0.66479 q 0.245211,0.17437 0.577608,0.2888 0.337846,0.10898 0.681141,0.10898 0.261558,0 0.419583,-0.049 0.163474,-0.0545 0.239762,-0.14713 0.07629,-0.0926 0.07629,-0.21251 0,-0.15258 -0.119881,-0.23976 -0.119881,-0.0926 -0.31605,-0.14713 -0.196169,-0.0599 -0.43593,-0.10898 -0.234313,-0.0545 -0.474075,-0.13078 -0.234312,-0.0763 -0.430481,-0.19617 -0.196169,-0.11988 -0.321499,-0.31605 -0.11988,-0.19617 -0.11988,-0.50132 0,-0.32695 0.174372,-0.59396 0.179821,-0.27245 0.534014,-0.43048 0.359643,-0.16347 0.899107,-0.16347 0.359643,0 0.708387,0.0872 0.348744,0.0817 0.615752,0.25066 l -0.272457,0.67025 q -0.267007,-0.15258 -0.534015,-0.22342 -0.267007,-0.0763 -0.523116,-0.0763 -0.256109,0 -0.419583,0.0599 -0.163474,0.0599 -0.234313,0.15802 -0.07084,0.0926 -0.07084,0.21797 0,0.14712 0.11988,0.23976 0.119881,0.0872 0.31605,0.14167 0.196169,0.0545 0.430481,0.10899 0.239762,0.0545 0.474075,0.12533 0.239761,0.0708 0.43593,0.19072 0.196169,0.11988 0.316049,0.31605 0.12533,0.19617 0.12533,0.49587 0,0.3215 -0.179821,0.5885 -0.179821,0.26701 -0.539464,0.43048 -0.354193,0.16348 -0.899106,0.16348 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path566" />
+        <path
+           d="m 21.000522,154.71991 v -0.68114 h 1.542104 v 0.68114 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path568" />
+        <path
+           d="m 23.272808,155.91327 v -3.81439 h 0.882759 v 3.81439 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path570" />
+        <path
+           d="m 25.060118,155.91327 v -3.81439 h 0.882759 v 3.81439 z"
+           style="-inkscape-font-specification:Montserrat"
+           id="path572" />
+      </g>
+      <g
+         aria-label="extension"
+         id="text4588"
+         style="font-size:10.5833px;line-height:1.25;font-family:'C&amp;C Red Alert [LAN]';-inkscape-font-specification:'C&amp;C Red Alert [LAN], Normal';stroke-width:0.264583;stroke-linejoin:round">
+        <path
+           d="M 76.833435,65.210727 V 61.08324 h 0.825497 v 1.650995 h 2.476493 V 61.08324 h -2.476493 v -0.825497 h 2.476493 v 0.825497 h 0.825497 v 2.476492 h -3.30199 v 1.650995 h 2.476493 v 0.825497 h -2.476493 v -0.825497 z m 4.127487,0 H 80.135425 V 64.38523 h 0.825497 z"
+           id="path701" />
+        <path
+           d="M 85.924488,66.036224 H 85.098991 V 65.210727 H 84.273493 V 63.559732 H 83.447996 V 62.734235 H 82.622499 V 61.08324 h -0.825498 v -0.825497 h 0.825498 v 0.825497 h 0.825497 v 1.650995 h 0.825497 v 0.825497 h 0.825498 v 1.650995 h 0.825497 z M 85.098991,61.08324 v 1.650995 H 84.273493 V 61.08324 Z m -1.650995,4.127487 h -0.825497 v -1.650995 h 0.825497 z m -0.825497,0.825497 h -0.825498 v -0.825497 h 0.825498 z m 3.301989,-5.778481 v 0.825497 h -0.825497 v -0.825497 z"
+           id="path703" />
+        <path
+           d="m 88.411562,58.606748 v 1.650995 h 0.825498 v 0.825497 h -0.825498 v 4.127487 h 0.825498 v 0.825497 H 87.586065 V 61.08324 h -0.825497 v -0.825497 h 0.825497 v -1.650995 z"
+           id="path705" />
+        <path
+           d="M 90.073137,65.210727 V 61.08324 h 0.825498 v 1.650995 h 2.476492 V 61.08324 h -2.476492 v -0.825497 h 2.476492 v 0.825497 h 0.825497 v 2.476492 h -3.301989 v 1.650995 h 2.476492 v 0.825497 h -2.476492 v -0.825497 z m 4.127487,0 H 93.375127 V 64.38523 h 0.825497 z"
+           id="path707" />
+        <path
+           d="m 95.8622,60.257743 v 0.825497 h 0.825498 v 0.825498 H 95.8622 v 4.127486 h -0.825497 v -5.778481 z m 3.30199,5.778481 H 98.338693 V 61.08324 h -1.650995 v -0.825497 h 1.650995 v 0.825497 h 0.825497 z"
+           id="path709" />
+        <path
+           d="m 100.80459,62.734235 h 2.47649 v 0.825497 h 0.8255 v 1.650995 h -0.8255 v -1.650995 h -2.47649 V 62.734235 H 99.979095 V 61.08324 h 0.825495 z m 3.30199,-0.825497 h -0.8255 V 61.08324 h -2.47649 v -0.825497 h 2.47649 v 0.825497 h 0.8255 z m -3.30199,3.301989 H 99.979095 V 64.38523 h 0.825495 v 0.825497 h 2.47649 v 0.825497 h -2.47649 z"
+           id="path711" />
+        <path
+           d="m 105.74698,60.257743 v 5.778481 h -0.82549 v -5.778481 z m 0,-1.650995 v 0.825497 h -0.82549 v -0.825497 z"
+           id="path713" />
+        <path
+           d="m 110.68937,65.210727 h -0.8255 V 61.08324 h -2.47649 v -0.825497 h 2.47649 v 0.825497 h 0.8255 z m -4.12749,0 V 61.08324 h 0.8255 v 4.127487 z m 3.30199,0 v 0.825497 h -2.47649 v -0.825497 z"
+           id="path715" />
+        <path
+           d="m 112.35095,60.257743 v 0.825497 h 0.8255 v 0.825498 h -0.8255 v 4.127486 h -0.8255 v -5.778481 z m 3.30199,5.778481 h -0.8255 V 61.08324 h -1.65099 v -0.825497 h 1.65099 v 0.825497 h 0.8255 z"
+           id="path717" />
+      </g>
     </g>
   </g>
 </svg>
