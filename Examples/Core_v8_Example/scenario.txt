@@ -1,0 +1,38 @@
+LandisData  Scenario
+
+Duration  200
+
+Species   species_s2e1.txt
+
+Ecoregions      ecoregions_s2e1.txt
+EcoregionsMap   ecoregions_s2e1.gis
+
+CellLength  100 << meters, 100 x 100 m = 1 ha
+
+
+>> NOTE:  This example assumes that you have downloaded and installed 
+>> the correpsonding extensions.  These extensions are currently packaged
+>> together as a package.
+
+>> Succession Extension     Initialization File
+>> --------------------     -------------------
+   "Biomass Succession"    biomass-succession_SetUp_s2e1.txt
+
+
+>> Disturbance Extensions   Initialization File
+>> ----------------------   -------------------
+>>   "Base BDA"			base-BDA-input.txt
+   "Biomass Harvest"		biomass-harvest_SetUp_s2e1.txt
+   "Forest Roads Simulation" ./input/disturbances/roads.txt
+
+>>   DisturbancesRandomOrder  yes  << optional parameter; default = no
+
+
+>> Other Extensions         Initialization File
+>> ----------------         -------------------
+>>   "Output Cohort Stats"    cohort-stats.output.txt
+>>   "Output Reclass"	    reclass.output.txt
+
+
+RandomNumberSeed  1,638,899,299  << optional parameter; default = the seed is
+                         << randomly generated using the current time

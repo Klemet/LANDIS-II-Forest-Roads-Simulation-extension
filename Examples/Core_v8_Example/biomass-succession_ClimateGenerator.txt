@@ -1,0 +1,11 @@
+LandisData "Climate Config"				
+		
+ClimateTimeSeries			Monthly_AverageAllYears
+ClimateFile				PRISM_data_AFRI_4.18.13.csv
+ClimateFileFormat			Monthly_Temp-C_Precip-mmMonth
+
+SpinUpClimateTimeSeries			Monthly_AverageAllYears
+SpinUpClimateFile			PRISM_data_AFRI_4.18.13.csv
+SpinUpClimateFileFormat			Monthly_Temp-C_Precip-mmMonth
+
+>> UsingClimateFire	yes  << Optional parameter; default is no.

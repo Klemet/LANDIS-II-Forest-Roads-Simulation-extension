@@ -1,0 +1,40 @@
+LandisData  "Dynamic Input Data"
+
+>> Year Ecoregion Species ProbEst MaxANPP MaxB
+>> --- ---------  ------- ------  ------  -----
+
+0 101  abiebals       0.9	886	26000	
+0 101  acerrubr       1.0  	1175	26000	
+0 101  acersacc       0.82 	1106	26000	
+0 101  betualle       0.64 	1202	26000	
+0 101  betupapy       1.0  	1202	26000	
+0 101  fraxamer       0.18 	1202	26000	
+0 101  piceglau       0.58 	969	26000	
+0 101  pinubank       1.0  	1130	26000	
+0 101  pinuresi       0.56 	1017	26000	
+0 101  pinustro       0.72 	1090	26000	
+0 101  poputrem       1.0  	1078	26000	
+0 101  querelli       0.66 	1017	26000	
+0 101  querrubr       0.66 	1017	26000	
+0 101  thujocci       0.76 	1090	26000	
+0 101  tiliamer       0.54 	1078	26000	
+0 102  abiebals       0.05	801	26000 	
+0 102  acerrubr       0.6 	1058	26000 
+0 102  acersacc       0.3 	1003	26000	
+0 102  betualle       0.24 	1052	26000	
+0 102  betupapy       0.75 	1052	26000	
+0 102  fraxamer       0.1 	1052	26000	
+0 102  piceglau       0.5 	875	26000	
+0 102  pinubank       0.8 	1015	26000	
+0 102  pinuresi       0.78 	916	26000	
+0 102  pinustro       0.70 	980	26000	
+0 102  poputrem       0.8 	968	26000	
+0 102  querelli       0.66 	1017	26000	
+0 102  querrubr       0.43 	916	26000	
+0 102  thujocci       0.002 	980	26000	
+0 102  tiliamer       0.06 	968	26000	
+
+
+
+
+

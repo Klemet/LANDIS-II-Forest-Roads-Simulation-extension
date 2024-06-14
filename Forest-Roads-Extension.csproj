@@ -34,35 +34,33 @@
     <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
       <HintPath>packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.Core.2.0.0\lib\netstandard2.0\Landis.Core.dll</HintPath>
+    <Reference Include="Landis.Core, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Landis.Core.3.0.1\lib\netstandard2.0\Landis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Core.Implementation, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.Core.Implementation.2.0.0\lib\netstandard2.0\Landis.Core.Implementation.dll</HintPath>
+    <Reference Include="Landis.Core.Implementation, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Landis.Core.Implementation.3.0.1\lib\netstandard2.0\Landis.Core.Implementation.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Landscapes, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.Landscapes.2.0.0\lib\netstandard2.0\Landis.Landscapes.dll</HintPath>
+    <Reference Include="Landis.Landscapes, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Landis.Landscapes.2.0.1\lib\netstandard2.0\Landis.Landscapes.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.AgeOnlyCohorts-v3">
-      <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.AgeOnlyCohorts-v3.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.Library.Cohorts-v2">
-      <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.Cohorts-v2.dll</HintPath>
-    </Reference>
-    <Reference Include="Landis.Library.HarvestManagement-v3">
-      <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.HarvestManagement-v3.dll</HintPath>
+    <Reference Include="Landis.Library.HarvestManagement-v4, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\Landis.Library.HarvestManagement-v4.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.SpatialModeling, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Landis.SpatialModeling.2.0.0\lib\netstandard2.0\Landis.SpatialModeling.dll</HintPath>
+    <Reference Include="Landis.Library.UniversalCohorts-v1">
+      <HintPath>C:\Program Files\LANDIS-II-v8\extensions\Landis.Library.UniversalCohorts-v1.dll</HintPath>
+    </Reference>
+    <Reference Include="Landis.SpatialModeling, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Landis.SpatialModeling.2.0.1\lib\netstandard2.0\Landis.SpatialModeling.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Utilities, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.Utilities.2.0.0\lib\netstandard2.0\Landis.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.14\lib\net45\log4net.dll</HintPath>
     </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="Priority Queue, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -72,7 +70,9 @@
       <HintPath>packages\Supercluster.KDTree.1.0.4\lib\Supercluster.KDTree.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -103,6 +103,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="NuGet.config">
       <SubType>Designer</SubType>
     </None>

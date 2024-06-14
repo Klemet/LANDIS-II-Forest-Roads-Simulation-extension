@@ -5,7 +5,7 @@
 using Landis.Landscapes;
 using Landis.Core;
 using Landis.SpatialModeling;
-using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.UniversalCohorts;
 
 namespace Landis.Extension.ForestRoadsSimulation
 {

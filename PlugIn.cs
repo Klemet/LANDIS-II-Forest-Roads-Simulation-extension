@@ -1,6 +1,6 @@
 ﻿// Author: Clément Hardy
 
-using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.UniversalCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;
@@ -313,5 +313,10 @@ namespace Landis.Extension.ForestRoadsSimulation
 				roadConstructionLog.WriteToFile();
 			} // End of if harvest extension detected
 		} // End of run function
-	} // End of PlugIn class
+
+        public override void AddCohortData()
+        {
+			return;
+        }
+    } // End of PlugIn class
 } // End of namespace

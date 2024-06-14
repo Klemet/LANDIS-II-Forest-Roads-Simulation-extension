@@ -1,7 +1,7 @@
 ; LANDIS-II Extension infomation
-#define CoreRelease "LANDIS-II-V7"
+#define CoreRelease "LANDIS-II-V8"
 #define ExtensionName "Forest Road Simulation module"
-#define AppVersion "1.3.1"
+#define AppVersion "2.0.0"
 #define AppPublisher "Clément Hardy"
 #define AppURL "https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module"
 
@@ -9,9 +9,9 @@
 #define BuildDir "..\bin\Release"
 
 ; LANDIS-II installation directories
-#define ExtDir "C:\Program Files\LANDIS-II-v7\extensions"
-#define AppDir "C:\Program Files\LANDIS-II-v7"
-#define LandisPlugInDir "C:\Program Files\LANDIS-II-v7\plug-ins-installer-files"
+#define ExtDir "C:\Program Files\LANDIS-II-v8\extensions"
+#define AppDir "C:\Program Files\LANDIS-II-v8"
+#define LandisPlugInDir "C:\Program Files\LANDIS-II-v8\plug-ins-installer-files"
 #define ExtensionsCmd AppDir + "\commands\landis-ii-extensions.cmd"
 
 [Setup]
@@ -50,12 +50,11 @@ Source: {#BuildDir}\Landis.Extension.ForestRoadsSimulation.dll; DestDir: {#ExtDi
 ; Requisite auxiliary libraries
 ; NB. These libraries are used by other extensions and thus are never uninstalled.
 Source: {#BuildDir}\Landis.Landscapes.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.AgeOnlyCohorts-v3.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.Cohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.HarvestManagement-v3.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Library.UniversalCohorts-v1.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Library.HarvestManagement-v4.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.SiteHarvest-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.Succession-v7.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Library.Succession-v9.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.SpatialModeling.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Priority Queue.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
@@ -63,11 +62,11 @@ Source: {#BuildDir}\Supercluster.KDTree.dll; DestDir: {#ExtDir}; Flags: uninsnev
 
 
 ; Complete example for testing the extension
-Source: "..\Examples\*"; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: ignoreversion
+Source: "..\Examples\Core_v8_Example\*"; DestDir: {#AppDir}\examples\{#ExtensionName}; Flags: ignoreversion
 
 ; LANDIS-II identifies the extension with the info in this .txt file
 ; NB. New releases must modify the name of this file and the info in it
-#define InfoTxt "Forest Roads Simulation 1.3.1.txt"
+#define InfoTxt "Forest Roads Simulation 2.0.txt"
 Source: .\Installation Files\plug-ins-installer-files\{#InfoTxt}; DestDir: {#LandisPlugInDir}
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

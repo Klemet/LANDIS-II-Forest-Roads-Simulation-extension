@@ -1,6 +1,6 @@
 ﻿// Author: Clément Hardy
 
-using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.UniversalCohorts;
 using Landis.Core;
 using Landis.SpatialModeling;
 using System.Collections.Generic;

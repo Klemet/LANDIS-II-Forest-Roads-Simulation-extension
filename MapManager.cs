@@ -6,7 +6,7 @@ using Landis.SpatialModeling;
 using System.IO;
 using System.Collections.Generic;
 using Landis.Core;
-using Landis.Library.AgeOnlyCohorts;
+using Landis.Library.UniversalCohorts;
 using Landis.Library.Metadata;
 using System;
 using System.Diagnostics;
