@@ -7,6 +7,10 @@
 </p>
 
 
+> [!WARNING]  
+> With the release of [version 2.0]([url](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/tag/2.0)) of the FRS extension, which aims to make the extension compatible with LANDIS-II-v8, all further releases will not be compatible with the older LANDIS-II-v7 version of LANDIS-II. If you need to use the version v7 of LANDIS-II, you can use the latest compatible version which is [FRS extension v1.3.1]([url](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/tag/1.3.1)).
+
+
 # 📑 Description
 
 The FRS (Forest Roads Simulation) extension is an extension for the [LANDIS-II](http://www.landis-ii.org/) model.
@@ -51,7 +55,7 @@ This is due to optimizations using two open-source C# Nuget packages (see Acknow
 
 To use the FRS extension, you need:
 
-- The [LANDIS-II model v7.0](http://www.landis-ii.org/install) installed on your computer.
+- The [LANDIS-II model v8.0](http://www.landis-ii.org/install) installed on your computer.
 - One of the succession extensions of LANDIS-II installed on your computer.
 - One of the harvest extensions ([Base Harvest](http://www.landis-ii.org/extensions/base-harvest) or [Biomass Harvest](http://www.landis-ii.org/extensions/biomass-harvest)) installed on your computer.
 - The FRS extension installed on your computer (see Download section below).
@@ -60,7 +64,7 @@ To use the FRS extension, you need:
 
 # 💾 Download
 
-Version 1.1 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/download/1.1/LANDIS-II-V7.Forest.Road.Simulation.extension.1.1-setup.exe). To install it on your computer, just launch the installer.
+Version 2.0 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/download/2.0/LANDIS-II-V8.Forest.Road.Simulation.module.2.0.0-setup.exe). To install it on your computer, just launch the installer.
 
 
 # 🛠 Parameterization and use
