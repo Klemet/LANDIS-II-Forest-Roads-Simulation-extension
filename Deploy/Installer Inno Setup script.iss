@@ -1,12 +1,12 @@
 ; LANDIS-II Extension infomation
 #define CoreRelease "LANDIS-II-V8"
 #define ExtensionName "Forest Road Simulation module"
-#define AppVersion "2.0.0"
+#define AppVersion "2.1.0"
 #define AppPublisher "Clément Hardy"
 #define AppURL "https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module"
 
 ; Build directory
-#define BuildDir "..\bin\Release"
+#define BuildDir "..\src\bin\Release"
 
 ; LANDIS-II installation directories
 #define ExtDir "C:\Program Files\LANDIS-II-v8\extensions"
@@ -50,11 +50,9 @@ Source: {#BuildDir}\Landis.Extension.ForestRoadsSimulation.dll; DestDir: {#ExtDi
 ; Requisite auxiliary libraries
 ; NB. These libraries are used by other extensions and thus are never uninstalled.
 Source: {#BuildDir}\Landis.Landscapes.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.UniversalCohorts-v1.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Library.UniversalCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.HarvestManagement-v4.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.SiteHarvest-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.Succession-v9.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.SpatialModeling.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Priority Queue.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
@@ -66,7 +64,7 @@ Source: "..\Examples\Core_v8_Example\*"; DestDir: {#AppDir}\examples\{#Extension
 
 ; LANDIS-II identifies the extension with the info in this .txt file
 ; NB. New releases must modify the name of this file and the info in it
-#define InfoTxt "Forest Roads Simulation 2.0.txt"
+#define InfoTxt "Forest Roads Simulation 2.1.txt"
 Source: .\Installation Files\plug-ins-installer-files\{#InfoTxt}; DestDir: {#LandisPlugInDir}
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

@@ -51,9 +51,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.UniversalCohorts-v1, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>libs\Landis.Library.UniversalCohorts-v1.dll</HintPath>
+    <Reference Include="Landis.Library.UniversalCohorts-v2">
+      <HintPath>libs\Landis.Library.UniversalCohorts-v2.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.SpatialModeling.2.0.1\lib\netstandard2.0\Landis.SpatialModeling.dll</HintPath>
