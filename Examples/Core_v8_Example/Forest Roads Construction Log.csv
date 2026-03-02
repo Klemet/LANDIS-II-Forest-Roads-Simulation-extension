@@ -1,0 +1,3 @@
+Timestep,NumberOfHarvestedSitesToConnect,NumberOfRoadsConstructed,TimeTaken,CostOfConstructionAndRepairs,
+10, 689, 143, 0, 2438952.1213275287, 
+20, 0, 0, 0, 0, 
