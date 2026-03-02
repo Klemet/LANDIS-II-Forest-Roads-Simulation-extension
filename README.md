@@ -2,7 +2,7 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Klemet/LANDIS-II-Forest-Roads-Simulation-extension?style=social"> <img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/master"> <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/Klemet/LANDIS-II-Forest-Roads-Simulation-extension"> <a href="https://zenodo.org/badge/latestdoi/200656337"><img src="https://zenodo.org/badge/200656337.svg" alt="DOI"></a>
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/master/webPageContent/assets/media/FRS_module_logo_v2.svg" />
+  <img src="https://raw.githubusercontent.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/refs/heads/master/docs/media/FRS_module_logo_v2.svg" />
 
 </p>
 
