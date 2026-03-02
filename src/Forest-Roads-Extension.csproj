@@ -45,13 +45,15 @@
     </Reference>
     <Reference Include="Landis.Library.HarvestManagement-v4, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Release\Landis.Library.HarvestManagement-v4.dll</HintPath>
+      <HintPath>libs\Landis.Library.HarvestManagement-v4.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.Metadata-v2">
-      <HintPath>C:\Program Files\LANDIS-II-v7\extensions\Landis.Library.Metadata-v2.dll</HintPath>
+    <Reference Include="Landis.Library.Metadata-v2, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Landis.Library.Metadata-v2.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.UniversalCohorts-v1">
-      <HintPath>C:\Program Files\LANDIS-II-v8\extensions\Landis.Library.UniversalCohorts-v1.dll</HintPath>
+    <Reference Include="Landis.Library.UniversalCohorts-v1, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Landis.Library.UniversalCohorts-v1.dll</HintPath>
     </Reference>
     <Reference Include="Landis.SpatialModeling, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.SpatialModeling.2.0.1\lib\netstandard2.0\Landis.SpatialModeling.dll</HintPath>
