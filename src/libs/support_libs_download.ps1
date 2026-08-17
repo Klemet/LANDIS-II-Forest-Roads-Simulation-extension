@@ -6,7 +6,7 @@ $master = "https://github.com/LANDIS-II-Foundation/Support-Library-Dlls-v8/raw/m
 # LANDIS-II support library dependencies
 # Modify here when any dependencies changed 
 
-$dlls = "Landis.Library.HarvestManagement-v4.dll",
+$dlls = "Landis.Library.HarvestManagement-v5.dll",
 "Landis.Library.Metadata-v2.dll",
 "Landis.Library.UniversalCohorts-v2.dll"
 #************************************************

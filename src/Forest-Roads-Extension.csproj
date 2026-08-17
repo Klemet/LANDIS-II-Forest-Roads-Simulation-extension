@@ -43,9 +43,9 @@
     <Reference Include="Landis.Landscapes, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Landis.Landscapes.2.0.1\lib\netstandard2.0\Landis.Landscapes.dll</HintPath>
     </Reference>
-    <Reference Include="Landis.Library.HarvestManagement-v4, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Landis.Library.HarvestManagement-v5">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>libs\Landis.Library.HarvestManagement-v4.dll</HintPath>
+      <HintPath>libs\Landis.Library.HarvestManagement-v5.dll</HintPath>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
