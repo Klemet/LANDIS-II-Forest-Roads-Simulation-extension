@@ -13,8 +13,8 @@ $dlls = "Landis.Library.HarvestManagement-v5.dll",
 
 
 # LANDIS-II support libraries download
-$current = Get-Location
-$outpath = $current.toString() + "/"
+# Always downloads next to this script (src/lib/), whatever the current directory is
+$outpath = $PSScriptRoot + "/"
 
 try {
 	ForEach ($item in $dlls) {

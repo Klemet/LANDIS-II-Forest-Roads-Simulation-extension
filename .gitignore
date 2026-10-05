@@ -28,6 +28,12 @@ Example files/
 copyToLandisFolder.bat
 launchLandisIITestScenario.bat
 
+# LANDIS-II support libraries fetched by src/lib/support_libs_download.ps1.
+# Never commit them: a committed copy shadows the .csproj HintPath (SDK-style
+# projects search project items before HintPaths) and overwrites newer installed
+# libraries in the shared extensions folder. See issue #4.
+src/lib/*.dll
+
 # Update checklist
 Update_Checklist.txt
 

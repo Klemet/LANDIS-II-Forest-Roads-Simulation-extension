@@ -67,6 +67,20 @@ To use the FRS extension, you need:
 Version 2.0 can be downloaded [here](https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension/releases/download/2.0/LANDIS-II-V8.Forest.Road.Simulation.module.2.0.0-setup.exe). To install it on your computer, just launch the installer.
 
 
+# Building from source
+
+Clone the repository, fetch the LANDIS-II support libraries once, then build:
+
+```powershell
+git clone https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-extension.git
+cd LANDIS-II-Forest-Roads-Simulation-extension
+.\src\lib\support_libs_download.ps1
+dotnet build -c Release
+```
+
+The support libraries are not committed to the repository; they are downloaded into `src/lib/`, where the project references them through `HintPath`s. They are deliberately **not** copied into the build output: LANDIS-II provides them at run time, so building this extension can never overwrite a newer library installed in the shared extensions folder.
+
+
 # 🛠 Parameterization and use
 
 To learn how to parameterize and use the FRS extension, take a look at the [FRS extension workshop](https://klemet.github.io/frs-extension-workshop/).

@@ -35,16 +35,34 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- LANDIS-II provides these libraries at run time: compile against them, but
+         never copy them into the output folder (which is shared with every other
+         extension in the Docker builds), so a build can never overwrite a newer
+         installed copy. See issue #4. -->
     <!-- Local LANDIS-II extension DLLs in src/lib/ (fetch via support_libs_download.ps1;
          HintPaths rewritten by the Docker build scripts to build/extensions) -->
     <Reference Include="Landis.Library.UniversalCohorts-v2">
       <HintPath>lib\Landis.Library.UniversalCohorts-v2.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Landis.Library.HarvestManagement-v5">
       <HintPath>lib\Landis.Library.HarvestManagement-v5.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Landis.Library.Metadata-v2">
       <HintPath>lib\Landis.Library.Metadata-v2.dll</HintPath>
+      <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SDK-style projects turn every file under src/ into a None item, and MSBuild
+         resolves references from those items ({CandidateAssemblyFiles}) BEFORE the
+         HintPath. Committed (or freshly downloaded) lib/*.dll and packages/*.dll would
+         therefore shadow the HintPath: compiling against a stale copy and copying it
+         over the installed libraries. Keep them out of the project items; only the
+         HintPath decides. -->
+    <None Remove="lib\**" />
+    <None Remove="packages\**" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,8 @@
 #define AppURL "https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module"
 
 ; Build directory
-#define BuildDir "..\src\bin\Release"
+#define BuildDir "..\src\bin\Release\netstandard2.0"
+#define LibDir "..\src\lib"
 
 ; LANDIS-II installation directories
 #define ExtDir "C:\Program Files\LANDIS-II-v8\extensions"
@@ -49,10 +50,11 @@ Source: {#BuildDir}\Landis.Extension.ForestRoadsSimulation.dll; DestDir: {#ExtDi
 
 ; Requisite auxiliary libraries
 ; NB. These libraries are used by other extensions and thus are never uninstalled.
+; NB. The Landis.Library.* DLLs come from src\lib: run src\lib\support_libs_download.ps1 before compiling this script.
 Source: {#BuildDir}\Landis.Landscapes.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.UniversalCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.HarvestManagement-v5.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#LibDir}\Landis.Library.UniversalCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#LibDir}\Landis.Library.HarvestManagement-v5.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#LibDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.SpatialModeling.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
 Source: {#BuildDir}\Priority Queue.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
