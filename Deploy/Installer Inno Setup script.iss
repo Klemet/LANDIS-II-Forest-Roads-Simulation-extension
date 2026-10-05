@@ -50,15 +50,17 @@ Source: {#BuildDir}\Landis.Extension.ForestRoadsSimulation.dll; DestDir: {#ExtDi
 
 ; Requisite auxiliary libraries
 ; NB. These libraries are used by other extensions and thus are never uninstalled.
+; NB. No ignoreversion: Setup replaces an installed copy only with a newer version,
+; so installing this extension cannot downgrade a library that another extension installed.
 ; NB. The Landis.Library.* DLLs come from src\lib: run src\lib\support_libs_download.ps1 before compiling this script.
-Source: {#BuildDir}\Landis.Landscapes.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#LibDir}\Landis.Library.UniversalCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#LibDir}\Landis.Library.HarvestManagement-v5.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#LibDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.SpatialModeling.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Priority Queue.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
-Source: {#BuildDir}\Supercluster.KDTree.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall ignoreversion
+Source: {#BuildDir}\Landis.Landscapes.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#LibDir}\Landis.Library.UniversalCohorts-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#LibDir}\Landis.Library.HarvestManagement-v5.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#LibDir}\Landis.Library.Metadata-v2.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#BuildDir}\Landis.SpatialModeling.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#BuildDir}\Landis.Utilities.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#BuildDir}\Priority Queue.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
+Source: {#BuildDir}\Supercluster.KDTree.dll; DestDir: {#ExtDir}; Flags: uninsneveruninstall
 
 
 ; Complete example for testing the extension
