@@ -1,7 +1,7 @@
 ; LANDIS-II Extension infomation
 #define CoreRelease "LANDIS-II-V8"
 #define ExtensionName "Forest Road Simulation module"
-#define AppVersion "2.1.0"
+#define AppVersion "2.1.1"
 #define AppPublisher "Cl�ment Hardy"
 #define AppURL "https://github.com/Klemet/LANDIS-II-Forest-Roads-Simulation-module"
 
@@ -68,7 +68,7 @@ Source: "..\Examples\Core_v8_Example\*"; DestDir: {#AppDir}\examples\{#Extension
 
 ; LANDIS-II identifies the extension with the info in this .txt file
 ; NB. New releases must modify the name of this file and the info in it
-#define InfoTxt "Forest Roads Simulation 2.1.txt"
+#define InfoTxt "Forest Roads Simulation 2.1.1.txt"
 Source: .\Installation Files\plug-ins-installer-files\{#InfoTxt}; DestDir: {#LandisPlugInDir}
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
